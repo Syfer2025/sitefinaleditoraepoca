@@ -1,0 +1,182 @@
+import { useState } from "react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { Star, BookX } from "lucide-react";
+import { GoldButton } from "./GoldButton";
+import { RevealOnScroll } from "./RevealOnScroll";
+import { motion, AnimatePresence } from "motion/react";
+import { featuredBooks, genres as allGenres } from "../data/books";
+
+const genres = allGenres.filter(
+  (g) => g === "Todos" || featuredBooks.some((b) => b.genre === g)
+);
+
+export function CatalogSection() {
+  const [activeGenre, setActiveGenre] = useState("Todos");
+
+  const filteredBooks =
+    activeGenre === "Todos"
+      ? featuredBooks
+      : featuredBooks.filter((b) => b.genre === activeGenre);
+
+  return (
+    <section id="catalogo" className="py-16 px-6 bg-secondary/30">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <RevealOnScroll direction="up" className="text-center mb-10">
+          <p
+            className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3"
+            style={{ fontFamily: "Inter, sans-serif" }}
+          >
+            Nosso Catálogo
+          </p>
+          <h2
+            className="text-[2.5rem] md:text-[3rem] text-foreground mb-4"
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              lineHeight: 1.15,
+            }}
+          >
+            Destaques <span className="italic">editoriais</span>
+          </h2>
+          <p
+            className="text-muted-foreground max-w-xl mx-auto"
+            style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
+          >
+            Confira nossas obras mais aclamadas pela crítica e amadas pelos
+            leitores.
+          </p>
+        </RevealOnScroll>
+
+        {/* Genre filters */}
+        <RevealOnScroll direction="up" delay={0.15}>
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
+            {genres.map((genre) => (
+              <button
+                key={genre}
+                onClick={() => setActiveGenre(genre)}
+                className="px-5 py-2 rounded-full transition-all duration-300 cursor-pointer"
+                style={{
+                  fontFamily: "Inter, sans-serif",
+                  backgroundColor:
+                    activeGenre === genre ? "#165B36" : "var(--background)",
+                  color:
+                    activeGenre === genre
+                      ? "var(--primary-foreground)"
+                      : "var(--muted-foreground)",
+                  border:
+                    activeGenre === genre
+                      ? "1px solid #165B36"
+                      : "1px solid var(--border)",
+                  transform: activeGenre === genre ? "scale(1.05)" : "scale(1)",
+                }}
+              >
+                {genre}
+              </button>
+            ))}
+          </div>
+        </RevealOnScroll>
+
+        {/* Books grid */}
+        <div className="grid md:grid-cols-3 gap-6">
+          <AnimatePresence mode="popLayout">
+            {filteredBooks.length === 0 ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4 }}
+                className="md:col-span-3 flex flex-col items-center justify-center py-20"
+              >
+                <BookX className="w-12 h-12 text-muted-foreground/40 mb-4" />
+                <p
+                  className="text-muted-foreground text-[1.1rem]"
+                  style={{ fontFamily: "Inter, sans-serif" }}
+                >
+                  Nenhum livro encontrado neste gênero.
+                </p>
+              </motion.div>
+            ) : (
+              filteredBooks.map((book, i) => (
+                <motion.div
+                  key={book.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  transition={{
+                    duration: 0.45,
+                    delay: i * 0.08,
+                    ease: [0.25, 0.1, 0.25, 1],
+                  }}
+                  className="group bg-card rounded-2xl overflow-hidden border border-border"
+                  style={{
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                  }}
+                  whileHover={{
+                    y: -6,
+                    boxShadow: "0 16px 40px rgba(5, 36, 19, 0.12)",
+                    transition: { duration: 0.3 },
+                  }}
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <ImageWithFallback
+                      src={book.image}
+                      alt={book.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute top-4 left-4">
+                      <span
+                        className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-[0.75rem]"
+                        style={{ fontFamily: "Inter, sans-serif" }}
+                      >
+                        {book.genre}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <div className="flex items-center gap-1 mb-2">
+                      <Star className="w-4 h-4 fill-[#EBBF74] text-[#EBBF74]" />
+                      <span
+                        className="text-[0.875rem] text-muted-foreground"
+                        style={{ fontFamily: "Inter, sans-serif" }}
+                      >
+                        {book.rating}
+                      </span>
+                    </div>
+                    <h3
+                      className="text-[1.375rem] text-foreground mb-1"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      {book.title}
+                    </h3>
+                    <p
+                      className="text-[0.875rem] text-muted-foreground mb-3"
+                      style={{ fontFamily: "Inter, sans-serif" }}
+                    >
+                      por {book.author}
+                    </p>
+                    <GoldButton className="w-full py-2.5">
+                      Ver detalhes
+                    </GoldButton>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* CTA */}
+        <RevealOnScroll direction="up" delay={0.2} className="text-center mt-10">
+          <GoldButton
+            href="/catalogo"
+            className="px-8 py-3.5"
+          >
+            Ver catálogo completo
+          </GoldButton>
+        </RevealOnScroll>
+      </div>
+    </section>
+  );
+}
