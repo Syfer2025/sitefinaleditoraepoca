@@ -1,5 +1,6 @@
 import { projectId, publicAnonKey } from "/utils/supabase/info";
 import { supabase } from "./supabaseClient";
+import { dedupeRequest } from "./apiCache";
 
 const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-e413165d`;
 
@@ -687,11 +688,13 @@ export async function getLogo(): Promise<string | null> {
   } catch { return null; }
 }
 
-export async function getLogos(): Promise<{ logo_navbar: string | null; logo_footer: string | null; logo_favicon: string | null }> {
-  try {
-    const data = await api("/logos", { auth: false });
-    return { logo_navbar: data.logo_navbar || null, logo_footer: data.logo_footer || null, logo_favicon: data.logo_favicon || null };
-  } catch { return { logo_navbar: null, logo_footer: null, logo_favicon: null }; }
+export function getLogos(): Promise<{ logo_navbar: string | null; logo_footer: string | null; logo_favicon: string | null }> {
+  return dedupeRequest("logos", async () => {
+    try {
+      const data = await api("/logos", { auth: false });
+      return { logo_navbar: data.logo_navbar || null, logo_footer: data.logo_footer || null, logo_favicon: data.logo_favicon || null };
+    } catch { return { logo_navbar: null, logo_footer: null, logo_favicon: null }; }
+  });
 }
 
 export async function updateAdminLogo(logo: string): Promise<void> {
@@ -720,11 +723,13 @@ export interface ContactInfo {
   mapUrl: string;
 }
 
-export async function getContactInfo(): Promise<ContactInfo> {
-  try {
-    const data = await api("/contact-info", { auth: false });
-    return data.contactInfo || { phone: "", address: "", city: "", email: "", whatsapp: "", mapUrl: "" };
-  } catch { return { phone: "", address: "", city: "", email: "", whatsapp: "", mapUrl: "" }; }
+export function getContactInfo(): Promise<ContactInfo> {
+  return dedupeRequest("contact-info", async () => {
+    try {
+      const data = await api("/contact-info", { auth: false });
+      return data.contactInfo || { phone: "", address: "", city: "", email: "", whatsapp: "", mapUrl: "" };
+    } catch { return { phone: "", address: "", city: "", email: "", whatsapp: "", mapUrl: "" }; }
+  });
 }
 
 export async function updateAdminContactInfo(info: Partial<ContactInfo>): Promise<void> {

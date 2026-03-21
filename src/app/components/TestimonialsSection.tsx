@@ -116,6 +116,7 @@ export function TestimonialsSection() {
                       src={t.image}
                       alt={t.name}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
                   <div>
