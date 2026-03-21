@@ -5,6 +5,34 @@ import { useState, useEffect } from "react";
 import { getPlans, type ServicesCard } from "../data/api";
 import { buildWhatsAppUrl as _buildWhatsAppUrl } from "../data/constants";
 
+const PRICING_CACHE_KEY = "epoca_pricing_v1";
+
+function PricingSkeleton() {
+  return (
+    <div
+      className="rounded-2xl overflow-hidden animate-pulse"
+      style={{ backgroundColor: "var(--foreground)", boxShadow: "0 20px 60px rgba(5,36,19,0.25)" }}
+    >
+      <div className="h-9" style={{ background: "linear-gradient(90deg, #8B6914 0%, #D4AF5A 50%, #8B6914 100%)" }} />
+      <div className="p-8 space-y-6">
+        <div className="text-center space-y-3">
+          <div className="h-7 w-64 mx-auto rounded-lg bg-white/10" />
+          <div className="h-4 w-96 max-w-full mx-auto rounded-lg bg-white/10" />
+          <div className="h-4 w-80 max-w-full mx-auto rounded-lg bg-white/5" />
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-2xl mx-auto">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div key={i} className="h-5 rounded-lg bg-white/10" />
+          ))}
+        </div>
+        <div className="flex justify-center">
+          <div className="h-11 w-44 rounded-full bg-white/10" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const DEFAULT_PLANS = [
   { id: "essencial", name: "Essencial", description: "Para autores que estão começando sua jornada literária.", price: "2.490", featured: false, features: ["Revisão gramatical completa", "Diagramação padrão", "Capa com design profissional", "Registro de ISBN", "Distribuição em e-book", "5 exemplares impressos"] },
   { id: "profissional", name: "Profissional", description: "O plano mais popular para autores que buscam excelência.", price: "4.990", featured: true, features: ["Tudo do plano Essencial", "Revisão estrutural e de estilo", "Capa personalizada premium", "Distribuição física e digital", "30 exemplares impressos", "Sessão de lançamento inclusa", "Assessoria de marketing básica", "Ficha catalográfica"] },
@@ -20,16 +48,29 @@ function buildWhatsAppUrl(planName: string) {
 export function PricingSection() {
   const [plans, setPlans] = useState(DEFAULT_PLANS);
   const [servicesCard, setServicesCard] = useState<ServicesCard | null>(null);
-  const [loaded, setLoaded] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    getPlans()
-      .then((data) => {
+    // Mostra do cache imediatamente (sem esperar API)
+    try {
+      const cached = sessionStorage.getItem(PRICING_CACHE_KEY);
+      if (cached) {
+        const data = JSON.parse(cached);
         if (Array.isArray(data?.plans) && data.plans.length > 0) setPlans(data.plans);
         if (data?.servicesCard?.active) setServicesCard(data.servicesCard);
+        setReady(true);
+      }
+    } catch { /* ignora erros de sessionStorage */ }
+
+    // Busca atualização em background (stale-while-revalidate)
+    getPlans()
+      .then((data) => {
+        try { sessionStorage.setItem(PRICING_CACHE_KEY, JSON.stringify(data)); } catch { /* ignora */ }
+        if (Array.isArray(data?.plans) && data.plans.length > 0) setPlans(data.plans);
+        if (data?.servicesCard?.active) setServicesCard(data.servicesCard);
+        setReady(true);
       })
-      .catch(() => {/* silently use defaults */})
-      .finally(() => setLoaded(true));
+      .catch(() => setReady(true));
   }, []);
   return (
     <section id="planos" className="py-16 px-6 bg-secondary/30">
@@ -59,7 +100,8 @@ export function PricingSection() {
           </p>
         </RevealOnScroll>
 
-        {loaded && !servicesCard && <div className="grid md:grid-cols-3 gap-6 lg:gap-8 items-start">
+        {!ready && <PricingSkeleton />}
+        {ready && !servicesCard && <div className="grid md:grid-cols-3 gap-6 lg:gap-8 items-start">
           {plans.map((plan, i) => (
             <RevealOnScroll key={plan.id || plan.name} direction="up" delay={i * 0.12}>
               <div
@@ -207,7 +249,7 @@ export function PricingSection() {
           ))}
         </div>}
 
-        {loaded && servicesCard && (
+        {ready && servicesCard && (
           <RevealOnScroll direction="up" delay={0.2}>
             <div
               className="relative rounded-2xl overflow-hidden"
