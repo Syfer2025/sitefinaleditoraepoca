@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { CookieBanner } from "./CookieBanner";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { getLogos } from "../data/api";
+import { TrackingScripts } from "./TrackingScripts";
 
 const SITE_URL = "https://editoraepoca.com.br";
 const PRIVATE_ROUTES = [
@@ -78,6 +79,7 @@ export function RootLayout() {
 
   return (
     <UserAuthProvider>
+      <TrackingScripts />
       <GoldNoiseFilter />
       <ErrorBoundary>
         <Outlet />

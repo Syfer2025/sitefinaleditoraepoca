@@ -20,6 +20,7 @@ import {
   ImageIcon,
   CreditCard,
   Phone,
+  Plug,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { api, clearToken, getAdminToken, getAdminRefreshToken } from "../../data/api";
@@ -41,6 +42,7 @@ const navItems = [
   { path: "/admin/logo", label: "Logo", icon: ImageIcon },
   { path: "/admin/pagamentos", label: "Pagamentos", icon: CreditCard },
   { path: "/admin/contato", label: "Contato", icon: Phone },
+  { path: "/admin/integracoes", label: "Integrações", icon: Plug },
 ];
 
 export function AdminLayout() {

@@ -26,6 +26,7 @@ export function CookieBanner() {
       analytics: analyticsVal,
       date: new Date().toISOString(),
     }));
+    window.dispatchEvent(new CustomEvent("epoca_cookie_consent_changed"));
     setVisible(false);
   };
 

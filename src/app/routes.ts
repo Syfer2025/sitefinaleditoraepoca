@@ -25,6 +25,7 @@ import { AdminAbout } from "./components/admin/AdminAbout";
 import { AdminLogo } from "./components/admin/AdminLogo";
 import { AdminPaymentConfig } from "./components/admin/AdminPaymentConfig";
 import { AdminContactInfo } from "./components/admin/AdminContactInfo";
+import { AdminTracking } from "./components/admin/AdminTracking";
 import { BookDetailPage } from "./components/BookDetailPage";
 import { PasswordResetPage } from "./components/PasswordResetPage";
 import { NotFoundPage } from "./components/NotFoundPage";
@@ -76,6 +77,7 @@ export const router = createBrowserRouter([
       { path: "logo", Component: AdminLogo },
       { path: "pagamentos", Component: AdminPaymentConfig },
       { path: "contato", Component: AdminContactInfo },
+      { path: "integracoes", Component: AdminTracking },
     ],
   },
 ]);
