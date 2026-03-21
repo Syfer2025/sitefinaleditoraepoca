@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { ArrowDown } from "lucide-react";
 import { GoldButton } from "./GoldButton";
 import { motion } from "motion/react";
@@ -39,8 +38,10 @@ export function HeroSection() {
             willChange: "transform",
           }}
         >
-          <ImageWithFallback
+          <img
             src="https://images.unsplash.com/photo-1722977735215-d28f2ac6efba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rc3RvcmUlMjBsaWJyYXJ5JTIwc2hlbHZlcyUyMHdhcm18ZW58MXx8fHwxNzcyNDU3MzE2fDA&ixlib=rb-4.1.0&q=70&w=1400"
+            srcSet="https://images.unsplash.com/photo-1722977735215-d28f2ac6efba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rc3RvcmUlMjBsaWJyYXJ5JTIwc2hlbHZlcyUyMHdhcm18ZW58MXx8fHwxNzcyNDU3MzE2fDA&ixlib=rb-4.1.0&q=65&w=800 800w, https://images.unsplash.com/photo-1722977735215-d28f2ac6efba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rc3RvcmUlMjBsaWJyYXJ5JTIwc2hlbHZlcyUyMHdhcm18ZW58MXx8fHwxNzcyNDU3MzE2fDA&ixlib=rb-4.1.0&q=70&w=1400 1400w"
+            sizes="100vw"
             alt="Biblioteca"
             className="w-full h-full object-cover"
             fetchPriority="high"
