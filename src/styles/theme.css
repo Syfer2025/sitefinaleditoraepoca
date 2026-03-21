@@ -197,24 +197,11 @@
 }
 
 @keyframes goldShimmer {
-  0% {
-    background-position: 200% 0;
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-  }
-  95% {
-    background-position: -200% 0;
-    opacity: 0;
-  }
-  100% {
-    background-position: -200% 0;
-    opacity: 0;
-  }
+  0%   { transform: translateX(200%); opacity: 0; }
+  8%   { opacity: 1; }
+  82%  { opacity: 1; }
+  95%  { transform: translateX(-200%); opacity: 0; }
+  100% { transform: translateX(-200%); opacity: 0; }
 }
 
 /* ============================================

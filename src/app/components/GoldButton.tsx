@@ -48,8 +48,8 @@ export function GoldButton({
       style={{
         background:
           "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.25) 45%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.25) 55%, transparent 65%)",
-        backgroundSize: "250% 100%",
         animation: `goldShimmer 10s linear ${delay}s infinite`,
+        willChange: "transform",
       }}
     />
   );
