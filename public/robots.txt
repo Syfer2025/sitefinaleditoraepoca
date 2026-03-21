@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /minha-conta
+Disallow: /pagamento/
+Disallow: /parcelas/
+Disallow: /contrato/
+Disallow: /nova-solicitacao
+Disallow: /meus-dados
+Disallow: /recuperar-senha
+
+Sitemap: https://editoraepoca.com.br/sitemap.xml

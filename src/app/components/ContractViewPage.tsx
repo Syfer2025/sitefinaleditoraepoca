@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router";
 import { ArrowLeft, Download, Loader2, Printer, AlertTriangle } from "lucide-react";
-import { getPaymentInfo, getPublicContractTemplate, getContractPdfUrl } from "../data/api";
+import { getPaymentInfo, getPublicContractTemplate, getContractPdfUrl, getLogo } from "../data/api";
 import { toast, Toaster } from "sonner";
-import logoImg from "figma:asset/866134e81312444c262030ef8ad8f59cefad5b17.png";
+import logoImg from "/assets/logo.png";
 
 const f = { play: "'Playfair Display', serif", inter: "Inter, sans-serif" };
 
@@ -25,23 +25,30 @@ export function ContractViewPage() {
   const COMPANY_DESC = contractTemplate?.companyDescription || "pessoa juridica de direito privado, com sede em territorio brasileiro";
   const CONTRACT_PREAMBLE = contractTemplate?.preamble || "Pelo presente instrumento particular, as partes abaixo qualificadas celebram o presente Contrato de Prestacao de Servicos Editoriais, que se regera pelas seguintes clausulas e condicoes:";
 
-  // Convert logo to base64 for print
+  // Load logo for print (prefer dynamic logo from API, fallback to static asset)
   useEffect(() => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(img, 0, 0);
-          setLogoBase64(canvas.toDataURL("image/png"));
-        }
-      } catch { /* fallback */ }
-    };
-    img.src = logoImg;
+    getLogo().then((logo) => {
+      if (logo) {
+        setLogoBase64(logo);
+      } else {
+        // Fallback: convert static asset to base64 via canvas
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+              ctx.drawImage(img, 0, 0);
+              setLogoBase64(canvas.toDataURL("image/png"));
+            }
+          } catch { /* leave empty */ }
+        };
+        img.src = logoImg;
+      }
+    });
   }, []);
 
   // Fetch data
@@ -84,7 +91,7 @@ export function ContractViewPage() {
       const title = tmpl?.title || defaultTitle;
       const content = tmpl?.content || defaultContent;
       const lines = content.split("\n").filter((l: string) => l.trim());
-      return `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA ${num} — ${title}</p>${lines.map((l: string) => `<p style="${/^[a-z]\)/.test(l.trim()) ? "padding-left:16px;" : ""}margin-bottom:4px">${l}</p>`).join("")}`;
+      return `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA ${num} — ${title}</p>${lines.map((l: string) => `<p style="${/^[a-z]\)/.test(l.trim()) ? "padding-left:16px;" : ""}margin-bottom:4px">${l}</p>`).join("")}`;
     };
 
     const name = info.contractAcceptorName || info.userName || "_______________";
@@ -94,44 +101,44 @@ export function ContractViewPage() {
     const printLogo = logoBase64 || logoImg;
     let html = `<div style="text-align:center;margin-bottom:20px;padding-bottom:15px;border-bottom:2px solid #EBBF74">`;
     html += `<img src="${printLogo}" alt="${COMPANY_NAME}" style="height:48px;margin:0 auto 8px;display:block" />`;
-    html += `<p style="font-weight:700;font-size:13px;margin-bottom:2px;font-family:'Playfair Display',Georgia,serif;color:#052413;letter-spacing:0.5px">CONTRATO DE PRESTACAO DE SERVICOS EDITORIAIS</p>`;
-    html += `<p style="font-size:9px;color:#856C42;text-transform:uppercase;letter-spacing:2px;margin-top:4px">Versao ${CONTRACT_VERSION}</p>`;
+    html += `<p style="font-weight:700;font-size:13px;margin-bottom:2px;font-family:'Playfair Display',Georgia,serif;color:#052413;letter-spacing:0.5px">CONTRATO DE PRESTA\u00C7\u00C3O DE SERVI\u00C7OS EDITORIAIS</p>`;
+    html += `<p style="font-size:9px;color:#856C42;text-transform:uppercase;letter-spacing:2px;margin-top:4px">Vers\u00E3o ${CONTRACT_VERSION}</p>`;
     html += `</div>`;
     html += `<p style="margin-bottom:8px">${CONTRACT_PREAMBLE}</p>`;
 
     // Clause 1
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 1 — DAS PARTES</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 1 — DAS PARTES</p>`;
     html += `<p style="margin-bottom:4px"><strong>EDITORA:</strong> ${COMPANY_NAME}, ${COMPANY_DESC}.</p>`;
     const cleanCpfDoc = cpf.replace(/\D/g, "");
     const docLabel = cleanCpfDoc.length === 14 ? "CNPJ" : "CPF";
     html += `<p style="margin-bottom:8px"><strong>CONTRATANTE:</strong> ${name}${cleanCpfDoc.length === 11 || cleanCpfDoc.length === 14 ? `, inscrito(a) no ${docLabel} sob o n. ${cpf}` : ""}${email.includes("@") ? `, e-mail ${email}` : ""}.</p>`;
 
     // Clause 2
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 2 — DO OBJETO</p>`;
-    html += `<p style="margin-bottom:4px">O presente contrato tem por objeto a prestacao dos seguintes servicos editoriais pela EDITORA ao CONTRATANTE:</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 2 — DO OBJETO</p>`;
+    html += `<p style="margin-bottom:4px">O presente contrato tem por objeto a presta\u00E7\u00E3o dos seguintes servi\u00E7os editoriais pela EDITORA ao CONTRATANTE:</p>`;
     if (info.services?.length > 0) {
-      const svcMap: Record<string, string> = { completo: "Servico editorial completo", diagramacao: "Diagramacao", capa: "Design de capa", revisao: "Revisao textual", isbn: "Registro ISBN", impressao: "Impressao" };
-      info.services.forEach((s: string) => { html += `<p style="padding-left:16px;margin-bottom:2px">• ${svcMap[s] || s}</p>`; });
+      const svcMap: Record<string, string> = { completo: "Servi\u00E7o editorial completo", diagramacao: "Diagrama\u00E7\u00E3o", capa: "Design de capa", revisao: "Revis\u00E3o textual", isbn: "Registro ISBN", impressao: "Impress\u00E3o" };
+      info.services.forEach((s: string) => { html += `<p style="padding-left:16px;margin-bottom:2px">\u2022 ${svcMap[s] || s}</p>`; });
     }
-    html += `<p style="margin-bottom:4px;margin-top:8px">A obra objeto deste contrato e: <strong>"${info.title}"</strong>, de autoria de <strong>${info.author}</strong>.</p>`;
+    html += `<p style="margin-bottom:4px;margin-top:8px">A obra objeto deste contrato \u00E9: <strong>\u201C${info.title}\u201D</strong>, de autoria de <strong>${info.author}</strong>.</p>`;
     if (info.format || info.pageCount) {
-      html += `<p style="margin-bottom:8px">Especificacoes tecnicas: ${info.format ? `formato ${info.format}` : ""}${info.format && info.pageCount ? ", " : ""}${info.pageCount ? `com aproximadamente ${info.pageCount} paginas` : ""}.</p>`;
+      html += `<p style="margin-bottom:8px">Especifica\u00E7\u00F5es t\u00E9cnicas: ${info.format ? `formato ${info.format}` : ""}${info.format && info.pageCount ? ", " : ""}${info.pageCount ? `com aproximadamente ${info.pageCount} p\u00E1ginas` : ""}.</p>`;
     }
     if (info.budgetDescription) {
-      html += `<p style="margin-bottom:8px;padding:8px;background:#f0f7f0;border-left:3px solid #cde"><strong>Descricao do orcamento:</strong> ${info.budgetDescription}</p>`;
+      html += `<p style="margin-bottom:8px;padding:8px;background:#f0f7f0;border-left:3px solid #cde"><strong>Descri\u00E7\u00E3o do or\u00E7amento:</strong> ${info.budgetDescription}</p>`;
     }
 
-    html += getClauseText(3, "DAS OBRIGACOES DA EDITORA", "A EDITORA se obriga a:\na) Executar os servicos contratados com qualidade profissional e dentro dos padroes editoriais vigentes;\nb) Manter sigilo sobre o conteudo da obra e informacoes pessoais do CONTRATANTE;\nc) Fornecer ao CONTRATANTE prova digital da obra para revisao e aprovacao antes da finalizacao;\nd) Realizar os ajustes solicitados pelo CONTRATANTE dentro do escopo contratado, limitados a uma rodada de revisao incluida no preco;\ne) Entregar o material finalizado no prazo acordado, a contar da aprovacao do orcamento e recebimento integral dos arquivos necessarios.");
-    html += getClauseText(4, "DAS OBRIGACOES DO CONTRATANTE", "O CONTRATANTE se obriga a:\na) Fornecer todos os materiais necessarios para a execucao dos servicos em formato digital adequado;\nb) Efetuar o pagamento conforme as condicoes estipuladas neste contrato;\nc) Responder as solicitacoes da EDITORA em ate 10 (dez) dias uteis;\nd) Revisar e aprovar ou solicitar ajustes na prova digital em ate 15 (quinze) dias uteis apos o envio;\ne) Garantir que possui todos os direitos autorais sobre o conteudo fornecido, isentando a EDITORA de qualquer responsabilidade sobre plagio ou violacao de direitos de terceiros.");
+    html += getClauseText(3, "DAS OBRIGA\u00C7\u00D5ES DA EDITORA", "A EDITORA se obriga a:\na) Executar os servi\u00E7os contratados com qualidade profissional e dentro dos padr\u00F5es editoriais vigentes;\nb) Manter sigilo sobre o conte\u00FAdo da obra e informa\u00E7\u00F5es pessoais do CONTRATANTE;\nc) Fornecer ao CONTRATANTE prova digital da obra para revis\u00E3o e aprova\u00E7\u00E3o antes da finaliza\u00E7\u00E3o;\nd) Realizar os ajustes solicitados pelo CONTRATANTE dentro do escopo contratado, limitados a uma rodada de revis\u00E3o inclu\u00EDda no pre\u00E7o;\ne) Entregar o material finalizado no prazo acordado, a contar da aprova\u00E7\u00E3o do or\u00E7amento e recebimento integral dos arquivos necess\u00E1rios.");
+    html += getClauseText(4, "DAS OBRIGA\u00C7\u00D5ES DO CONTRATANTE", "O CONTRATANTE se obriga a:\na) Fornecer todos os materiais necess\u00E1rios para a execu\u00E7\u00E3o dos servi\u00E7os em formato digital adequado;\nb) Efetuar o pagamento conforme as condi\u00E7\u00F5es estipuladas neste contrato;\nc) Responder \u00E0s solicita\u00E7\u00F5es da EDITORA em at\u00E9 10 (dez) dias \u00FAteis;\nd) Revisar e aprovar ou solicitar ajustes na prova digital em at\u00E9 15 (quinze) dias \u00FAteis ap\u00F3s o envio;\ne) Garantir que possui todos os direitos autorais sobre o conte\u00FAdo fornecido, isentando a EDITORA de qualquer responsabilidade sobre pl\u00E1gio ou viola\u00E7\u00E3o de direitos de terceiros.");
 
     // Clause 5
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 5 — DO PRECO E CONDICOES DE PAGAMENTO</p>`;
-    html += `<p style="margin-bottom:4px">O valor total dos servicos e de <strong>${formatCurrency(info.price)}</strong>, conforme detalhado no orcamento apresentado.</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CL\u00C1USULA 5 \u2014 DO PRE\u00C7O E CONDI\u00C7\u00D5ES DE PAGAMENTO</p>`;
+    html += `<p style="margin-bottom:4px">O valor total dos servi\u00E7os \u00E9 de <strong>${formatCurrency(info.price)}</strong>, conforme detalhado no or\u00E7amento apresentado.</p>`;
     if (info.depositPercent > 0 && info.depositPercent < 100) {
-      html += `<p style="padding-left:16px;margin-bottom:2px">a) Entrada (${info.depositPercent}%): ${formatCurrency(info.chargeAmount)}, a ser paga no ato da contratacao;</p>`;
+      html += `<p style="padding-left:16px;margin-bottom:2px">a) Entrada (${info.depositPercent}%): ${formatCurrency(info.chargeAmount)}, a ser paga no ato da contrata\u00E7\u00E3o;</p>`;
       html += `<p style="padding-left:16px;margin-bottom:8px">b) Saldo remanescente (${100 - info.depositPercent}%): ${formatCurrency(info.remainderAmount)}, a ser pago na entrega do material finalizado.</p>`;
     } else {
-      html += `<p style="margin-bottom:8px">O pagamento integral no valor de <strong>${formatCurrency(info.price)}</strong> devera ser realizado no ato da contratacao.</p>`;
+      html += `<p style="margin-bottom:8px">O pagamento integral no valor de <strong>${formatCurrency(info.price)}</strong> dever\u00E1 ser realizado no ato da contrata\u00E7\u00E3o.</p>`;
     }
     // Installment plan clause
     if (info.installmentPlan?.enabled && info.installmentPlan?.installments?.length > 0) {
@@ -140,15 +147,15 @@ export function ContractViewPage() {
       html += `<p style="margin-bottom:4px">O CONTRATANTE opta pelo pagamento parcelado em <strong>${ip.totalInstallments} parcela(s)</strong> via PIX, conforme cronograma abaixo:</p>`;
       ip.installments.forEach((inst: any) => {
         const dueFormatted = new Date(inst.dueDate + "T12:00:00").toLocaleDateString("pt-BR");
-        html += `<p style="padding-left:16px;margin-bottom:2px">${inst.number}ª parcela: ${formatCurrency(inst.amount)} — vencimento em ${dueFormatted}${inst.status === "paid" ? " (pago)" : ""};</p>`;
+        html += `<p style="padding-left:16px;margin-bottom:2px">${inst.number}\u00AA parcela: ${formatCurrency(inst.amount)} \u2014 vencimento em ${dueFormatted}${inst.status === "paid" ? " (pago)" : ""};</p>`;
       });
-      html += `<p style="margin-top:4px;margin-bottom:8px">O CONTRATANTE compromete-se a efetuar o pagamento de cada parcela ate a data de vencimento estipulada. O atraso no pagamento de qualquer parcela podera acarretar a suspensao dos servicos ate a regularizacao.</p>`;
+      html += `<p style="margin-top:4px;margin-bottom:8px">O CONTRATANTE compromete-se a efetuar o pagamento de cada parcela at\u00E9 a data de vencimento estipulada. O atraso no pagamento de qualquer parcela poder\u00E1 acarretar a suspens\u00E3o dos servi\u00E7os at\u00E9 a regulariza\u00E7\u00E3o.</p>`;
     }
 
     // Clause 6
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 6 — DO PRAZO</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CL\u00C1USULA 6 \u2014 DO PRAZO</p>`;
     if (info.estimatedDeadline) {
-      html += `<p style="margin-bottom:8px">O prazo estimado para a execucao dos servicos e de <strong>${info.estimatedDeadline}</strong>, contados a partir do recebimento integral dos arquivos necessarios e da confirmacao do pagamento.</p>`;
+      html += `<p style="margin-bottom:8px">O prazo estimado para a execu\u00E7\u00E3o dos servi\u00E7os \u00E9 de <strong>${info.estimatedDeadline}</strong>, contados a partir do recebimento integral dos arquivos necess\u00E1rios e da confirma\u00E7\u00E3o do pagamento.</p>`;
     } else {
       html += `<p style="margin-bottom:8px">O prazo estimado para a execucao dos servicos sera informado pela EDITORA apos a analise do material recebido.</p>`;
     }
@@ -166,15 +173,15 @@ export function ContractViewPage() {
         const parsed = JSON.parse(info.customClauses);
         if (Array.isArray(parsed)) {
           parsed.forEach((clause: any, idx: number) => {
-            html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA ${13 + idx} — ${clause.title ? clause.title.toUpperCase() : `DISPOSICOES ESPECIFICAS ${idx + 1}`}</p>`;
+            html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA ${13 + idx} — ${clause.title ? clause.title.toUpperCase() : `DISPOSICOES ESPECIFICAS ${idx + 1}`}</p>`;
             html += `<p style="margin-bottom:8px;white-space:pre-wrap">${clause.content}</p>`;
           });
         } else {
-          html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 13 — DISPOSICOES ESPECIFICAS DESTE PROJETO</p>`;
+          html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 13 — DISPOSICOES ESPECIFICAS DESTE PROJETO</p>`;
           html += `<p style="margin-bottom:8px;white-space:pre-wrap">${info.customClauses}</p>`;
         }
       } catch {
-        html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 13 — DISPOSICOES ESPECIFICAS DESTE PROJETO</p>`;
+        html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 13 — DISPOSICOES ESPECIFICAS DESTE PROJETO</p>`;
         html += `<p style="margin-bottom:8px;white-space:pre-wrap">${info.customClauses}</p>`;
       }
     }
@@ -494,7 +501,7 @@ function ContractClause({ num, title, children }: { num: number; title: string; 
   return (
     <div className="mb-4">
       <h3 className="text-xs font-bold text-[#052413] mt-5 mb-1.5" style={{ fontFamily: "'Playfair Display', serif" }}>
-        CLAUSULA {num} — {title}
+        CLÁUSULA {num} — {title}
       </h3>
       <div className="text-sm text-[#333] leading-relaxed space-y-1" style={{ fontFamily: "Inter, sans-serif" }}>
         {children}

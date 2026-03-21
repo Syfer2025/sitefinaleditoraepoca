@@ -565,6 +565,20 @@ export function NewRequestForm({
                   Envie o manuscrito e materiais de apoio (opcional)
                 </p>
                 <div
+                  className="flex items-start gap-2 mb-3 p-2.5 rounded-lg text-[0.65rem] leading-relaxed"
+                  style={{ backgroundColor: "rgba(22,91,54,0.05)", border: "1px solid rgba(22,91,54,0.1)", fontFamily: "Inter, sans-serif", color: "#052413" }}
+                >
+                  <svg className="w-3.5 h-3.5 text-[#165B36] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" /></svg>
+                  <span>
+                    Os arquivos enviados serao armazenados de forma segura em nossos servidores e utilizados exclusivamente para a prestacao dos servicos editoriais contratados.
+                    Consulte nossa{" "}
+                    <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-[#165B36] font-medium hover:underline">
+                      Politica de Privacidade
+                    </a>{" "}
+                    para mais informacoes.
+                  </span>
+                </div>
+                <div
                   className={`relative rounded-xl border-2 border-dashed p-6 text-center transition-colors duration-200 cursor-pointer ${
                     dragOver
                       ? "border-[#165B36] bg-[#165B36]/[0.03]"

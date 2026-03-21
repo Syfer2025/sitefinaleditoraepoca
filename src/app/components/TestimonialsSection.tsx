@@ -2,42 +2,23 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { Star, Quote } from "lucide-react";
 import { motion } from "motion/react";
+import { useState, useEffect } from "react";
+import { getTestimonials } from "../data/api";
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Isabela Nascimento",
-    role: "Autora de 'Caminhos da Alma'",
-    image:
-      "https://images.unsplash.com/photo-1770808499289-88e2d7e70beb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxicmF6aWxpYW4lMjB3b21hbiUyMHdyaXRlciUyMHBvcnRyYWl0JTIwd2FybXxlbnwxfHx8fDE3NzI0NjEyNTJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    quote:
-      "A Época Editora transformou meu manuscrito em algo que eu jamais imaginei possível. O cuidado editorial e a atenção aos detalhes foram excepcionais.",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "Fernando Rios",
-    role: "Autor de 'Horizontes Perdidos'",
-    image:
-      "https://images.unsplash.com/photo-1750809411300-915ca4928f83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBhdXRob3IlMjBsaXRlcmFyeSUyMHBvcnRyYWl0JTIwc3R1ZGlvfGVufDF8fHx8MTc3MjQ2MTI1M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    quote:
-      "Publicar com a Época foi uma das melhores decisões da minha carreira. A equipe entendeu a essência da minha história e o resultado foi um livro premiado.",
-    rating: 5,
-    featured: true,
-  },
-  {
-    id: 3,
-    name: "Helena Barbosa",
-    role: "Leitora fiel há 20 anos",
-    image:
-      "https://images.unsplash.com/photo-1753286437694-5695d648698b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGVnYW50JTIwZWxkZXJseSUyMHdvbWFuJTIwcmVhZGluZyUyMHBvcnRyYWl0fGVufDF8fHx8MTc3MjQ2MTI1NHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    quote:
-      "A qualidade dos livros, a curadoria impecável e o compromisso com a literatura brasileira fazem da Época uma das editoras mais importantes do país.",
-    rating: 5,
-  },
+const DEFAULT_TESTIMONIALS = [
+  { id: 1, name: "Isabela Nascimento", role: "Autora de 'Caminhos da Alma'", image: "https://images.unsplash.com/photo-1770808499289-88e2d7e70beb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxicmF6aWxpYW4lMjB3b21hbiUyMHdyaXRlciUyMHBvcnRyYWl0JTIwd2FybXxlbnwxfHx8fDE3NzI0NjEyNTJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral", quote: "A Época Editora transformou meu manuscrito em algo que eu jamais imaginei possível. O cuidado editorial e a atenção aos detalhes foram excepcionais.", rating: 5, featured: false },
+  { id: 2, name: "Fernando Rios", role: "Autor de 'Horizontes Perdidos'", image: "https://images.unsplash.com/photo-1750809411300-915ca4928f83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBhdXRob3IlMjBsaXRlcmFyeSUyMHBvcnRyYWl0JTIwc3R1ZGlvfGVufDF8fHx8MTc3MjQ2MTI1M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral", quote: "Publicar com a Época foi uma das melhores decisões da minha carreira. A equipe entendeu a essência da minha história e o resultado foi um livro premiado.", rating: 5, featured: true },
+  { id: 3, name: "Helena Barbosa", role: "Leitora fiel há 20 anos", image: "https://images.unsplash.com/photo-1753286437694-5695d648698b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGVnYW50JTIwZWxkZXJseSUyMHdvbWFuJTIwcmVhZGluZyUyMHBvcnRyYWl0fGVufDF8fHx8MTc3MjQ2MTI1NHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral", quote: "A qualidade dos livros, a curadoria impecável e o compromisso com a literatura brasileira fazem da Época uma das editoras mais importantes do país.", rating: 5, featured: false },
 ];
 
 export function TestimonialsSection() {
+  const [testimonials, setTestimonials] = useState(DEFAULT_TESTIMONIALS);
+
+  useEffect(() => {
+    getTestimonials()
+      .then((data) => { if (Array.isArray(data?.testimonials) && data.testimonials.length > 0) setTestimonials(data.testimonials); })
+      .catch(() => {});
+  }, []);
   return (
     <section className="py-16 px-6 bg-[#052413] relative overflow-hidden">
       {/* Decorative glows */}

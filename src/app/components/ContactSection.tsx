@@ -1,14 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, MapPin, Phone, Send, CheckCircle } from "lucide-react";
 import { GoldButton } from "./GoldButton";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { motion, AnimatePresence } from "motion/react";
 import { projectId, publicAnonKey } from "/utils/supabase/info";
 import { toast } from "sonner";
+import { getContactInfo, type ContactInfo } from "../data/api";
+
+const DEFAULT_CONTACT: ContactInfo = {
+  phone: "(44) 3456-7890",
+  address: "Maringa, PR - Brasil",
+  city: "",
+  email: "contato@epocaeditora.com.br",
+  whatsapp: "",
+  mapUrl: "",
+};
 
 export function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [contactInfo, setContactInfo] = useState<ContactInfo>(DEFAULT_CONTACT);
+
+  useEffect(() => {
+    getContactInfo().then((info) => {
+      if (info.phone || info.address || info.email) setContactInfo({ ...DEFAULT_CONTACT, ...info });
+    }).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +40,9 @@ export function ContactSection() {
       message: formData.get("message") as string,
     };
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+
     try {
       const res = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-e413165d/messages`,
@@ -33,6 +53,7 @@ export function ContactSection() {
             Authorization: `Bearer ${publicAnonKey}`,
           },
           body: JSON.stringify(body),
+          signal: controller.signal,
         }
       );
       if (!res.ok) {
@@ -41,16 +62,21 @@ export function ContactSection() {
         toast.error("Erro ao enviar mensagem. Tente novamente.");
       } else {
         toast.success("Mensagem enviada com sucesso!");
+        setSubmitted(true);
+        form.reset();
+        setTimeout(() => setSubmitted(false), 5000);
       }
-    } catch (err) {
-      console.error("Contact form submit error:", err);
-      toast.error("Erro de conexão. Verifique sua internet e tente novamente.");
+    } catch (err: any) {
+      if (err?.name === "AbortError") {
+        toast.error("Tempo esgotado. Verifique sua conexão e tente novamente.");
+      } else {
+        console.error("Contact form submit error:", err);
+        toast.error("Erro de conexão. Verifique sua internet e tente novamente.");
+      }
+    } finally {
+      clearTimeout(timeout);
+      setSending(false);
     }
-
-    setSending(false);
-    setSubmitted(true);
-    form.reset();
-    setTimeout(() => setSubmitted(false), 5000);
   };
 
   return (
@@ -87,17 +113,17 @@ export function ContactSection() {
                 {[
                   {
                     icon: MapPin,
-                    title: "Rua das Letras, 420",
-                    sub: "São Paulo, SP - Brasil",
+                    title: contactInfo.address,
+                    sub: contactInfo.city || "Brasil",
                   },
                   {
                     icon: Phone,
-                    title: "+55 (11) 3456-7890",
+                    title: contactInfo.phone,
                     sub: "Seg - Sex, 9h - 18h",
                   },
                   {
                     icon: Mail,
-                    title: "contato@epocaeditora.com.br",
+                    title: contactInfo.email,
                     sub: "Resposta em até 24h",
                   },
                 ].map((item, i) => (

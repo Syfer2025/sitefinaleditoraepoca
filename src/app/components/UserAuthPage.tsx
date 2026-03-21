@@ -189,9 +189,15 @@ export function UserAuthPage() {
   const [cnpjLoading, setCnpjLoading] = useState(false);
   const [cnpjData, setCnpjData] = useState<any>(null);
   const [cnpjError, setCnpjError] = useState("");
-  const [docCheckResult, setDocCheckResult] = useState<{ exists: boolean; maskedEmail?: string } | null>(null);
+  const [docCheckResult, setDocCheckResult] = useState<{ exists: boolean } | null>(null);
   const [docChecking, setDocChecking] = useState(false);
+  const [emailCheckResult, setEmailCheckResult] = useState<{ exists: boolean } | null>(null);
+  const [emailChecking, setEmailChecking] = useState(false);
+  const [phoneCheckResult, setPhoneCheckResult] = useState<{ exists: boolean } | null>(null);
+  const [phoneChecking, setPhoneChecking] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const emailDebounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const phoneDebounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   // Phone
   const [phone, setPhone] = useState("");
@@ -207,8 +213,9 @@ export function UserAuthPage() {
   const [cepLoading, setCepLoading] = useState(false);
   const [cepError, setCepError] = useState("");
 
-  // Terms
+  // Terms and consents
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [acceptNewsletter, setAcceptNewsletter] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
   useEffect(() => {
@@ -225,7 +232,8 @@ export function UserAuthPage() {
     setDocNumber(""); setCompanyName(""); setCnpjData(null); setCnpjError("");
     setDocCheckResult(null); setPhone(""); setCep(""); setStreet(""); setNumber("");
     setComplement(""); setNeighborhood(""); setCity(""); setState("");
-    setCepError(""); setAcceptTerms(false); setConfirmEmail(""); setConfirmPassword("");
+    setCepError(""); setAcceptTerms(false); setAcceptNewsletter(false); setConfirmEmail(""); setConfirmPassword("");
+    setEmailCheckResult(null); setPhoneCheckResult(null);
     setError("");
   }, [mode, personType]);
 
@@ -250,6 +258,37 @@ export function UserAuthPage() {
     } catch { setDocCheckResult(null); }
     finally { setDocChecking(false); }
   }, [personType]);
+
+  const checkEmailDuplicate = useCallback(async (emailVal: string) => {
+    if (!validateEmail(emailVal)) { setEmailCheckResult(null); return; }
+    setEmailChecking(true);
+    try {
+      const res = await fetch(`${BASE_URL}/user/check-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${publicAnonKey}` },
+        body: JSON.stringify({ email: emailVal }),
+      });
+      const data = await res.json();
+      setEmailCheckResult(data);
+    } catch { setEmailCheckResult(null); }
+    finally { setEmailChecking(false); }
+  }, []);
+
+  const checkPhoneDuplicate = useCallback(async (phoneVal: string) => {
+    const clean = phoneVal.replace(/\D/g, "");
+    if (clean.length < 10) { setPhoneCheckResult(null); return; }
+    setPhoneChecking(true);
+    try {
+      const res = await fetch(`${BASE_URL}/user/check-phone`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${publicAnonKey}` },
+        body: JSON.stringify({ phone: clean }),
+      });
+      const data = await res.json();
+      setPhoneCheckResult(data);
+    } catch { setPhoneCheckResult(null); }
+    finally { setPhoneChecking(false); }
+  }, []);
 
   const handleDocumentChange = useCallback((value: string) => {
     const formatted = personType === "pf" ? formatCPF(value) : formatCNPJ(value);
@@ -337,11 +376,21 @@ export function UserAuthPage() {
         }
 
         if (docCheckResult?.exists) {
-          setError(`Ja existe uma conta com este ${personType === "pf" ? "CPF" : "CNPJ"} (${docCheckResult.maskedEmail}). Use "Entrar" ou recupere sua conta.`);
+          setError(`Ja existe uma conta com este ${personType === "pf" ? "CPF" : "CNPJ"}. Use "Entrar" ou recupere sua conta.`);
           setLoading(false); return;
         }
 
         if (!email.trim() || !validateEmail(email)) { setError("Informe um e-mail valido."); setLoading(false); return; }
+
+        if (emailCheckResult?.exists) {
+          setError("Este e-mail ja esta cadastrado. Faca login ou recupere sua senha em /recuperar-senha.");
+          setLoading(false); return;
+        }
+
+        if (phoneCheckResult?.exists) {
+          setError("Ja existe uma conta com este telefone. Faca login ou recupere sua senha.");
+          setLoading(false); return;
+        }
         if (email !== confirmEmail) { setError("Os e-mails nao coincidem. Verifique e tente novamente."); setLoading(false); return; }
         if (password.length < 8) { setError("A senha deve ter no minimo 8 caracteres."); setLoading(false); return; }
         if (password !== confirmPassword) { setError("As senhas nao coincidem. Verifique e tente novamente."); setLoading(false); return; }
@@ -486,7 +535,7 @@ export function UserAuthPage() {
                         <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
                         <div className="text-amber-800">
                           <p className="font-medium">Documento ja cadastrado</p>
-                          <p className="mt-0.5">Ja existe uma conta com este {personType === "pf" ? "CPF" : "CNPJ"} ({docCheckResult.maskedEmail}). <button type="button" onClick={() => { setMode("login"); setError(""); }} className="text-[#165B36] font-semibold underline cursor-pointer">Faca login</button> ou recupere sua conta.</p>
+                          <p className="mt-0.5">Ja existe uma conta com este {personType === "pf" ? "CPF" : "CNPJ"}. <button type="button" onClick={() => { setMode("login"); setError(""); }} className="text-[#165B36] font-semibold underline cursor-pointer">Faca login</button> ou recupere sua conta.</p>
                         </div>
                       </motion.div>
                     )}
@@ -499,10 +548,15 @@ export function UserAuthPage() {
                   {personType === "pj" && (
                     <>
                       {docNumber.replace(/\D/g, "").length === 14 && !cnpjData && (
-                        <button type="button" onClick={handleValidateCNPJ} disabled={cnpjLoading} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer disabled:opacity-50" style={{ fontFamily: F, backgroundColor: "rgba(22,91,54,0.08)", color: "#165B36", border: "1px solid rgba(22,91,54,0.15)" }}>
-                          {cnpjLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                          Consultar CNPJ na Receita Federal
-                        </button>
+                        <div className="space-y-1.5">
+                          <p className="text-[0.65rem] text-[#856C42]/70 leading-relaxed" style={{ fontFamily: F }}>
+                            Ao consultar, seu CNPJ sera enviado a API publica da Receita Federal (ReceitaWS) para validacao. Nenhum dado e armazenado por terceiros.
+                          </p>
+                          <button type="button" onClick={handleValidateCNPJ} disabled={cnpjLoading} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer disabled:opacity-50" style={{ fontFamily: F, backgroundColor: "rgba(22,91,54,0.08)", color: "#165B36", border: "1px solid rgba(22,91,54,0.15)" }}>
+                            {cnpjLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                            Consultar CNPJ na Receita Federal
+                          </button>
+                        </div>
                       )}
                       {cnpjError && <p className="text-xs text-red-500" style={{ fontFamily: F }}>{cnpjError}</p>}
                       {cnpjData && (
@@ -530,7 +584,41 @@ export function UserAuthPage() {
                     <label className={labelClasses} style={{ fontFamily: F }}>
                       <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-[#856C42]/60" /> Telefone / WhatsApp *</span>
                     </label>
-                    <input type="tel" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="(00) 00000-0000" className={inputClasses} style={inputStyle} maxLength={15} />
+                    <div className="relative">
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => {
+                          const formatted = formatPhone(e.target.value);
+                          setPhone(formatted);
+                          setPhoneCheckResult(null);
+                          if (phoneDebounceRef.current) clearTimeout(phoneDebounceRef.current);
+                          phoneDebounceRef.current = setTimeout(() => checkPhoneDuplicate(formatted), 700);
+                        }}
+                        placeholder="(00) 00000-0000"
+                        className={inputClasses + " pr-10"}
+                        style={inputStyle}
+                        maxLength={15}
+                      />
+                      {phoneChecking && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#856C42] animate-spin" />}
+                      {!phoneChecking && phoneCheckResult?.exists === false && phone.replace(/\D/g, "").length >= 10 && (
+                        <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
+                      )}
+                    </div>
+                    {phoneCheckResult?.exists && (
+                      <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-2.5 rounded-lg text-xs flex items-start gap-2" style={{ backgroundColor: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.15)", fontFamily: F }}>
+                        <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div className="text-amber-800">
+                          <p className="font-medium">Telefone ja cadastrado</p>
+                          <p className="mt-0.5">
+                            Ja existe uma conta com este telefone.{" "}
+                            <button type="button" onClick={() => { setMode("login"); setError(""); }} className="text-[#165B36] font-semibold underline cursor-pointer">Faca login</button>
+                            {" "}ou{" "}
+                            <Link to="/recuperar-senha" className="text-[#165B36] font-semibold underline">recupere sua senha</Link>.
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
 
                   {/* Address Section */}
@@ -577,17 +665,44 @@ export function UserAuthPage() {
             {/* Email */}
             <div>
               <label className={labelClasses} style={{ fontFamily: F }}>E-mail *</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-                required
-                className={inputClasses}
-                style={{ ...inputStyle, borderColor: email && !emailValid ? "rgba(212,24,61,0.4)" : inputStyle.borderColor }}
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (mode === "signup") {
+                      setEmailCheckResult(null);
+                      if (emailDebounceRef.current) clearTimeout(emailDebounceRef.current);
+                      emailDebounceRef.current = setTimeout(() => checkEmailDuplicate(e.target.value), 700);
+                    }
+                  }}
+                  placeholder="seu@email.com"
+                  required
+                  className={inputClasses + " pr-10"}
+                  style={{ ...inputStyle, borderColor: email && !emailValid ? "rgba(212,24,61,0.4)" : inputStyle.borderColor }}
+                />
+                {mode === "signup" && emailChecking && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#856C42] animate-spin" />}
+                {mode === "signup" && !emailChecking && emailCheckResult?.exists === false && emailValid && email && (
+                  <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
+                )}
+              </div>
               {email && !emailValid && (
                 <p className="text-xs text-red-500 mt-1" style={{ fontFamily: F }}>Formato de e-mail invalido.</p>
+              )}
+              {mode === "signup" && emailCheckResult?.exists && (
+                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-2.5 rounded-lg text-xs flex items-start gap-2" style={{ backgroundColor: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.15)", fontFamily: F }}>
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div className="text-amber-800">
+                    <p className="font-medium">E-mail ja cadastrado</p>
+                    <p className="mt-0.5">
+                      Ja existe uma conta com este e-mail.{" "}
+                      <button type="button" onClick={() => { setMode("login"); setError(""); }} className="text-[#165B36] font-semibold underline cursor-pointer">Faca login</button>
+                      {" "}ou{" "}
+                      <Link to="/recuperar-senha" className="text-[#165B36] font-semibold underline">recupere sua senha</Link>.
+                    </p>
+                  </div>
+                </motion.div>
               )}
             </div>
 
@@ -664,29 +779,43 @@ export function UserAuthPage() {
 
             {/* Terms acceptance (signup only) */}
             {mode === "signup" && (
-              <div className="flex items-start gap-2.5 pt-2">
-                <input
-                  type="checkbox"
-                  checked={acceptTerms}
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
-                  className="w-4 h-4 rounded accent-[#165B36] mt-0.5 flex-shrink-0"
-                  id="accept-terms"
-                />
-                <label htmlFor="accept-terms" className="text-xs text-[#052413] cursor-pointer leading-relaxed" style={{ fontFamily: F }}>
-                  Li e aceito os{" "}
-                  <button type="button" onClick={() => setShowTerms(true)} className="text-[#165B36] font-semibold underline underline-offset-2 hover:text-[#0a7c3e] cursor-pointer">
-                    Termos de Uso
-                  </button>{" "}
-                  e a{" "}
-                  <Link to="/privacidade" target="_blank" className="text-[#165B36] font-semibold underline underline-offset-2 hover:text-[#0a7c3e]">
-                    Politica de Privacidade
-                  </Link>{" "}
-                  da Epoca Editora de Livros. *
-                </label>
+              <div className="space-y-2.5 pt-2">
+                <div className="flex items-start gap-2.5">
+                  <input
+                    type="checkbox"
+                    checked={acceptTerms}
+                    onChange={(e) => setAcceptTerms(e.target.checked)}
+                    className="w-4 h-4 rounded accent-[#165B36] mt-0.5 flex-shrink-0"
+                    id="accept-terms"
+                  />
+                  <label htmlFor="accept-terms" className="text-xs text-[#052413] cursor-pointer leading-relaxed" style={{ fontFamily: F }}>
+                    Li e aceito os{" "}
+                    <button type="button" onClick={() => setShowTerms(true)} className="text-[#165B36] font-semibold underline underline-offset-2 hover:text-[#0a7c3e] cursor-pointer">
+                      Termos de Uso
+                    </button>{" "}
+                    e a{" "}
+                    <Link to="/privacidade" target="_blank" className="text-[#165B36] font-semibold underline underline-offset-2 hover:text-[#0a7c3e]">
+                      Politica de Privacidade
+                    </Link>{" "}
+                    da Epoca Editora de Livros. *
+                  </label>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <input
+                    type="checkbox"
+                    checked={acceptNewsletter}
+                    onChange={(e) => setAcceptNewsletter(e.target.checked)}
+                    className="w-4 h-4 rounded accent-[#165B36] mt-0.5 flex-shrink-0"
+                    id="accept-newsletter"
+                  />
+                  <label htmlFor="accept-newsletter" className="text-xs text-[#052413]/70 cursor-pointer leading-relaxed" style={{ fontFamily: F }}>
+                    Desejo receber novidades, lancamentos e promocoes da Epoca Editora por e-mail. (opcional)
+                  </label>
+                </div>
               </div>
             )}
 
-            <GoldButton type="submit" className="w-full py-3.5 mt-2" disabled={loading || (mode === "signup" && (!!docCheckResult?.exists || !acceptTerms))}>
+            <GoldButton type="submit" className="w-full py-3.5 mt-2" disabled={loading || (mode === "signup" && (!!docCheckResult?.exists || !!emailCheckResult?.exists || !!phoneCheckResult?.exists || !acceptTerms))}>
               {loading ? (
                 <div className="w-5 h-5 border-2 border-[#1a1206]/30 border-t-[#1a1206] rounded-full animate-spin" />
               ) : mode === "login" ? (
@@ -707,7 +836,10 @@ export function UserAuthPage() {
 
           {mode === "login" && (
             <p className="text-center text-xs text-[#856C42]/60 mt-3" style={{ fontFamily: F }}>
-              Esqueceu a senha? Em breve, recuperacao via e-mail.
+              Esqueceu a senha?{" "}
+              <Link to="/recuperar-senha" className="text-[#165B36] font-medium hover:underline">
+                Recuperar acesso
+              </Link>
             </p>
           )}
         </motion.div>

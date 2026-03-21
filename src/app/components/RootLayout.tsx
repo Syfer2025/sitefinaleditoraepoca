@@ -1,8 +1,22 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { UserAuthProvider } from "./UserAuthContext";
 import { Toaster } from "sonner";
 import { useEffect } from "react";
 import { CookieBanner } from "./CookieBanner";
+import { ErrorBoundary } from "./ErrorBoundary";
+import { getLogos } from "../data/api";
+
+const SITE_URL = "https://editoraepoca.com.br";
+const PRIVATE_ROUTES = [
+  "/minha-conta",
+  "/pagamento/",
+  "/parcelas/",
+  "/contrato/",
+  "/nova-solicitacao",
+  "/meus-dados",
+  "/recuperar-senha",
+  "/admin",
+];
 
 /**
  * Global SVG filter for GoldButton noise effect.
@@ -24,36 +38,50 @@ function GoldNoiseFilter() {
 }
 
 export function RootLayout() {
-  // Set default SEO meta tags
+  const { pathname } = useLocation();
+
+  // Update canonical URL and robots on every navigation
   useEffect(() => {
-    document.title = "Época Editora de Livros — Histórias que transformam";
+    const isPrivate = PRIVATE_ROUTES.some((r) => pathname === r || pathname.startsWith(r));
 
-    const setMeta = (name: string, content: string, property?: boolean) => {
-      const attr = property ? "property" : "name";
-      let el = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement | null;
-      if (!el) {
-        el = document.createElement("meta");
-        el.setAttribute(attr, name);
-        document.head.appendChild(el);
+    let canonical = document.querySelector("link[rel='canonical']") as HTMLLinkElement | null;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = `${SITE_URL}${pathname}`;
+
+    let robots = document.querySelector("meta[name='robots']") as HTMLMetaElement | null;
+    if (!robots) {
+      robots = document.createElement("meta");
+      robots.setAttribute("name", "robots");
+      document.head.appendChild(robots);
+    }
+    robots.content = isPrivate ? "noindex, nofollow" : "index, follow";
+  }, [pathname]);
+
+  // Load favicon from CMS on mount
+  useEffect(() => {
+    getLogos().then((logos) => {
+      const favicon = logos.logo_favicon;
+      if (!favicon) return;
+      let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement("link");
+        link.rel = "icon";
+        document.head.appendChild(link);
       }
-      el.content = content;
-    };
-
-    setMeta("description", "Época Editora de Livros — publicamos histórias que transformam vidas desde 1987. Catálogo com mais de 500 títulos de ficção, poesia, ensaios e literatura infantil.");
-    setMeta("keywords", "editora, livros, publicação, literatura brasileira, autopublicação, diagramação, revisão, ISBN, Época Editora");
-    setMeta("og:title", "Época Editora de Livros", true);
-    setMeta("og:description", "Publicamos histórias que transformam vidas desde 1987. Conheça nosso catálogo e serviços editoriais.", true);
-    setMeta("og:type", "website", true);
-    setMeta("og:site_name", "Época Editora de Livros", true);
-    setMeta("twitter:card", "summary_large_image");
-    setMeta("twitter:title", "Época Editora de Livros");
-    setMeta("twitter:description", "Publicamos histórias que transformam vidas desde 1987.");
+      link.href = favicon;
+    });
   }, []);
 
   return (
     <UserAuthProvider>
       <GoldNoiseFilter />
-      <Outlet />
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
       <CookieBanner />
       <Toaster
         position="bottom-right"

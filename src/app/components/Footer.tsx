@@ -1,10 +1,52 @@
+import { useState, useEffect } from "react";
 import { GoldButton } from "./GoldButton";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { Link } from "react-router";
 import { Lock } from "lucide-react";
-import footerLogoImg from "figma:asset/36074aebf24684a213a02f0250350012b7c049a7.png";
+import { toast } from "sonner";
+import footerLogoFallback from "/assets/36074aebf24684a213a02f0250350012b7c049a7.png";
+import { projectId, publicAnonKey } from "/utils/supabase/info";
+import { getLogos } from "../data/api";
+
+const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-e413165d`;
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
+  const [consentNewsletter, setConsentNewsletter] = useState(false);
+  const [footerLogoImg, setFooterLogoImg] = useState<string>(footerLogoFallback);
+
+  useEffect(() => {
+    getLogos().then((logos) => { if (logos.logo_footer) setFooterLogoImg(logos.logo_footer); });
+  }, []);
+
+  async function handleNewsletter() {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Informe um e-mail valido.");
+      return;
+    }
+    if (!consentNewsletter) {
+      toast.error("Marque o consentimento para receber a newsletter.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/newsletter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${publicAnonKey}` },
+        body: JSON.stringify({ email, consent: true }),
+      });
+      if (!res.ok) throw new Error();
+      setSubscribed(true);
+      setEmail("");
+    } catch {
+      toast.error("Erro ao se inscrever. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <footer className="bg-[#052413] text-white/70 py-12 px-6">
       <div className="max-w-7xl mx-auto">
@@ -43,8 +85,8 @@ export function Footer() {
               >
                 {[
                   { label: "Sobre nós", href: "/#sobre" },
-                  { label: "Equipe", href: "#" },
-                  { label: "Carreiras", href: "#" },
+                  { label: "Autores", href: "/#autores" },
+                  { label: "Planos", href: "/#planos" },
                   { label: "Contato", href: "/#contato" },
                 ].map((link) => (
                   <li key={link.label}>
@@ -74,9 +116,9 @@ export function Footer() {
               >
                 {[
                   { label: "Catálogo", href: "/catalogo" },
-                  { label: "Lançamentos", href: "#" },
-                  { label: "Mais vendidos", href: "#" },
-                  { label: "Autores", href: "/#autores" },
+                  { label: "Lançamentos", href: "/catalogo" },
+                  { label: "Mais vendidos", href: "/catalogo" },
+                  { label: "Depoimentos", href: "/#depoimentos" },
                 ].map((link) => (
                   <li key={link.label}>
                     <a
@@ -105,28 +147,68 @@ export function Footer() {
               >
                 Receba novidades e lançamentos diretamente no seu email.
               </p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder="Seu email"
-                  className="flex-1 min-w-0 px-4 py-2.5 rounded-lg bg-white/10 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#EBBF74]/40 focus:border-[#EBBF74]/30 text-[0.875rem] transition-all duration-300"
-                  style={{ fontFamily: "Inter, sans-serif" }}
-                />
-                <GoldButton className="px-4 py-2.5 text-[0.875rem] shrink-0">
-                  Assinar
-                </GoldButton>
-              </div>
+              {subscribed ? (
+                <div className="space-y-1">
+                  <p className="text-[0.875rem] text-[#EBBF74]" style={{ fontFamily: "Inter, sans-serif" }}>
+                    ✓ Quase la! Confirme em sua caixa de entrada.
+                  </p>
+                  <p className="text-[0.75rem] text-white/40" style={{ fontFamily: "Inter, sans-serif" }}>
+                    Enviamos um e-mail de confirmacao. Verifique sua caixa de entrada (e o spam).
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      placeholder="Seu email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleNewsletter()}
+                      disabled={loading}
+                      className="flex-1 min-w-0 px-4 py-2.5 rounded-lg bg-white/10 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#EBBF74]/40 focus:border-[#EBBF74]/30 text-[0.875rem] transition-all duration-300 disabled:opacity-50"
+                      style={{ fontFamily: "Inter, sans-serif" }}
+                    />
+                    <GoldButton
+                      className="px-4 py-2.5 text-[0.875rem] shrink-0 disabled:opacity-50"
+                      onClick={handleNewsletter}
+                      disabled={loading || !consentNewsletter}
+                    >
+                      {loading ? "..." : "Assinar"}
+                    </GoldButton>
+                  </div>
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={consentNewsletter}
+                      onChange={(e) => setConsentNewsletter(e.target.checked)}
+                      className="w-3.5 h-3.5 rounded accent-[#EBBF74] mt-0.5 flex-shrink-0"
+                    />
+                    <span className="text-[0.7rem] text-white/40 leading-relaxed" style={{ fontFamily: "Inter, sans-serif" }}>
+                      Concordo em receber comunicacoes da Epoca Editora por e-mail e posso cancelar a qualquer momento.
+                    </span>
+                  </label>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Divider & copyright */}
           <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p
-              className="text-[0.8rem] text-center md:text-left"
-              style={{ fontFamily: "Inter, sans-serif" }}
-            >
-              &copy; 2026 Época Editora de Livros. Todos os direitos reservados.
-            </p>
+            <div className="text-center md:text-left space-y-1">
+              <p
+                className="text-[0.8rem]"
+                style={{ fontFamily: "Inter, sans-serif" }}
+              >
+                &copy; {new Date().getFullYear()} Epoca Editora de Livros. Todos os direitos reservados.
+              </p>
+              <p className="text-[0.7rem] text-white/30" style={{ fontFamily: "Inter, sans-serif" }}>
+                Encarregado de dados (DPO):{" "}
+                <a href="mailto:privacidade@epocaeditora.com.br" className="hover:text-[#EBBF74] transition-colors">
+                  privacidade@epocaeditora.com.br
+                </a>
+              </p>
+            </div>
             <div
               className="flex items-center gap-6"
               style={{ fontFamily: "Inter, sans-serif" }}

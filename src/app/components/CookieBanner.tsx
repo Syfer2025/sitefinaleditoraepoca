@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { Shield, X } from "lucide-react";
+import { Shield, X, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 const COOKIE_KEY = "epoca_cookie_consent";
 
 export function CookieBanner() {
   const [visible, setVisible] = useState(false);
+  const [managing, setManaging] = useState(false);
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
 
   useEffect(() => {
     const consent = localStorage.getItem(COOKIE_KEY);
@@ -16,10 +18,18 @@ export function CookieBanner() {
     }
   }, []);
 
-  const accept = (type: "all" | "essential") => {
-    localStorage.setItem(COOKIE_KEY, JSON.stringify({ type, date: new Date().toISOString() }));
+  const save = (type: "all" | "essential" | "custom", analytics?: boolean) => {
+    const analyticsVal = type === "all" ? true : type === "essential" ? false : (analytics ?? analyticsEnabled);
+    localStorage.setItem(COOKIE_KEY, JSON.stringify({
+      type,
+      essential: true,
+      analytics: analyticsVal,
+      date: new Date().toISOString(),
+    }));
     setVisible(false);
   };
+
+  const F = "Inter, sans-serif";
 
   return (
     <AnimatePresence>
@@ -32,58 +42,132 @@ export function CookieBanner() {
           className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6"
         >
           <div
-            className="max-w-4xl mx-auto rounded-2xl p-5 md:p-6 shadow-2xl flex flex-col md:flex-row items-start md:items-center gap-4"
+            className="max-w-4xl mx-auto rounded-2xl shadow-2xl overflow-hidden"
             style={{
               backgroundColor: "#052413",
               border: "1px solid rgba(235,191,116,0.15)",
               boxShadow: "0 -8px 40px rgba(5,36,19,0.3)",
             }}
           >
-            <div className="flex items-start gap-3 flex-1 min-w-0">
-              <Shield className="w-5 h-5 text-[#EBBF74] flex-shrink-0 mt-0.5" />
-              <div>
-                <p
-                  className="text-sm text-white/90 leading-relaxed"
-                  style={{ fontFamily: "Inter, sans-serif" }}
+            <div className="p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center gap-4">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <Shield className="w-5 h-5 text-[#EBBF74] flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm text-white/90 leading-relaxed" style={{ fontFamily: F }}>
+                    Utilizamos cookies essenciais para o funcionamento do site e cookies analiticos para melhorar sua experiencia.
+                    Ao continuar navegando, voce concorda com nossa{" "}
+                    <Link to="/privacidade" className="text-[#EBBF74] hover:underline">
+                      Politica de Privacidade
+                    </Link>{" "}
+                    e{" "}
+                    <Link to="/termos" className="text-[#EBBF74] hover:underline">
+                      Termos de Uso
+                    </Link>
+                    .
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setManaging((v) => !v)}
+                    className="mt-2 flex items-center gap-1 text-xs text-[#EBBF74]/70 hover:text-[#EBBF74] transition-colors cursor-pointer"
+                    style={{ fontFamily: F }}
+                  >
+                    {managing ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    Gerenciar preferencias
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0 w-full md:w-auto">
+                <button
+                  onClick={() => save("essential")}
+                  className="flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border border-white/10"
+                  style={{ fontFamily: F }}
                 >
-                  Utilizamos cookies essenciais para o funcionamento do site e cookies analiticos para melhorar sua experiencia.
-                  Ao continuar navegando, voce concorda com nossa{" "}
-                  <Link to="/privacidade" className="text-[#EBBF74] hover:underline">
-                    Politica de Privacidade
-                  </Link>{" "}
-                  e{" "}
-                  <Link to="/termos" className="text-[#EBBF74] hover:underline">
-                    Termos de Uso
-                  </Link>
-                  , em conformidade com a LGPD (Lei 13.709/2018).
-                </p>
+                  Rejeitar tudo
+                </button>
+                <button
+                  onClick={() => save("all")}
+                  className="flex-1 md:flex-none px-5 py-2 rounded-lg text-xs font-semibold text-[#052413] transition-opacity hover:opacity-90 cursor-pointer"
+                  style={{
+                    fontFamily: F,
+                    background: "linear-gradient(135deg, #EBBF74, #D4AF5A)",
+                  }}
+                >
+                  Aceitar todos
+                </button>
+                <button
+                  onClick={() => setVisible(false)}
+                  className="p-1.5 rounded-lg text-white/30 hover:text-white/60 transition-colors cursor-pointer md:hidden"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0 w-full md:w-auto">
-              <button
-                onClick={() => accept("essential")}
-                className="flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border border-white/10"
-                style={{ fontFamily: "Inter, sans-serif" }}
-              >
-                Apenas essenciais
-              </button>
-              <button
-                onClick={() => accept("all")}
-                className="flex-1 md:flex-none px-5 py-2 rounded-lg text-xs font-semibold text-[#052413] transition-opacity hover:opacity-90 cursor-pointer"
-                style={{
-                  fontFamily: "Inter, sans-serif",
-                  background: "linear-gradient(135deg, #EBBF74, #D4AF5A)",
-                }}
-              >
-                Aceitar todos
-              </button>
-              <button
-                onClick={() => setVisible(false)}
-                className="p-1.5 rounded-lg text-white/30 hover:text-white/60 transition-colors cursor-pointer md:hidden"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+
+            {/* Granular management panel */}
+            <AnimatePresence>
+              {managing && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-5 md:px-6 pb-5 border-t border-white/10 pt-4 space-y-3">
+                    {/* Essential */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-semibold text-white/90" style={{ fontFamily: F }}>
+                          Cookies essenciais
+                        </p>
+                        <p className="text-[0.65rem] text-white/40 mt-0.5" style={{ fontFamily: F }}>
+                          Necessarios para autenticacao, sessao e seguranca. Nao podem ser desativados.
+                        </p>
+                      </div>
+                      <div
+                        className="px-2.5 py-1 rounded-full text-[0.6rem] font-semibold text-[#052413]"
+                        style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)", fontFamily: F }}
+                      >
+                        Sempre ativo
+                      </div>
+                    </div>
+                    {/* Analytics */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-semibold text-white/90" style={{ fontFamily: F }}>
+                          Cookies analiticos
+                        </p>
+                        <p className="text-[0.65rem] text-white/40 mt-0.5" style={{ fontFamily: F }}>
+                          Nos ajudam a entender como voce usa o site para melhorar a experiencia.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setAnalyticsEnabled((v) => !v)}
+                        className={`relative w-10 h-5 rounded-full transition-colors cursor-pointer flex-shrink-0 ${analyticsEnabled ? "" : "bg-white/20"}`}
+                        style={analyticsEnabled ? { background: "linear-gradient(135deg, #EBBF74, #D4AF5A)" } : {}}
+                        aria-label={analyticsEnabled ? "Desativar cookies analiticos" : "Ativar cookies analiticos"}
+                      >
+                        <span
+                          className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${analyticsEnabled ? "translate-x-5" : "translate-x-0.5"}`}
+                        />
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => save("custom", analyticsEnabled)}
+                      className="w-full py-2 rounded-lg text-xs font-semibold text-[#052413] transition-opacity hover:opacity-90 cursor-pointer mt-1"
+                      style={{
+                        fontFamily: F,
+                        background: "linear-gradient(135deg, #EBBF74, #D4AF5A)",
+                      }}
+                    >
+                      Salvar preferencias
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
       )}

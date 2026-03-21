@@ -137,10 +137,15 @@
   html {
     scroll-behavior: smooth;
     font-size: var(--font-size);
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+    max-width: 100%;
+    min-width: 0;
   }
 
   /**

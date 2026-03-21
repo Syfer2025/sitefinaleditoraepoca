@@ -4,7 +4,7 @@ import { supabase } from "./supabaseClient";
 const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-e413165d`;
 
 // ============================================
-// ADMIN token helpers (unchanged — manual localStorage)
+// ADMIN token helpers — with auto-refresh
 // ============================================
 export function getAdminToken(): string | null {
   return localStorage.getItem("admin_token");
@@ -14,8 +14,51 @@ export function setToken(token: string) {
   localStorage.setItem("admin_token", token);
 }
 
+export function setAdminRefreshToken(token: string) {
+  localStorage.setItem("admin_refresh_token", token);
+}
+
+export function getAdminRefreshToken(): string | null {
+  return localStorage.getItem("admin_refresh_token");
+}
+
 export function clearToken() {
   localStorage.removeItem("admin_token");
+  localStorage.removeItem("admin_refresh_token");
+}
+
+/** Decode JWT payload without verification (client-side check only). */
+function jwtExpired(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    // Expire 60s before actual exp so we refresh proactively
+    return Date.now() / 1000 > (payload.exp ?? 0) - 60;
+  } catch {
+    return true;
+  }
+}
+
+/** Try to refresh the admin access token using the stored refresh token. */
+async function tryRefreshAdminToken(): Promise<string | null> {
+  const refreshToken = getAdminRefreshToken();
+  if (!refreshToken) return null;
+  try {
+    const { data, error } = await supabase.auth.refreshSession({ refresh_token: refreshToken });
+    if (error || !data.session) return null;
+    setToken(data.session.access_token);
+    if (data.session.refresh_token) setAdminRefreshToken(data.session.refresh_token);
+    return data.session.access_token;
+  } catch {
+    return null;
+  }
+}
+
+/** Get admin token, refreshing it if expired. Returns null if refresh fails (user must re-login). */
+export async function getAdminTokenAsync(): Promise<string | null> {
+  const token = getAdminToken();
+  if (!token) return null;
+  if (!jwtExpired(token)) return token;
+  return tryRefreshAdminToken();
 }
 
 // ============================================
@@ -83,7 +126,7 @@ export async function api(
   } = {}
 ) {
   const { method = "GET", body, auth = true } = options;
-  const token = auth ? getAdminToken() : null;
+  const token = auth ? await getAdminTokenAsync() : null;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -94,23 +137,34 @@ export async function api(
     headers["X-Access-Token"] = token;
   }
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
 
-  let data: any;
   try {
-    data = await res.json();
-  } catch {
-    throw new Error(`Server returned non-JSON response (HTTP ${res.status}) for ${method} ${path}`);
+    const res = await fetch(`${BASE_URL}${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    let data: any;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error(`Server returned non-JSON response (HTTP ${res.status}) for ${method} ${path}`);
+    }
+    if (!res.ok) {
+      console.error(`API error [${method} ${path}]:`, data);
+      throw new Error(data.error || "Erro desconhecido");
+    }
+    return data;
+  } catch (err: any) {
+    clearTimeout(timeout);
+    if (err.name === "AbortError") throw new Error("Tempo limite excedido. Tente novamente.");
+    throw err;
   }
-  if (!res.ok) {
-    console.error(`API error [${method} ${path}]:`, data);
-    throw new Error(data.error || "Erro desconhecido");
-  }
-  return data;
 }
 
 // ============================================
@@ -139,25 +193,34 @@ export async function userApi(
     headers["X-Access-Token"] = token;
   }
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-    signal,
-  });
+  const controller = signal ? null : new AbortController();
+  const timeout = controller ? setTimeout(() => controller.abort(), 20000) : null;
 
-  let data: any;
   try {
-    data = await res.json();
-  } catch {
-    // Response is not JSON (e.g. 403 HTML page from edge function)
-    throw new Error(`Server returned non-JSON response (HTTP ${res.status}) for ${method} ${path}`);
+    const res = await fetch(`${BASE_URL}${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: signal ?? controller?.signal,
+    });
+    if (timeout) clearTimeout(timeout);
+
+    let data: any;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error(`Server returned non-JSON response (HTTP ${res.status}) for ${method} ${path}`);
+    }
+    if (!res.ok) {
+      console.error(`User API error [${method} ${path}]:`, data);
+      throw new Error(data.error || `Erro HTTP ${res.status}`);
+    }
+    return data;
+  } catch (err: any) {
+    if (timeout) clearTimeout(timeout);
+    if (err.name === "AbortError" && !signal) throw new Error("Tempo limite excedido. Tente novamente.");
+    throw err;
   }
-  if (!res.ok) {
-    console.error(`User API error [${method} ${path}]:`, data);
-    throw new Error(data.error || `Erro HTTP ${res.status}`);
-  }
-  return data;
 }
 
 // ============================================
@@ -503,4 +566,177 @@ export async function deleteInvoice(projectId: string, index: number) {
 
 export async function getUserInvoices(projectId: string) {
   return userApi(`/projects/${projectId}/invoices`);
+}
+
+// FAQ
+export async function getFaqs() {
+  return api("/faqs", { auth: false });
+}
+
+export async function updateAdminFaqs(faqs: { id: string; question: string; answer: string }[]) {
+  return api("/admin/faqs", { method: "PUT", body: { faqs } });
+}
+
+// BOOKS
+export async function getBooks() {
+  return api("/books", { auth: false });
+}
+
+export async function getBookBySlug(slug: string) {
+  const res = await fetch(`${BASE_URL}/books/slug/${slug}`, {
+    headers: { Authorization: `Bearer ${publicAnonKey}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Livro não encontrado");
+  return data;
+}
+
+export async function createAdminBook(data: { title: string; author: string; genre: string; rating: number; year: number; description: string; image: string; photos?: string[] }) {
+  return api("/admin/books", { method: "POST", body: data });
+}
+
+export async function updateAdminBook(id: number, data: { title: string; author: string; genre: string; rating: number; year: number; description: string; image: string; photos?: string[] }) {
+  return api(`/admin/books/${id}`, { method: "PUT", body: data });
+}
+
+export async function deleteAdminBook(id: number) {
+  return api(`/admin/books/${id}`, { method: "DELETE" });
+}
+
+// PLANS
+export async function getPlans() {
+  return api("/plans", { auth: false });
+}
+
+export interface ServicesCard {
+  active: boolean;
+  title: string;
+  subtitle: string;
+  services: string[];
+}
+
+export async function updateAdminPlans(
+  plans: { id: string; name: string; description: string; price: string; featured: boolean; features: string[] }[],
+  servicesCard?: ServicesCard,
+) {
+  return api("/admin/plans", { method: "PUT", body: { plans, servicesCard } });
+}
+
+// PAYMENT CONFIG
+export async function getAdminPaymentConfig() {
+  return api("/admin/payment-config");
+}
+export async function updateAdminPaymentConfig(data: { access_token?: string; public_key?: string; methods?: { pix: boolean; credit_card: boolean; boleto: boolean } }) {
+  return api("/admin/payment-config", { method: "PUT", body: data });
+}
+export async function testAdminPaymentConfig() {
+  return api("/admin/payment-config/test", { method: "POST", body: {} });
+}
+
+// NEWSLETTER
+export async function getAdminSubscribers() {
+  return api("/admin/subscribers");
+}
+
+// AUTHORS
+export interface VideoSection {
+  url: string;
+  title: string;
+  text: string;
+}
+
+export async function getAuthors() {
+  return api("/authors", { auth: false });
+}
+
+export async function updateAdminAuthors(
+  authors: { id: number; name: string; specialty: string; books: number; image: string; quote: string }[],
+  videoSection?: VideoSection,
+) {
+  return api("/admin/authors", { method: "PUT", body: { authors, videoSection } });
+}
+
+// TESTIMONIALS
+export async function getTestimonials() {
+  return api("/testimonials", { auth: false });
+}
+
+export async function updateAdminTestimonials(testimonials: { id: number; name: string; role: string; image: string; quote: string; rating: number; featured: boolean }[]) {
+  return api("/admin/testimonials", { method: "PUT", body: { testimonials } });
+}
+
+// MEDIA UPLOAD (admin — uploads to public Supabase Storage bucket)
+export async function uploadFile(file: File, folder: "logos" | "books" | "authors" | "misc" = "misc"): Promise<string> {
+  const token = getAdminToken();
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", folder);
+  const headers: Record<string, string> = { Authorization: `Bearer ${publicAnonKey}` };
+  if (token) headers["X-Access-Token"] = token;
+  const res = await fetch(`${BASE_URL}/admin/upload`, { method: "POST", headers, body: formData });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Erro ao enviar arquivo");
+  return data.url as string;
+}
+
+// LOGO
+export async function getLogo(): Promise<string | null> {
+  try {
+    const data = await api("/logo", { auth: false });
+    return data.logo || null;
+  } catch { return null; }
+}
+
+export async function getLogos(): Promise<{ logo_navbar: string | null; logo_footer: string | null; logo_favicon: string | null }> {
+  try {
+    const data = await api("/logos", { auth: false });
+    return { logo_navbar: data.logo_navbar || null, logo_footer: data.logo_footer || null, logo_favicon: data.logo_favicon || null };
+  } catch { return { logo_navbar: null, logo_footer: null, logo_favicon: null }; }
+}
+
+export async function updateAdminLogo(logo: string): Promise<void> {
+  await api("/admin/logo", { method: "POST", body: { logo } });
+}
+
+export async function updateAdminLogoKey(key: "navbar" | "footer" | "favicon", logo: string): Promise<void> {
+  await api(`/admin/logo/${key}`, { method: "POST", body: { logo } });
+}
+
+// ABOUT STATS
+export async function getAbout() {
+  return api("/about", { auth: false });
+}
+
+export async function updateAdminAbout(about: { yearsOfHistory: number; stats: { key: string; value: number; suffix: string; label: string }[] }) {
+  return api("/admin/about", { method: "PUT", body: { about } });
+}
+
+export interface ContactInfo {
+  phone: string;
+  address: string;
+  city: string;
+  email: string;
+  whatsapp: string;
+  mapUrl: string;
+}
+
+export async function getContactInfo(): Promise<ContactInfo> {
+  try {
+    const data = await api("/contact-info", { auth: false });
+    return data.contactInfo || { phone: "", address: "", city: "", email: "", whatsapp: "", mapUrl: "" };
+  } catch { return { phone: "", address: "", city: "", email: "", whatsapp: "", mapUrl: "" }; }
+}
+
+export async function updateAdminContactInfo(info: Partial<ContactInfo>): Promise<void> {
+  await api("/admin/contact-info", { method: "PUT", body: info });
+}
+
+export async function submitDataRightsRequest(body: { name: string; email: string; requestType: string; details?: string }): Promise<void> {
+  const res = await fetch(`${BASE_URL}/user/data-rights`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${publicAnonKey}` },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Erro ao enviar solicitação");
 }

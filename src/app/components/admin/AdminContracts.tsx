@@ -655,7 +655,7 @@ function ContractPreview({ template }: { template: ContractTemplate }) {
       <p className="mb-3">{template.preamble}</p>
 
       {/* Clause 1 */}
-      <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 1 — {getClause(1)?.title || "DAS PARTES"}</p>
+      <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 1 — {getClause(1)?.title || "DAS PARTES"}</p>
       <p className="mb-3"><strong>CONTRATADA:</strong> {template.companyName}, {template.companyDescription}, doravante denominada simplesmente "EDITORA".</p>
       <p className="mb-3">
         <strong>CONTRATANTE:</strong>{" "}
@@ -666,7 +666,7 @@ function ContractPreview({ template }: { template: ContractTemplate }) {
       </p>
 
       {/* Clause 2 */}
-      <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 2 — {getClause(2)?.title || "DO OBJETO"}</p>
+      <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 2 — {getClause(2)?.title || "DO OBJETO"}</p>
       <p className="mb-2">O presente contrato tem por objeto a prestacao dos seguintes servicos editoriais pela EDITORA ao CONTRATANTE:</p>
       <div className="mb-2 pl-3">
         <p className="mb-0.5">• <strong>Pacote completo</strong> — Todos os servicos inclusos</p>
@@ -678,11 +678,11 @@ function ContractPreview({ template }: { template: ContractTemplate }) {
       {[3, 4].map((num) => {
         const cl = getClause(num);
         if (!cl) return null;
-        return <div key={num}><p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA {num} — {cl.title}</p>{renderClauseContent(cl.content)}</div>;
+        return <div key={num}><p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA {num} — {cl.title}</p>{renderClauseContent(cl.content)}</div>;
       })}
 
       {/* Clause 5 */}
-      <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 5 — {getClause(5)?.title || "DO PRECO E CONDICOES DE PAGAMENTO"}</p>
+      <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 5 — {getClause(5)?.title || "DO PRECO E CONDICOES DE PAGAMENTO"}</p>
       <p className="mb-2">O valor total dos servicos e de <strong>R$ 2.500,00</strong>, conforme detalhado no orcamento apresentado.</p>
       <div className="mb-2 p-2 rounded-lg" style={{ backgroundColor: "rgba(22,91,54,0.04)", borderLeft: "3px solid rgba(22,91,54,0.2)" }}>
         <p className="mb-1"><strong>Forma de pagamento parcelada:</strong></p>
@@ -696,7 +696,7 @@ function ContractPreview({ template }: { template: ContractTemplate }) {
       <p className="mb-3">O nao pagamento nos prazos estipulados podera resultar na suspensao dos servicos sem aviso previo.</p>
 
       {/* Clause 6 */}
-      <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 6 — {getClause(6)?.title || "DO PRAZO"}</p>
+      <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 6 — {getClause(6)?.title || "DO PRAZO"}</p>
       <p className="mb-2">O prazo estimado para a execucao dos servicos e de <strong className="text-[#165B36]">15 dias uteis</strong>, contados a partir do recebimento integral dos arquivos necessarios e da confirmacao do pagamento.</p>
       <p className="mb-3">Atrasos no fornecimento de materiais ou na aprovacao de etapas pelo CONTRATANTE prorrogarao o prazo proporcionalmente. O prazo podera ser revisto pela EDITORA mediante comunicacao previa ao CONTRATANTE.</p>
 
@@ -704,13 +704,13 @@ function ContractPreview({ template }: { template: ContractTemplate }) {
       {[7, 8, 9, 10, 11, 12].map((num) => {
         const cl = getClause(num);
         if (!cl) return null;
-        return <div key={num}><p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA {num} — {cl.title}</p>{renderClauseContent(cl.content)}</div>;
+        return <div key={num}><p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA {num} — {cl.title}</p>{renderClauseContent(cl.content)}</div>;
       })}
 
       {/* Sample custom clause */}
       <div className="mt-2 pt-2 border-t border-dashed" style={{ borderColor: "rgba(133,108,66,0.15)" }}>
         <p className="text-[0.6rem] text-[#856C42]/50 italic mb-2" style={{ fontFamily: F }}>Exemplo de clausula personalizada por projeto (13+):</p>
-        <p className="font-semibold text-[#052413] mb-1 mt-2">CLAUSULA 13 — DA ENTREGA DIGITAL</p>
+        <p className="font-semibold text-[#052413] mb-1 mt-2">CLÁUSULA 13 — DA ENTREGA DIGITAL</p>
         <p className="mb-3">A EDITORA entregara os arquivos finais em formato PDF de alta resolucao para impressao e PDF otimizado para leitura digital.</p>
       </div>
     </div>

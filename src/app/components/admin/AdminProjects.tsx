@@ -64,7 +64,7 @@ import {
   confirmInstallment,
 } from "../../data/api";
 import { toast } from "sonner";
-import logoImg from "figma:asset/866134e81312444c262030ef8ad8f59cefad5b17.png";
+import logoImg from "/assets/logo.png";
 
 interface ProjectStep {
   status: string;
@@ -704,7 +704,7 @@ function EditProjectModal({
       const title = cl?.title || defaultTitle;
       const content = cl?.content || defaultContent;
       const lines = content.split("\n").filter((l: string) => l.trim());
-      return `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA ${num} — ${title}</p>${lines.map((l: string) => `<p style="${/^[a-z]\)/.test(l.trim()) ? "padding-left:16px;" : ""}margin-bottom:4px">${l}</p>`).join("")}`;
+      return `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA ${num} — ${title}</p>${lines.map((l: string) => `<p style="${/^[a-z]\)/.test(l.trim()) ? "padding-left:16px;" : ""}margin-bottom:4px">${l}</p>`).join("")}`;
     };
 
     const name = acceptance?.acceptorName || project.userName || "_______________";
@@ -723,14 +723,14 @@ function EditProjectModal({
     html += `<p style="margin-bottom:8px">${preamble}</p>`;
 
     // Clause 1
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 1 — ${getClauseFromTemplate(1)?.title || "DAS PARTES"}</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 1 — ${getClauseFromTemplate(1)?.title || "DAS PARTES"}</p>`;
     html += `<p style="margin-bottom:4px"><strong>EDITORA:</strong> ${companyName}, ${companyDesc}.</p>`;
     const cleanCpfAdmin = cpf ? cpf.replace(/\D/g, "") : "";
     const docLabelAdmin = cleanCpfAdmin.length === 14 ? "CNPJ" : "CPF";
     html += `<p style="margin-bottom:8px"><strong>CONTRATANTE:</strong> ${name}${cleanCpfAdmin.length === 11 || cleanCpfAdmin.length === 14 ? `, inscrito(a) no ${docLabelAdmin} sob o n. ${cpf}` : ""}${email.includes("@") ? `, e-mail ${email}` : ""}.</p>`;
 
     // Clause 2
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 2 — ${getClauseFromTemplate(2)?.title || "DO OBJETO"}</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 2 — ${getClauseFromTemplate(2)?.title || "DO OBJETO"}</p>`;
     html += `<p style="margin-bottom:4px">O presente contrato tem por objeto a prestacao dos seguintes servicos editoriais pela EDITORA ao CONTRATANTE:</p>`;
     if (project.services?.length) {
       project.services.forEach((s) => { const svc = SERVICE_MAP[s]; html += `<p style="padding-left:16px;margin-bottom:2px">• ${svc ? svc.label : s}</p>`; });
@@ -744,7 +744,7 @@ function EditProjectModal({
     html += getClauseText(4, "DAS OBRIGACOES DO CONTRATANTE", "O CONTRATANTE se obriga a:\na) Fornecer todos os materiais necessarios;\nb) Efetuar o pagamento conforme estipulado;\nc) Responder as solicitacoes em ate 10 dias uteis;\nd) Revisar a prova digital em ate 15 dias uteis;\ne) Garantir que possui todos os direitos autorais sobre o conteudo.");
 
     // Clause 5
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 5 — ${getClauseFromTemplate(5)?.title || "DO PRECO E CONDICOES DE PAGAMENTO"}</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 5 — ${getClauseFromTemplate(5)?.title || "DO PRECO E CONDICOES DE PAGAMENTO"}</p>`;
     html += `<p style="margin-bottom:4px">O valor total dos servicos e de <strong>${formatCurrency(budget.price)}</strong>.</p>`;
     if (dp > 0 && dp < 100) {
       html += `<p style="padding-left:16px;margin-bottom:2px">a) Entrada (${dp}%): <strong>${formatCurrency(chargeAmt)}</strong>, devida no ato da contratacao para <strong>inicio dos trabalhos</strong>;</p>`;
@@ -770,7 +770,7 @@ function EditProjectModal({
     }
 
     // Clause 6
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 6 — ${getClauseFromTemplate(6)?.title || "DO PRAZO"}</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 6 — ${getClauseFromTemplate(6)?.title || "DO PRAZO"}</p>`;
     const deadline = previewEditMode ? previewDeadline : budget.estimatedDeadline;
     if (deadline) {
       html += `<p style="margin-bottom:8px">Prazo estimado: <strong>${deadline}</strong>, contados a partir do recebimento dos arquivos e confirmacao do pagamento.</p>`;
@@ -790,7 +790,7 @@ function EditProjectModal({
       try { const p = budget.customClauses ? JSON.parse(budget.customClauses) : []; return Array.isArray(p) ? p : [{ title: "", content: budget.customClauses }]; } catch { return budget.customClauses ? [{ title: "", content: budget.customClauses }] : []; }
     })();
     clauses.filter((c: any) => c.content?.trim()).forEach((clause: any, idx: number) => {
-      html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA ${13 + idx} — ${clause.title ? clause.title.toUpperCase() : `DISPOSICOES ESPECIFICAS ${idx + 1}`}</p>`;
+      html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA ${13 + idx} — ${clause.title ? clause.title.toUpperCase() : `DISPOSICOES ESPECIFICAS ${idx + 1}`}</p>`;
       html += `<p style="margin-bottom:8px;white-space:pre-wrap">${clause.content}</p>`;
     });
 
@@ -1784,7 +1784,7 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
     const content = cl?.content || defaultContent;
     return (
       <div>
-        <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA {num} — {title}</p>
+        <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA {num} — {title}</p>
         {renderClauseContent(content)}
       </div>
     );
@@ -1829,7 +1829,7 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
       <p className="mb-3">{preamble}</p>
 
       {/* Clause 1 — DAS PARTES */}
-      <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 1 — {getClause(1)?.title || "DAS PARTES"}</p>
+      <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 1 — {getClause(1)?.title || "DAS PARTES"}</p>
       <p className="mb-3"><strong>CONTRATADA:</strong> {companyName}, {companyDesc}, doravante denominada simplesmente "EDITORA".</p>
       <p className="mb-3">
         <strong>CONTRATANTE:</strong>{" "}
@@ -1844,7 +1844,7 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
       </p>
 
       {/* Clause 2 — DO OBJETO */}
-      <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 2 — {getClause(2)?.title || "DO OBJETO"}</p>
+      <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 2 — {getClause(2)?.title || "DO OBJETO"}</p>
       <p className="mb-2">O presente contrato tem por objeto a prestacao dos seguintes servicos editoriais pela EDITORA ao CONTRATANTE:</p>
       <div className="mb-2 pl-3">
         {project.services && project.services.length > 0 ? (
@@ -1882,7 +1882,7 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
       {renderStaticClause(4, "DAS OBRIGACOES DO CONTRATANTE", "O CONTRATANTE se obriga a:\na) Fornecer todos os materiais necessarios para a execucao dos servicos em formato digital adequado;\nb) Efetuar o pagamento conforme as condicoes estipuladas neste contrato;\nc) Responder as solicitacoes da EDITORA em ate 10 (dez) dias uteis;\nd) Revisar e aprovar ou solicitar ajustes na prova digital em ate 15 (quinze) dias uteis apos o envio;\ne) Garantir que possui todos os direitos autorais sobre o conteudo fornecido, isentando a EDITORA de qualquer responsabilidade sobre plagio ou violacao de direitos de terceiros.")}
 
       {/* Clause 5 — PRECO */}
-      <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 5 — {getClause(5)?.title || "DO PRECO E CONDICOES DE PAGAMENTO"}</p>
+      <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 5 — {getClause(5)?.title || "DO PRECO E CONDICOES DE PAGAMENTO"}</p>
       {budget && (
         <>
           <p className="mb-2">O valor total dos servicos e de <strong>{formatCurrency(budget.price)}</strong>, conforme detalhado no orcamento apresentado.</p>
@@ -1904,7 +1904,7 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
       )}
 
       {/* Clause 6 — PRAZO */}
-      <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 6 — {getClause(6)?.title || "DO PRAZO"}</p>
+      <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 6 — {getClause(6)?.title || "DO PRAZO"}</p>
       {(() => {
         const deadlineValue = editMode ? editDeadline : budget?.estimatedDeadline;
         if (editMode) {
@@ -1989,7 +1989,7 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
                   </div>
                 ) : (
                   <>
-                    <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA {13 + idx} — {clause.title ? clause.title.toUpperCase() : `DISPOSICOES ESPECIFICAS ${idx + 1}`}</p>
+                    <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA {13 + idx} — {clause.title ? clause.title.toUpperCase() : `DISPOSICOES ESPECIFICAS ${idx + 1}`}</p>
                     <p className="mb-3 whitespace-pre-wrap">{clause.content}</p>
                   </>
                 )}

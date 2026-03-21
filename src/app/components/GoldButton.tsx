@@ -1,8 +1,11 @@
 import React, { useMemo } from "react";
+import { Link } from "react-router";
 
 interface GoldButtonProps {
   children: React.ReactNode;
   href?: string;
+  to?: string;
+  target?: string;
   type?: "button" | "submit";
   className?: string;
   onClick?: () => void;
@@ -12,6 +15,8 @@ interface GoldButtonProps {
 export function GoldButton({
   children,
   href,
+  to,
+  target,
   type = "button",
   className = "",
   onClick,
@@ -61,9 +66,21 @@ export function GoldButton({
     />
   );
 
+  if (to) {
+    return (
+      <Link to={to} className={`block ${baseClasses}`} style={bgStyle} onClick={onClick}>
+        {noise}
+        {shimmer}
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {children}
+        </span>
+      </Link>
+    );
+  }
+
   if (href) {
     return (
-      <a href={href} className={baseClasses} style={bgStyle} onClick={onClick}>
+      <a href={href} target={target} rel={target === "_blank" ? "noopener noreferrer" : undefined} className={`block ${baseClasses}`} style={bgStyle} onClick={onClick}>
         {noise}
         {shimmer}
         <span className="relative z-10 flex items-center justify-center gap-2">

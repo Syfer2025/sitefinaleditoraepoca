@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useSEO } from "../hooks/useSEO";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Star, BookX, Search, ArrowLeft, SlidersHorizontal, X } from "lucide-react";
@@ -7,8 +8,10 @@ import { Footer } from "./Footer";
 import { BackToTop } from "./BackToTop";
 import { WhatsAppButton } from "./WhatsAppButton";
 import { motion, AnimatePresence } from "motion/react";
-import logoImg from "figma:asset/866134e81312444c262030ef8ad8f59cefad5b17.png";
-import { allBooks, genres } from "../data/books";
+import logoImg from "/assets/logo.png";
+import { allBooks } from "../data/books";
+import { getBooks } from "../data/api";
+import { buildWhatsAppUrl } from "../data/constants";
 
 const sortOptions = [
   { label: "Mais recentes", value: "recent" },
@@ -21,27 +24,44 @@ export function CatalogPage() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [showFilters, setShowFilters] = useState(false);
+  const [books, setBooks] = useState(allBooks);
+
+  useSEO({
+    title: "Catálogo de Livros",
+    description: "Explore o catálogo completo da Época Editora de Livros. Mais de 500 títulos de ficção, poesia, ensaios, literatura infantil e muito mais.",
+    canonical: "https://editoraepoca.com.br/catalogo",
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = "Catálogo — Época Editora de Livros";
-    return () => { document.title = "Época Editora de Livros — Histórias que transformam"; };
+    getBooks()
+      .then((data) => { if (Array.isArray(data?.books) && data.books.length > 0) setBooks(data.books); })
+      .catch(() => {/* silently use defaults */});
   }, []);
 
-  const filteredBooks = allBooks
-    .filter((b) => {
-      const matchGenre = activeGenre === "Todos" || b.genre === activeGenre;
-      const matchSearch =
-        search === "" ||
-        b.title.toLowerCase().includes(search.toLowerCase()) ||
-        b.author.toLowerCase().includes(search.toLowerCase());
-      return matchGenre && matchSearch;
-    })
-    .sort((a, b) => {
-      if (sortBy === "recent") return b.year - a.year;
-      if (sortBy === "rating") return b.rating - a.rating;
-      return a.title.localeCompare(b.title);
-    });
+  const genres = useMemo(
+    () => ["Todos", ...Array.from(new Set(books.map((b) => b.genre)))],
+    [books]
+  );
+
+  const filteredBooks = useMemo(
+    () =>
+      books
+        .filter((b) => {
+          const matchGenre = activeGenre === "Todos" || b.genre === activeGenre;
+          const matchSearch =
+            search === "" ||
+            b.title.toLowerCase().includes(search.toLowerCase()) ||
+            b.author.toLowerCase().includes(search.toLowerCase());
+          return matchGenre && matchSearch;
+        })
+        .sort((a, b) => {
+          if (sortBy === "recent") return b.year - a.year;
+          if (sortBy === "rating") return b.rating - a.rating;
+          return a.title.localeCompare(b.title);
+        }),
+    [books, activeGenre, search, sortBy]
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -334,7 +354,13 @@ export function CatalogPage() {
                     >
                       {book.description}
                     </p>
-                    <GoldButton className="w-full py-2.5">
+                    <GoldButton
+                      className="w-full py-2.5 block"
+                      {...(book.slug
+                        ? { to: `/livros/${book.slug}` }
+                        : { href: buildWhatsAppUrl(`Olá! Gostaria de saber mais sobre o livro "${book.title}".`), target: "_blank" }
+                      )}
+                    >
                       Ver detalhes
                     </GoldButton>
                   </div>

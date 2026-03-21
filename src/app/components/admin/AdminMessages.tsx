@@ -329,6 +329,19 @@ export function AdminMessages() {
                   <Trash2 className="w-3 h-3 inline mr-1" />
                   Excluir
                 </button>
+                {!selected.read && (
+                  <button
+                    onClick={() => markAsRead(selected.id)}
+                    className="px-4 py-2 rounded-lg text-xs text-[#165B36] border hover:bg-[#165B36]/5 transition-colors cursor-pointer"
+                    style={{
+                      fontFamily: "Inter, sans-serif",
+                      borderColor: "rgba(22,91,54,0.2)",
+                    }}
+                  >
+                    <CheckCheck className="w-3 h-3 inline mr-1" />
+                    Marcar como lida
+                  </button>
+                )}
                 <a
                   href={`mailto:${selected.email}?subject=Re: ${selected.subject}`}
                   className="px-4 py-2 rounded-lg text-xs text-white transition-opacity hover:opacity-90"

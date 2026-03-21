@@ -2,13 +2,24 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { BookOpen, Award, Users, Globe } from "lucide-react";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { useEffect, useRef, useState } from "react";
+import { getAbout } from "../data/api";
 
-const stats = [
-  { icon: BookOpen, value: 500, suffix: "+", label: "Títulos publicados" },
-  { icon: Award, value: 32, suffix: "", label: "Prêmios literários" },
-  { icon: Users, value: 120, suffix: "+", label: "Autores parceiros" },
-  { icon: Globe, value: 15, suffix: "", label: "Países alcançados" },
-];
+const ICON_MAP: Record<string, any> = {
+  titulos: BookOpen,
+  premios: Award,
+  autores: Users,
+  paises: Globe,
+};
+
+const DEFAULT_ABOUT = {
+  yearsOfHistory: 37,
+  stats: [
+    { key: "titulos", value: 500, suffix: "+", label: "Títulos publicados" },
+    { key: "premios", value: 32, suffix: "", label: "Prêmios literários" },
+    { key: "autores", value: 120, suffix: "+", label: "Autores parceiros" },
+    { key: "paises", value: 15, suffix: "", label: "Países alcançados" },
+  ],
+};
 
 function AnimatedCounter({
   target,
@@ -57,6 +68,16 @@ function AnimatedCounter({
 }
 
 export function AboutSection() {
+  const [about, setAbout] = useState(DEFAULT_ABOUT);
+
+  useEffect(() => {
+    getAbout()
+      .then((data) => { if (data?.about) setAbout(data.about); })
+      .catch(() => {});
+  }, []);
+
+  const stats = about.stats.map((s) => ({ ...s, icon: ICON_MAP[s.key] || BookOpen }));
+
   return (
     <section id="sobre" className="py-16 px-6 bg-background">
       <div className="max-w-7xl mx-auto">
@@ -81,7 +102,7 @@ export function AboutSection() {
                   className="text-[2.25rem]"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  37
+                  {about.yearsOfHistory}
                 </p>
                 <p
                   className="text-[0.875rem] text-[#EBBF74]/80"

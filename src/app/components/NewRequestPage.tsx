@@ -46,13 +46,13 @@ const FORMAT_OPTIONS = [
 ];
 
 const SERVICE_OPTIONS = [
-  { key: "completo", label: "Pacote completo", desc: "Todos os servicos inclusos" },
-  { key: "diagramacao", label: "Diagramacao", desc: "Layout e composicao das paginas" },
+  { key: "completo", label: "Pacote completo", desc: "Todos os serviços inclusos" },
+  { key: "diagramacao", label: "Diagramação", desc: "Layout e composição das páginas" },
   { key: "capa", label: "Design de capa", desc: "Capa, lombada e contracapa" },
-  { key: "revisao", label: "Revisao textual", desc: "Ortografia, gramatica e estilo" },
-  { key: "impressao", label: "Impressao", desc: "Producao grafica do livro" },
-  { key: "ficha_catalografica", label: "Ficha catalografica", desc: "CIP e dados de catalogacao" },
-  { key: "registro_isbn", label: "Registro ISBN", desc: "Codigo ISBN e codigo de barras" },
+  { key: "revisao", label: "Revisão textual", desc: "Ortografia, gramática e estilo" },
+  { key: "impressao", label: "Impressão", desc: "Produção gráfica do livro" },
+  { key: "ficha_catalografica", label: "Ficha catalográfica", desc: "CIP e dados de catalogação" },
+  { key: "registro_isbn", label: "Registro ISBN", desc: "Código ISBN e código de barras" },
 ];
 
 const ACCEPTED_FILE_TYPES =
@@ -60,7 +60,7 @@ const ACCEPTED_FILE_TYPES =
 
 const WIZARD_STEPS = [
   { label: "Obra", icon: BookOpen },
-  { label: "Servicos", icon: Package },
+  { label: "Serviços", icon: Package },
   { label: "Formato", icon: LayoutGrid },
   { label: "Arquivos", icon: Upload },
 ];
@@ -123,7 +123,7 @@ function InlineAuth({ onSuccess }: { onSuccess: () => void }) {
           </div>
           <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>
             {mode === "login"
-              ? "Faca login para enviar sua solicitacao"
+              ? "Faça login para enviar sua solicitação"
               : "Crie uma conta gratuita para continuar"}
           </p>
         </div>
@@ -256,7 +256,7 @@ export function NewRequestPage() {
       setSubmitted(true);
       toast.success("Solicitacao enviada com sucesso!");
     } catch (err: any) {
-      setError(err.message || "Erro ao enviar solicitacao");
+      setError(err.message || "Erro ao enviar solicitação");
     } finally {
       setSubmitting(false);
       setUploadProgress("");
@@ -274,9 +274,9 @@ export function NewRequestPage() {
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring", stiffness: 200 }} className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: "linear-gradient(135deg, #165B36, #0a7c3e)" }}>
             <CheckCircle className="w-8 h-8 text-white" />
           </motion.div>
-          <h2 className="text-2xl text-[#052413] mb-2" style={{ fontFamily: PF }}>Solicitacao <span className="italic text-[#165B36]">enviada!</span></h2>
+          <h2 className="text-2xl text-[#052413] mb-2" style={{ fontFamily: PF }}>Solicitação <span className="italic text-[#165B36]">enviada!</span></h2>
           <p className="text-sm text-[#856C42] mb-6 leading-relaxed" style={{ fontFamily: F }}>
-            Sua solicitacao foi recebida com sucesso. Nossa equipe ira analisa-la e em breve voce recebera um orcamento na sua area do cliente.
+            Sua solicitação foi recebida com sucesso. Nossa equipe irá analisá-la e em breve você receberá um orçamento na sua área do cliente.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <GoldButton onClick={() => navigate("/minha-conta")} className="px-6 py-2.5 text-sm font-semibold justify-center">
@@ -325,13 +325,13 @@ export function NewRequestPage() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4" style={{ backgroundColor: "rgba(22,91,54,0.06)", border: "1px solid rgba(22,91,54,0.1)" }}>
             <Sparkles className="w-3.5 h-3.5 text-[#165B36]" />
-            <span className="text-xs font-medium text-[#165B36]" style={{ fontFamily: F }}>Formulario de nova solicitacao</span>
+            <span className="text-xs font-medium text-[#165B36]" style={{ fontFamily: F }}>Formulário de nova solicitação</span>
           </div>
           <h1 className="text-3xl sm:text-4xl text-[#052413] mb-2" style={{ fontFamily: PF }}>
             Solicite sua <span className="italic text-[#165B36]">diagramacao</span>
           </h1>
           <p className="text-sm text-[#856C42] max-w-md mx-auto leading-relaxed" style={{ fontFamily: F }}>
-            Preencha os dados do seu projeto editorial. Nossa equipe ira preparar um orcamento personalizado para voce.
+            Preencha os dados do seu projeto editorial. Nossa equipe irá preparar um orçamento personalizado para você.
           </p>
         </motion.div>
 
@@ -371,8 +371,8 @@ export function NewRequestPage() {
               <div className="absolute inset-0 flex items-center justify-center rounded-2xl" style={{ background: "linear-gradient(180deg, rgba(255,253,248,0.3) 0%, rgba(255,253,248,0.8) 60%, rgba(255,253,248,0.95) 100%)" }}>
                 <div className="text-center px-4">
                   <LogIn className="w-8 h-8 text-[#165B36] mx-auto mb-2" />
-                  <p className="text-sm font-medium text-[#052413] mb-1" style={{ fontFamily: F }}>Faca login para preencher</p>
-                  <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>Voce precisa estar logado para enviar sua solicitacao</p>
+                  <p className="text-sm font-medium text-[#052413] mb-1" style={{ fontFamily: F }}>Faça login para preencher</p>
+                  <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>Você precisa estar logado para enviar sua solicitação</p>
                 </div>
               </div>
             </div>
@@ -439,7 +439,7 @@ export function NewRequestPage() {
                   {/* Step 1: Servicos */}
                   {step === 1 && (
                     <motion.div key="step1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.2 }}>
-                      <p className="text-xs text-[#856C42] mb-3" style={{ fontFamily: F }}>Selecione os servicos que voce precisa</p>
+                      <p className="text-xs text-[#856C42] mb-3" style={{ fontFamily: F }}>Selecione os serviços que você precisa</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {SERVICE_OPTIONS.map((svc) => {
                           const isSelected = services.includes(svc.key);
@@ -454,7 +454,7 @@ export function NewRequestPage() {
                           );
                         })}
                       </div>
-                      <p className="text-[0.6rem] text-[#856C42]/50 mt-3" style={{ fontFamily: F }}>"Pacote completo" inclui todos os servicos. Selecionar outro desmarca o pacote completo.</p>
+                      <p className="text-[0.6rem] text-[#856C42]/50 mt-3" style={{ fontFamily: F }}>"Pacote completo" inclui todos os serviços. Selecionar outro desmarca o pacote completo.</p>
                     </motion.div>
                   )}
 
@@ -481,8 +481,8 @@ export function NewRequestPage() {
                         </div>
                       )}
                       <div>
-                        <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>Observacoes adicionais</label>
-                        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Referencias de estilo, preferencias tipograficas, prazos..." rows={2} className={ic + " resize-none"} style={is} />
+                        <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>Observações adicionais</label>
+                        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Referências de estilo, preferências tipográficas, prazos..." rows={2} className={ic + " resize-none"} style={is} />
                       </div>
                     </motion.div>
                   )}
@@ -550,7 +550,7 @@ export function NewRequestPage() {
                     </button>
                   ) : (
                     <GoldButton onClick={handleSubmit} className={`px-5 py-2.5 text-sm font-semibold ${submitting ? "opacity-70 pointer-events-none" : ""}`}>
-                      {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />{uploadProgress || "Enviando..."}</> : <><Send className="w-4 h-4" /> Enviar solicitacao</>}
+                      {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />{uploadProgress || "Enviando..."}</> : <><Send className="w-4 h-4" /> Enviar solicitação</>}
                     </GoldButton>
                   )}
                 </div>
@@ -559,7 +559,7 @@ export function NewRequestPage() {
 
             {/* Extra info */}
             <p className="text-center text-[0.65rem] text-[#856C42]/60 mt-4" style={{ fontFamily: F }}>
-              Ao enviar, voce concorda com nossos termos de servico. Responderemos em ate 2 dias uteis.
+              Ao enviar, você concorda com nossos termos de serviço. Responderemos em até 2 dias úteis.
             </p>
           </motion.div>
         )}

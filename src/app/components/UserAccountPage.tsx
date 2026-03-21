@@ -1,13 +1,15 @@
-import { useState, useEffect, useMemo, useCallback, forwardRef } from "react";
+import { useState, useEffect, useMemo, useCallback, forwardRef, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  ArrowLeft, BookOpen, CheckCircle, ChevronRight, Clock, CreditCard,
-  Download, Edit3, Eye, FileText, Folder, LayoutGrid, Loader2,
-  LogOut, Mail, Package, Plus, Receipt, Save, Search, Send, Upload, X,
+  AlertCircle, ArrowLeft, Bell, Camera, CheckCircle, ChevronRight, Clock, CreditCard,
+  Download, Edit3, Eye, FileText, Folder, History, Key, LayoutGrid, Loader2,
+  LogOut, Mail, Package, Phone, Plus, Receipt, Save, Search, Send, Shield, Upload, X,
   Info, Files, Wallet, ScrollText, ExternalLink, Calendar
 } from "lucide-react";
+import { supabase } from "../data/supabaseClient";
 import { GoldButton } from "./GoldButton";
+import { Footer } from "./Footer";
 import { useUserAuth } from "./UserAuthContext";
 import { getUserProjects, userConfirmPayment, getReviewFiles, getUserProject, approveReview, getUserInvoices, getContractPdfUrl, getUserInstallments } from "../data/api";
 import { NewRequestForm } from "./NewRequestForm";
@@ -93,6 +95,242 @@ const FORMAT_LABELS: Record<string, string> = {
 };
 
 const f = { play: "'Playfair Display', serif", inter: "Inter, sans-serif" };
+
+const STEP_DESCRIPTIONS: Record<string, string> = {
+  solicitado: "Projeto solicitado à editora",
+  analise: "Nossa equipe está avaliando o projeto",
+  orcamento: "Orçamento disponível para aprovação",
+  producao: "Diagramação em andamento",
+  revisao: "Material enviado para sua revisão",
+  ajustes: "Ajustes finais em andamento",
+  concluido: "Projeto concluído e entregue",
+};
+
+function formatPhoneProfile(v: string): string {
+  const d = v.replace(/\D/g, "").slice(0, 11);
+  if (d.length <= 2) return d.length ? `(${d}` : d;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+}
+
+// ============================================
+// Profile Edit Modal
+// ============================================
+function ProfileEditModal({ onClose }: { onClose: () => void }) {
+  const { user, updateProfile } = useUserAuth();
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [phone, setPhone] = useState(user?.phone || "");
+  const [saving, setSaving] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [notifEmail, setNotifEmail] = useState(true);
+  const [notifWhatsapp, setNotifWhatsapp] = useState(true);
+
+  useEffect(() => {
+    const orig = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = orig; };
+  }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      try {
+        const prefs = localStorage.getItem(`notif_${user.id}`);
+        if (prefs) {
+          const p = JSON.parse(prefs);
+          setNotifEmail(p.email ?? true);
+          setNotifWhatsapp(p.whatsapp ?? true);
+        }
+      } catch {}
+    }
+  }, [user?.id]);
+
+  const handleSave = async () => {
+    if (!name.trim()) return;
+    if (newPassword && newPassword.length < 6) {
+      toast.error("A senha deve ter no mínimo 6 caracteres.");
+      return;
+    }
+    if (newPassword && newPassword !== confirmPassword) {
+      toast.error("As senhas não conferem.");
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateProfile({ name: name.trim(), email: email.trim(), phone });
+      if (newPassword) {
+        const { error } = await supabase.auth.updateUser({ password: newPassword });
+        if (error) throw new Error(error.message);
+        toast.success("Senha alterada com sucesso!");
+      }
+      if (user?.id) {
+        localStorage.setItem(`notif_${user.id}`, JSON.stringify({ email: notifEmail, whatsapp: notifWhatsapp }));
+      }
+      onClose();
+    } catch (err: any) {
+      if (err?.message) toast.error(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const inputCls = "w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#052413] focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 transition-all";
+  const inputSt = { fontFamily: f.inter, backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-6"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <motion.div
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 30, opacity: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-sm rounded-2xl p-6 shadow-2xl"
+        style={{ backgroundColor: "#FFFDF8", boxShadow: "0 25px 50px -12px rgba(5,36,19,0.25), 0 0 0 1px rgba(133,108,66,0.1)" }}
+      >
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-lg text-[#052413]" style={{ fontFamily: f.play }}>Editar perfil</h3>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-[#856C42]/40 hover:bg-[#F0E8D4] hover:text-[#856C42] transition-colors cursor-pointer">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: f.inter }}>Nome</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
+              autoFocus
+              className={inputCls}
+              style={inputSt}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: f.inter }}>E-mail</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={inputCls}
+              style={inputSt}
+            />
+            <p className="text-[0.6rem] text-[#856C42]/50 mt-1" style={{ fontFamily: f.inter }}>
+              Alterar o e-mail requer confirmacao pelo novo endereco.
+            </p>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: f.inter }}>
+              <span className="flex items-center gap-1"><Phone className="w-3 h-3 text-[#856C42]/50" /> Telefone / WhatsApp</span>
+            </label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(formatPhoneProfile(e.target.value))}
+              placeholder="(00) 00000-0000"
+              maxLength={15}
+              className={inputCls}
+              style={inputSt}
+            />
+          </div>
+
+          {/* Password change */}
+          <div className="pt-3 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
+            <button
+              type="button"
+              onClick={() => setShowPasswordSection(!showPasswordSection)}
+              className="flex items-center gap-1.5 text-xs text-[#165B36] hover:text-[#0a7c3e] transition-colors cursor-pointer"
+              style={{ fontFamily: f.inter }}
+            >
+              <Key className="w-3.5 h-3.5" />
+              {showPasswordSection ? "Cancelar alteração de senha" : "Alterar senha"}
+            </button>
+            {showPasswordSection && (
+              <div className="mt-3 space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: f.inter }}>Nova senha</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Mínimo 6 caracteres"
+                    className={inputCls}
+                    style={inputSt}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: f.inter }}>Confirmar nova senha</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Repita a nova senha"
+                    className={inputCls}
+                    style={inputSt}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Notification preferences */}
+          <div className="pt-3 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <Bell className="w-3.5 h-3.5 text-[#856C42]/60" />
+              <span className="text-xs font-medium text-[#052413]" style={{ fontFamily: f.inter }}>Notificações</span>
+              <span className="text-[0.55rem] px-1.5 py-0.5 rounded-full bg-[#F0E8D4] text-[#856C42]/60 ml-auto" style={{ fontFamily: f.inter }}>Em breve</span>
+            </div>
+            <div className="space-y-2">
+              <label className="flex items-center justify-between cursor-pointer">
+                <span className="text-xs text-[#052413]/70" style={{ fontFamily: f.inter }}>Alertas por e-mail</span>
+                <input
+                  type="checkbox"
+                  checked={notifEmail}
+                  onChange={(e) => setNotifEmail(e.target.checked)}
+                  className="w-3.5 h-3.5 rounded accent-[#165B36]"
+                />
+              </label>
+              <label className="flex items-center justify-between cursor-pointer">
+                <span className="text-xs text-[#052413]/70" style={{ fontFamily: f.inter }}>Alertas por WhatsApp</span>
+                <input
+                  type="checkbox"
+                  checked={notifWhatsapp}
+                  onChange={(e) => setNotifWhatsapp(e.target.checked)}
+                  className="w-3.5 h-3.5 rounded accent-[#165B36]"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-2 mt-5">
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-xl text-sm text-[#856C42] hover:bg-[#F0E8D4] transition-colors cursor-pointer"
+            style={{ fontFamily: f.inter }}
+          >
+            Cancelar
+          </button>
+          <GoldButton onClick={handleSave} disabled={saving || !name.trim()} className="flex-1 py-2.5 text-sm font-semibold">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Salvar</>}
+          </GoldButton>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
@@ -183,8 +421,18 @@ function ProgressBar({ project }: { project: Project }) {
           const isCurrent = i === currentIdx;
           return (
             <div key={step.key} className="flex-1 flex flex-col items-center group relative">
+              {/* Tooltip */}
+              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block z-20 pointer-events-none">
+                <div
+                  className="px-2 py-1 rounded-md text-white text-[0.5rem] whitespace-nowrap shadow-lg"
+                  style={{ backgroundColor: "#052413", fontFamily: f.inter }}
+                >
+                  {STEP_DESCRIPTIONS[step.key] || step.label}
+                </div>
+                <div className="w-1.5 h-1.5 bg-[#052413] rotate-45 mx-auto -mt-1" />
+              </div>
               <div
-                className="w-2 h-2 rounded-full transition-all"
+                className="w-2 h-2 rounded-full transition-all cursor-default"
                 style={{
                   backgroundColor: done ? "#165B36" : "#E8DFC8",
                   transform: isCurrent ? "scale(1.25)" : undefined,
@@ -266,15 +514,30 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
           </span>
 
           <div className="flex items-center gap-1.5">
-            {hasPendingPayment && (
+            {hasPendingPayment && !project.budget?.installmentPlan?.enabled && (
               <a
-                href={project.budget?.installmentPlan?.enabled ? `/parcelas/${project.id}` : `/pagamento/${project.id}`}
+                href={`/pagamento/${project.id}`}
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[0.6rem] font-semibold text-[#052413] hover:shadow-sm transition-all"
                 style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
               >
-                {project.budget?.installmentPlan?.enabled ? <Calendar className="w-3 h-3" /> : <CreditCard className="w-3 h-3" />}
-                {project.budget?.installmentPlan?.enabled ? "Parcelas" : "Pagar"}
+                <CreditCard className="w-3 h-3" />
+                {project.budget?.chargeAmount
+                  ? `Pagar ${formatCurrency(project.budget.chargeAmount)}`
+                  : "Pagar"}
+              </a>
+            )}
+            {hasPendingPayment && project.budget?.installmentPlan?.enabled && (
+              <a
+                href={`/pagamento/${project.id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[0.6rem] font-semibold text-[#052413] hover:shadow-sm transition-all"
+                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+              >
+                <CreditCard className="w-3 h-3" />
+                {project.budget?.chargeAmount
+                  ? `Entrada ${formatCurrency(project.budget.chargeAmount)}`
+                  : "Pagar entrada"}
               </a>
             )}
             {hasRemainderUrl && (
@@ -326,6 +589,29 @@ function TabOverview({ project }: { project: Project }) {
   return (
     <div className="space-y-4">
       <ProgressBar project={project} />
+
+      {/* Em análise banner */}
+      {project.status === "analise" && (
+        <div
+          className="p-4 rounded-xl flex items-start gap-3 border"
+          style={{ backgroundColor: "rgba(235,191,116,0.12)", borderColor: "rgba(235,191,116,0.4)" }}
+        >
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
+          >
+            <Search className="w-4.5 h-4.5 text-[#052413]" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-[#052413]" style={{ fontFamily: f.inter }}>
+              Projeto em analise
+            </p>
+            <p className="text-xs text-[#856C42] mt-0.5 leading-relaxed" style={{ fontFamily: f.inter }}>
+              Nossa equipe esta avaliando o seu projeto. Em breve entraremos em contato para apresentar o orcamento e os proximos passos.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Financial milestone card (shows when there's a notable financial event) */}
       {isFullyPaid && hasDeposit && (
@@ -651,6 +937,7 @@ function InstallmentPlanClient({ installmentPlan, totalPrice, projectId, deposit
   hasDeposit?: boolean;
 }) {
   const [copiedPix, setCopiedPix] = useState<number | null>(null);
+  const [pixCopiedAwaiting, setPixCopiedAwaiting] = useState(false);
 
   const paidCount = installmentPlan.installments.filter((i) => i.status === "paid").length;
   const allPaid = paidCount === installmentPlan.totalInstallments;
@@ -668,6 +955,7 @@ function InstallmentPlanClient({ installmentPlan, totalPrice, projectId, deposit
   const handleCopyPix = (num: number, code: string) => {
     navigator.clipboard.writeText(code);
     setCopiedPix(num);
+    setPixCopiedAwaiting(true);
     toast.success("Código PIX copiado!");
     setTimeout(() => setCopiedPix(null), 3000);
   };
@@ -758,6 +1046,21 @@ function InstallmentPlanClient({ installmentPlan, totalPrice, projectId, deposit
         })}
       </div>
 
+      {/* PIX awaiting confirmation */}
+      {pixCopiedAwaiting && !allPaid && (
+        <div className="px-3 pb-2">
+          <div
+            className="flex items-center gap-2 px-3 py-2 rounded-lg"
+            style={{ backgroundColor: "rgba(22,91,54,0.06)", border: "1px solid rgba(22,91,54,0.15)" }}
+          >
+            <Loader2 className="w-3 h-3 animate-spin text-[#165B36] flex-shrink-0" />
+            <p className="text-[0.62rem] text-[#165B36]" style={{ fontFamily: f.inter }}>
+              Aguardando confirmação do PIX... Esta página atualiza automaticamente.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Single CTA */}
       {!allPaid && (
         <div className="px-3 pb-3">
@@ -814,7 +1117,8 @@ function TabFinancial({ project }: { project: Project }) {
   const remainingAmount = hasDeposit ? budget.price - budget.chargeAmount! : 0;
   const isDepositPaid = hasDeposit && isPaid;
   const isFullyPaid = isPaid && (!hasDeposit || budget.remainderStatus === "paid");
-  const isRemainderPending = isDepositPaid && budget.remainderStatus !== "paid";
+  // installment plan projects don't use remainderStatus — their "remainder" is tracked per-parcela
+  const isRemainderPending = isDepositPaid && !budget.installmentPlan?.enabled && budget.remainderStatus !== "paid";
   const isRemainderPaid = isDepositPaid && budget.remainderStatus === "paid";
 
   return (
@@ -839,7 +1143,15 @@ function TabFinancial({ project }: { project: Project }) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-[#052413]" style={{ fontFamily: f.inter }}>
-              {isFullyPaid ? "Pagamento total confirmado" : isRemainderPending ? (budget.remainderPaymentUrl ? "Restante disponivel para pagamento" : "Entrada paga — restante na entrega") : isDepositPaid ? (budget.installmentPlan?.enabled ? "Entrada paga — trabalhos iniciados" : "Entrada paga") : "Orcamento disponivel"}
+              {isFullyPaid
+                ? "Pagamento total confirmado"
+                : budget.installmentPlan?.enabled
+                  ? (isDepositPaid ? "Entrada paga — parcelas em andamento" : "Orcamento aprovado — pague a entrada para iniciar")
+                  : isRemainderPending
+                    ? (budget.remainderPaymentUrl ? "Restante disponivel para pagamento" : "Entrada paga — restante na entrega")
+                    : isDepositPaid
+                      ? "Entrada paga"
+                      : "Orcamento disponivel"}
             </p>
             <p className="text-[0.65rem] text-[#856C42] truncate" style={{ fontFamily: f.inter }}>{budget.description}</p>
           </div>
@@ -936,7 +1248,7 @@ function TabFinancial({ project }: { project: Project }) {
                 </a>
               </div>
             )}
-            {isRemainderPending && !budget.remainderPaymentUrl && (
+            {isRemainderPending && !budget.remainderPaymentUrl && !budget.installmentPlan?.enabled && (
               <div className="p-2.5 rounded-lg" style={{ backgroundColor: "rgba(235,191,116,0.1)", borderWidth: 1, borderColor: "rgba(235,191,116,0.2)" }}>
                 <p className="text-[0.7rem] text-[#856C42] leading-relaxed" style={{ fontFamily: f.inter }}>
                   O valor restante de <strong className="text-[#052413]">{formatCurrency(remainingAmount)}</strong> sera cobrado na entrega do projeto finalizado.
@@ -1023,11 +1335,114 @@ function TabFinancial({ project }: { project: Project }) {
 }
 
 // ============================================
+// Detail Tab: Payment History
+// ============================================
+function TabHistorico({ project }: { project: Project }) {
+  const budget = project.budget;
+
+  if (!budget) {
+    return (
+      <div className="flex flex-col items-center py-8 text-center">
+        <History className="w-10 h-10 text-[#856C42]/20 mb-3" />
+        <p className="text-sm text-[#856C42]/60" style={{ fontFamily: f.inter }}>Sem histórico de pagamentos</p>
+      </div>
+    );
+  }
+
+  type PayEvent = { label: string; amount: number; date: string };
+  const events: PayEvent[] = [];
+
+  if (budget.paidAt) {
+    events.push({
+      label:
+        budget.chargeAmount && budget.depositPercent && budget.depositPercent < 100
+          ? `Entrada (${budget.depositPercent}%) confirmada`
+          : "Pagamento confirmado",
+      amount: budget.chargeAmount ?? budget.price,
+      date: budget.paidAt,
+    });
+  }
+
+  if (budget.remainderPaidAt) {
+    events.push({
+      label: "Restante pago",
+      amount: budget.remainderAmount ?? budget.price - (budget.chargeAmount ?? 0),
+      date: budget.remainderPaidAt,
+    });
+  }
+
+  if (budget.installmentPlan?.enabled) {
+    budget.installmentPlan.installments
+      .filter((i) => i.status === "paid" && i.paidAt)
+      .forEach((i) => {
+        events.push({
+          label: `Parcela ${i.number}/${budget.installmentPlan!.totalInstallments}`,
+          amount: i.amount,
+          date: i.paidAt!,
+        });
+      });
+  }
+
+  events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  if (events.length === 0) {
+    return (
+      <div className="flex flex-col items-center py-8 text-center">
+        <History className="w-10 h-10 text-[#856C42]/20 mb-3" />
+        <p className="text-sm text-[#856C42]/60" style={{ fontFamily: f.inter }}>Nenhum pagamento confirmado ainda</p>
+        <p className="text-xs text-[#856C42]/40 mt-1" style={{ fontFamily: f.inter }}>Os pagamentos confirmados aparecerão aqui</p>
+      </div>
+    );
+  }
+
+  const totalPaid = events.reduce((s, e) => s + e.amount, 0);
+
+  return (
+    <div className="space-y-3">
+      <p className="text-[0.6rem] uppercase tracking-wider text-[#856C42]/70" style={{ fontFamily: f.inter }}>
+        Histórico de pagamentos
+      </p>
+      <div className="space-y-2">
+        {events.map((ev, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-3 p-3 rounded-xl"
+            style={{ backgroundColor: "rgba(10,124,62,0.04)", border: "1px solid rgba(10,124,62,0.12)" }}
+          >
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: "rgba(10,124,62,0.1)" }}
+            >
+              <CheckCircle className="w-4 h-4 text-[#0a7c3e]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-[#052413]" style={{ fontFamily: f.inter }}>{ev.label}</p>
+              <p className="text-[0.6rem] text-[#856C42]/60" style={{ fontFamily: f.inter }}>{formatDateTime(ev.date)}</p>
+            </div>
+            <span className="text-sm font-bold text-[#0a7c3e] flex-shrink-0" style={{ fontFamily: f.inter }}>
+              {formatCurrency(ev.amount)}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div
+        className="flex items-center justify-between px-3 py-2.5 rounded-xl"
+        style={{ backgroundColor: "rgba(133,108,66,0.06)", border: "1px solid rgba(133,108,66,0.1)" }}
+      >
+        <span className="text-xs text-[#856C42] font-medium" style={{ fontFamily: f.inter }}>Total pago</span>
+        <span className="text-sm font-bold text-[#052413]" style={{ fontFamily: f.inter }}>{formatCurrency(totalPaid)}</span>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
 // Project Detail Modal (tabbed)
 // ============================================
-type DetailTab = "overview" | "files" | "financial";
+type DetailTab = "overview" | "files" | "financial" | "historico";
 
 function ProjectDetail({ project, onClose }: { project: Project; onClose: () => void }) {
+  const navigate = useNavigate();
   const [liveProject, setLiveProject] = useState<Project>(project);
   const [activeTab, setActiveTab] = useState<DetailTab>("overview");
   const [viewingFile, setViewingFile] = useState<{ name: string; url: string } | null>(null);
@@ -1066,7 +1481,6 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
   // Auto-switch to files tab if in review
   useEffect(() => {
     if (liveProject.status === "revisao") setActiveTab("files");
-    else if (liveProject.budget && liveProject.budget.status !== "paid" && liveProject.budget.status !== "fully_paid") setActiveTab("financial");
   }, []);
 
   const handleApproveReview = async () => {
@@ -1087,6 +1501,7 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
     { key: "overview", label: "Visao Geral", icon: <Info className="w-3.5 h-3.5" /> },
     { key: "files", label: "Arquivos", icon: <Files className="w-3.5 h-3.5" />, badge: (liveProject.uploadedFiles?.length || 0) + (liveProject.reviewFiles?.length || 0) || undefined },
     { key: "financial", label: "Financeiro", icon: <Wallet className="w-3.5 h-3.5" />, badge: (liveProject.budget && liveProject.budget.status !== "paid" && liveProject.budget.status !== "fully_paid") || (liveProject.budget && liveProject.budget.remainderPaymentUrl && liveProject.budget.remainderStatus !== "paid") ? 1 : undefined },
+    { key: "historico", label: "Historico", icon: <History className="w-3.5 h-3.5" /> },
   ];
 
   return (
@@ -1125,26 +1540,37 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
 
           {/* Tabs */}
           <div className="flex gap-1">
-            {tabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.7rem] font-medium transition-all cursor-pointer ${
-                  activeTab === tab.key
-                    ? "text-[#052413] bg-[#F0E8D4]/80"
-                    : "text-[#856C42]/60 hover:text-[#856C42] hover:bg-[#F0E8D4]/30"
-                }`}
-                style={{ fontFamily: f.inter }}
-              >
-                {tab.icon}
-                <span className="hidden sm:inline">{tab.label}</span>
-                {tab.badge !== undefined && tab.badge > 0 && (
-                  <span className="w-4 h-4 flex items-center justify-center rounded-full text-[0.5rem] font-bold bg-[#EBBF74]/30 text-[#856C42]">
-                    {tab.badge}
-                  </span>
-                )}
-              </button>
-            ))}
+            {tabs.map((tab) => {
+              const isFinancialNav = tab.key === "financial" && !!liveProject.budget?.installmentPlan?.enabled;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => {
+                    if (isFinancialNav) {
+                      onClose();
+                      navigate(`/parcelas/${liveProject.id}`);
+                    } else {
+                      setActiveTab(tab.key);
+                    }
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.7rem] font-medium transition-all cursor-pointer ${
+                    activeTab === tab.key && !isFinancialNav
+                      ? "text-[#052413] bg-[#F0E8D4]/80"
+                      : "text-[#856C42]/60 hover:text-[#856C42] hover:bg-[#F0E8D4]/30"
+                  }`}
+                  style={{ fontFamily: f.inter }}
+                >
+                  {tab.icon}
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  {tab.badge !== undefined && tab.badge > 0 && (
+                    <span className="w-4 h-4 flex items-center justify-center rounded-full text-[0.5rem] font-bold bg-[#EBBF74]/30 text-[#856C42]">
+                      {tab.badge}
+                    </span>
+                  )}
+                  {isFinancialNav && <ExternalLink className="w-2.5 h-2.5 ml-0.5 opacity-50" />}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -1161,6 +1587,7 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
               {activeTab === "overview" && <TabOverview project={liveProject} />}
               {activeTab === "files" && <TabFiles project={liveProject} onViewFile={setViewingFile} />}
               {activeTab === "financial" && <TabFinancial project={liveProject} />}
+              {activeTab === "historico" && <TabHistorico project={liveProject} />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -1266,56 +1693,46 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
           )}
         </AnimatePresence>
 
-        {/* Footer action: Pay now (always visible when pending) */}
-        {liveProject.budget && liveProject.budget.status !== "paid" && liveProject.budget.status !== "fully_paid" && liveProject.status !== "revisao" && (
+        {/* Footer action: Pay deposit (always visible when budget pending, any project status) */}
+        {liveProject.budget && liveProject.budget.status !== "paid" && liveProject.budget.status !== "fully_paid" && (
           <div className="flex-shrink-0 px-5 py-3 border-t" style={{ borderColor: "rgba(235,191,116,0.15)" }}>
-            {liveProject.budget.installmentPlan?.enabled ? (
-              <a
-                href={`/parcelas/${liveProject.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-[#052413] transition-all hover:shadow-md"
-                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
-              >
-                <Calendar className="w-4 h-4" />
-                {liveProject.budget!.depositPercent && liveProject.budget!.depositPercent < 100 && liveProject.budget!.chargeAmount
-                  ? `PAGAR ENTRADA`
-                  : "Pagar parcelas"}
-              </a>
-            ) : (
-              <a
-                href={`/pagamento/${liveProject.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-[#052413] transition-all hover:shadow-md"
-                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
-              >
-                <CreditCard className="w-4 h-4" />
-                {liveProject.budget.depositPercent && liveProject.budget.depositPercent < 100 && liveProject.budget.chargeAmount
-                  ? `Pagar entrada de ${formatCurrency(liveProject.budget.chargeAmount)}`
-                  : `Pagar ${formatCurrency(liveProject.budget.price)}`}
-              </a>
-            )}
+            <a
+              href={`/pagamento/${liveProject.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-[#052413] transition-all hover:shadow-md"
+              style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+            >
+              <CreditCard className="w-4 h-4" />
+              {liveProject.budget.depositPercent && liveProject.budget.depositPercent < 100 && liveProject.budget.chargeAmount
+                ? `Pagar entrada — ${formatCurrency(liveProject.budget.chargeAmount)}`
+                : `Pagar ${formatCurrency(liveProject.budget.price)}`}
+            </a>
           </div>
         )}
-        {/* Footer action: Pay remainder */}
-        {liveProject.budget && (liveProject.budget.status === "paid" || liveProject.budget.status === "fully_paid") && liveProject.budget.remainderPaymentUrl && liveProject.budget.remainderStatus !== "paid" && liveProject.status !== "revisao" && (() => {
-          const remAmt = liveProject.budget!.remainderAmount || (liveProject.budget!.price - (liveProject.budget!.chargeAmount || 0));
-          return (
-            <div className="flex-shrink-0 px-5 py-3 border-t" style={{ borderColor: "rgba(235,191,116,0.15)" }}>
-              <a
-                href={liveProject.budget!.remainderPaymentUrl!}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-[#052413] transition-all hover:shadow-md"
-                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
-              >
-                <CreditCard className="w-4 h-4" />
-                Pagar restante de {formatCurrency(remAmt)}
-              </a>
-            </div>
-          );
-        })()}
+        {/* Footer action: Pay remainder (only for non-installment projects, any project status) */}
+        {liveProject.budget
+          && (liveProject.budget.status === "paid" || liveProject.budget.status === "fully_paid")
+          && !liveProject.budget.installmentPlan?.enabled
+          && liveProject.budget.remainderPaymentUrl
+          && liveProject.budget.remainderStatus !== "paid"
+          && (() => {
+            const remAmt = liveProject.budget!.remainderAmount ?? (liveProject.budget!.price - (liveProject.budget!.chargeAmount ?? 0));
+            return (
+              <div className="flex-shrink-0 px-5 py-3 border-t" style={{ borderColor: "rgba(235,191,116,0.15)" }}>
+                <a
+                  href={liveProject.budget!.remainderPaymentUrl!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-[#052413] transition-all hover:shadow-md"
+                  style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+                >
+                  <CreditCard className="w-4 h-4" />
+                  Pagar restante — {formatCurrency(remAmt)}
+                </a>
+              </div>
+            );
+          })()}
       </motion.div>
 
       {/* File Viewer Overlay */}
@@ -1329,19 +1746,65 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
 // ============================================
 // Main Page
 // ============================================
+function getProjectPriority(p: Project): number {
+  if (p.status === "concluido") return 5;
+  if (p.budget?.installmentPlan?.enabled) {
+    const hasOverdue = p.budget.installmentPlan.installments.some(
+      (i) => i.status !== "paid" && new Date(i.dueDate + "T23:59:59") < new Date()
+    );
+    if (hasOverdue) return 0;
+  }
+  if (p.budget && p.budget.status !== "paid" && p.budget.status !== "fully_paid") return 1;
+  if (p.status === "analise") return 2;
+  if (p.budget?.installmentPlan?.enabled && p.budget.status === "paid") return 3;
+  return 4;
+}
+
 export function UserAccountPage() {
   const navigate = useNavigate();
-  const { user, loading, logout, updateProfile } = useUserAuth();
-  const [editing, setEditing] = useState(false);
-  const [editName, setEditName] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const { user, loading, logout } = useUserAuth();
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("todos");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      const saved = localStorage.getItem(`avatar_${user.id}`);
+      if (saved) setAvatarUrl(saved);
+    }
+  }, [user?.id]);
+
+  const handleAvatarChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const size = 96;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d")!;
+        const min = Math.min(img.width, img.height);
+        const sx = (img.width - min) / 2;
+        const sy = (img.height - min) / 2;
+        ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+        const resized = canvas.toDataURL("image/jpeg", 0.8);
+        setAvatarUrl(resized);
+        if (user?.id) localStorage.setItem(`avatar_${user.id}`, resized);
+      };
+      img.src = ev.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  }, [user?.id]);
 
   useEffect(() => {
     if (!loading && !user) navigate("/entrar");
@@ -1372,7 +1835,6 @@ export function UserAccountPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      setEditName(user.name);
       loadProjects();
     }
   }, [user, loading]);
@@ -1405,39 +1867,44 @@ export function UserAccountPage() {
     } catch { /* silent */ }
   }, []);
 
-  const handleSave = useCallback(async () => {
-    if (!editName.trim()) return;
-    setSaving(true);
-    try {
-      await updateProfile(editName.trim());
-      setEditing(false);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    } catch {
-      toast.error("Erro ao atualizar perfil.");
-    } finally {
-      setSaving(false);
-    }
-  }, [editName, updateProfile]);
-
   const handleLogout = useCallback(async () => {
     await logout();
     navigate("/");
   }, [logout, navigate]);
 
-  // Computed lists with search — show all projects sorted: active first, then completed
+  // Pending action count: unpaid deposit OR overdue installment
+  const pendingActionCount = useMemo(() => {
+    return projects.filter((p) => {
+      if (p.status === "concluido") return false;
+      if (p.budget?.installmentPlan?.enabled) {
+        return p.budget.installmentPlan.installments.some(
+          (i) => i.status !== "paid" && new Date(i.dueDate + "T23:59:59") < new Date()
+        );
+      }
+      return p.budget && p.budget.status !== "paid" && p.budget.status !== "fully_paid";
+    }).length;
+  }, [projects]);
+
+  // Computed lists with search + status filter, sorted by urgency
   const displayProjects = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
-    const filtered = q
+    let filtered = q
       ? projects.filter((p) => p.title.toLowerCase().includes(q) || p.author.toLowerCase().includes(q))
       : projects;
+    if (statusFilter === "analise") {
+      filtered = filtered.filter((p) => p.status === "analise");
+    } else if (statusFilter === "ativo") {
+      filtered = filtered.filter((p) => p.status !== "concluido" && p.status !== "analise");
+    } else if (statusFilter === "concluido") {
+      filtered = filtered.filter((p) => p.status === "concluido");
+    }
     return [...filtered].sort((a, b) => {
-      const aComplete = a.status === "concluido" ? 1 : 0;
-      const bComplete = b.status === "concluido" ? 1 : 0;
-      if (aComplete !== bComplete) return aComplete - bComplete;
+      const pa = getProjectPriority(a);
+      const pb = getProjectPriority(b);
+      if (pa !== pb) return pa - pb;
       return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     });
-  }, [projects, searchQuery]);
+  }, [projects, searchQuery, statusFilter]);
 
   const totalActive = projects.filter((p) => p.status !== "concluido").length;
   const totalCompleted = projects.filter((p) => p.status === "concluido").length;
@@ -1491,50 +1958,73 @@ export function UserAccountPage() {
           >
             {/* Profile card */}
             <div className="rounded-2xl p-4 shadow-sm" style={{ backgroundColor: "#FFFDF8", borderWidth: 1, borderColor: "rgba(133,108,66,0.12)" }}>
-              <div className="flex items-center gap-3 mb-3">
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center text-base font-semibold flex-shrink-0"
-                  style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74", fontFamily: f.play }}
-                >
-                  {user.name?.[0]?.toUpperCase() || user.email[0]?.toUpperCase()}
-                </div>
-                <div className="min-w-0 flex-1">
-                  {editing ? (
-                    <div className="flex gap-1 items-center">
-                      <input
-                        type="text"
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        className="flex-1 min-w-0 px-2 py-1 rounded-lg border text-sm text-[#052413] focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                        style={{ fontFamily: f.inter, backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
-                        autoFocus
-                        onKeyDown={(e) => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") { setEditing(false); setEditName(user.name); } }}
-                      />
-                      <button onClick={handleSave} disabled={saving} className="p-1.5 rounded-lg text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>
-                        {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
-                      </button>
+              <div className="flex items-start gap-3 mb-3">
+                {/* Avatar with upload */}
+                <div className="relative flex-shrink-0 group">
+                  <div
+                    className="relative w-11 h-11 rounded-xl flex items-center justify-center text-base font-semibold overflow-hidden cursor-pointer"
+                    style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74", fontFamily: f.play }}
+                    onClick={() => avatarInputRef.current?.click()}
+                    title="Trocar foto"
+                  >
+                    {avatarUrl
+                      ? <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                      : (user.name?.[0]?.toUpperCase() || user.email[0]?.toUpperCase())}
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Camera className="w-4 h-4 text-white" />
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-1">
-                      <p className="text-sm font-medium text-[#052413] truncate" style={{ fontFamily: f.play }}>{user.name || "Sem nome"}</p>
-                      <button onClick={() => setEditing(true)} className="p-0.5 text-[#856C42]/30 hover:text-[#165B36] transition-colors cursor-pointer"><Edit3 className="w-3 h-3" /></button>
-                      {saved && <CheckCircle className="w-3 h-3 text-[#165B36]" />}
+                  </div>
+                  {pendingActionCount > 0 && (
+                    <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center border-2 border-[#FFFDF8]">
+                      <span className="text-[0.45rem] font-bold text-white">{pendingActionCount}</span>
                     </div>
                   )}
-                  <p className="text-[0.65rem] text-[#856C42] truncate" style={{ fontFamily: f.inter }}>{user.email}</p>
+                  <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
                 </div>
+
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-[#052413] truncate" style={{ fontFamily: f.play }}>{user.name || "Sem nome"}</p>
+                  <p className="text-[0.65rem] text-[#856C42] truncate" style={{ fontFamily: f.inter }}>{user.email}</p>
+                  {user.phone && (
+                    <p className="text-[0.65rem] text-[#856C42]/60 truncate mt-0.5" style={{ fontFamily: f.inter }}>{user.phone}</p>
+                  )}
+                  {/* Summary stats */}
+                  <div className="flex items-center gap-3 mt-1.5 pt-1.5 border-t" style={{ borderColor: "rgba(133,108,66,0.06)" }}>
+                    <div>
+                      <p className="text-xs font-bold text-[#052413]" style={{ fontFamily: f.inter }}>{totalActive}</p>
+                      <p className="text-[0.5rem] text-[#856C42]/50" style={{ fontFamily: f.inter }}>ativos</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-[#052413]" style={{ fontFamily: f.inter }}>{totalCompleted}</p>
+                      <p className="text-[0.5rem] text-[#856C42]/50" style={{ fontFamily: f.inter }}>concluídos</p>
+                    </div>
+                    {pendingActionCount > 0 && (
+                      <div>
+                        <p className="text-xs font-bold text-red-500" style={{ fontFamily: f.inter }}>{pendingActionCount}</p>
+                        <p className="text-[0.5rem] text-red-400/70" style={{ fontFamily: f.inter }}>pendente{pendingActionCount !== 1 ? "s" : ""}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowProfileEdit(true)}
+                  className="p-1.5 rounded-lg text-[#856C42]/30 hover:text-[#165B36] hover:bg-[#F0E8D4] transition-colors cursor-pointer flex-shrink-0"
+                  title="Editar perfil"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                </button>
               </div>
 
               <div className="space-y-1 pt-2 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
-                <Link to="/catalogo" className="flex items-center gap-2 p-2 rounded-lg text-xs text-[#052413] hover:bg-[#F0E8D4]/50 transition-colors" style={{ fontFamily: f.inter }}>
-                  <BookOpen className="w-3.5 h-3.5 text-[#165B36]" /> Ver catalogo
-                </Link>
                 <a href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Gostaria%20de%20saber%20mais%20sobre%20os%20servi%C3%A7os%20da%20%C3%89poca%20Editora." target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2 rounded-lg text-xs text-[#052413] hover:bg-[#F0E8D4]/50 transition-colors" style={{ fontFamily: f.inter }}>
                   <Mail className="w-3.5 h-3.5 text-[#165B36]" /> Fale conosco
                 </a>
                 <button onClick={handleLogout} className="w-full flex items-center gap-2 p-2 rounded-lg text-xs text-[#d4183d] hover:bg-[#d4183d]/5 transition-colors cursor-pointer" style={{ fontFamily: f.inter }}>
                   <LogOut className="w-3.5 h-3.5" /> Sair da conta
                 </button>
+                <Link to="/meus-dados" className="block text-center text-[0.6rem] text-[#856C42]/40 hover:text-[#856C42]/70 transition-colors pt-1" style={{ fontFamily: f.inter }}>
+                  Privacidade e dados pessoais
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -1546,6 +2036,23 @@ export function UserAccountPage() {
             transition={{ duration: 0.4, delay: 0.1 }}
             className="space-y-4"
           >
+            {/* Pending action banner */}
+            {pendingActionCount > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl"
+                style={{ backgroundColor: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.18)" }}
+              >
+                <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                <p className="text-xs text-[#052413]" style={{ fontFamily: f.inter }}>
+                  {pendingActionCount === 1
+                    ? "Você tem 1 projeto aguardando ação — pagamento pendente ou parcela vencida."
+                    : `Você tem ${pendingActionCount} projetos aguardando ação — pagamentos pendentes ou parcelas vencidas.`}
+                </p>
+              </motion.div>
+            )}
+
             {/* Toolbar */}
             <div className="flex flex-col sm:flex-row gap-3">
               {/* Search */}
@@ -1575,6 +2082,34 @@ export function UserAccountPage() {
               </GoldButton>
             </div>
 
+            {/* Status filter chips */}
+            <div className="flex gap-1.5 flex-wrap">
+              {[
+                { key: "todos", label: "Todos" },
+                { key: "analise", label: "Em análise" },
+                { key: "ativo", label: "Em andamento" },
+                { key: "concluido", label: "Concluídos" },
+              ].map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => setStatusFilter(opt.key)}
+                  className={`px-3 py-1 rounded-full text-[0.65rem] font-medium transition-all cursor-pointer ${
+                    statusFilter === opt.key
+                      ? "text-[#052413]"
+                      : "text-[#856C42]/60 hover:text-[#856C42] bg-white/60 hover:bg-white"
+                  }`}
+                  style={{
+                    fontFamily: f.inter,
+                    ...(statusFilter === opt.key
+                      ? { background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }
+                      : { border: "1px solid rgba(133,108,66,0.12)" }),
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
             {/* Project list */}
             {loadingProjects ? (
               <div className="flex items-center justify-center py-16">
@@ -1587,12 +2122,23 @@ export function UserAccountPage() {
                 className="rounded-2xl p-10 text-center"
                 style={{ backgroundColor: "#FFFDF8", borderWidth: 1, borderColor: "rgba(133,108,66,0.12)" }}
               >
-                {searchQuery ? (
+                {searchQuery || statusFilter !== "todos" ? (
                   <>
                     <Search className="w-10 h-10 text-[#856C42]/20 mx-auto mb-3" />
                     <p className="text-sm text-[#856C42]/60" style={{ fontFamily: f.inter }}>
-                      Nenhum projeto encontrado para "<span className="font-medium text-[#052413]">{searchQuery}</span>"
+                      {searchQuery
+                        ? <>Nenhum projeto para "<span className="font-medium text-[#052413]">{searchQuery}</span>"</>
+                        : "Nenhum projeto nessa categoria"}
                     </p>
+                    {statusFilter !== "todos" && (
+                      <button
+                        onClick={() => setStatusFilter("todos")}
+                        className="mt-2 text-xs text-[#165B36] hover:underline cursor-pointer"
+                        style={{ fontFamily: f.inter }}
+                      >
+                        Ver todos os projetos
+                      </button>
+                    )}
                   </>
                 ) : (
                   <>
@@ -1649,11 +2195,15 @@ export function UserAccountPage() {
 
       {/* Modals */}
       <AnimatePresence>
+        {showProfileEdit && <ProfileEditModal onClose={() => setShowProfileEdit(false)} />}
+      </AnimatePresence>
+      <AnimatePresence>
         {selectedProject && <ProjectDetail project={selectedProject} onClose={() => setSelectedProject(null)} />}
       </AnimatePresence>
       <AnimatePresence>
         {showNewForm && <NewRequestForm onClose={() => setShowNewForm(false)} onCreated={loadProjects} />}
       </AnimatePresence>
+      <Footer />
     </div>
   );
 }

@@ -9,8 +9,8 @@ import {
 import { GoldButton } from "./GoldButton";
 import { getPaymentInfo, processPayment, acceptContract, getContractPdfUrl, getPublicContractTemplate, checkPaymentStatus } from "../data/api";
 import { toast, Toaster } from "sonner";
-import footerLogoImg from "figma:asset/36074aebf24684a213a02f0250350012b7c049a7.png";
-import logoImg from "figma:asset/866134e81312444c262030ef8ad8f59cefad5b17.png";
+import footerLogoImg from "/assets/36074aebf24684a213a02f0250350012b7c049a7.png";
+import logoImg from "/assets/logo.png";
 
 // ============================================
 // Types
@@ -44,6 +44,11 @@ interface PaymentInfo {
   contractPdfName: string | null;
   hasContractPdf: boolean;
   contractHash: string | null;
+  installmentPlan?: {
+    enabled: boolean;
+    totalInstallments: number;
+    installments: { number: number; amount: number; dueDate: string }[];
+  } | null;
 }
 
 type PaymentMethod = "pix" | "credit_card" | "bolbradesco";
@@ -1081,7 +1086,7 @@ export function PaymentPage() {
     const lines = content.split("\n").filter((l: string) => l.trim());
     return (
       <>
-        <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA {num} — {title}</p>
+        <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA {num} — {title}</p>
         {lines.map((line: string, i: number) => {
           const isSubItem = /^[a-z]\)/.test(line.trim());
           const isLast = i === lines.length - 1;
@@ -1104,7 +1109,7 @@ export function PaymentPage() {
       const title = tmpl?.title || defaultTitle;
       const content = tmpl?.content || defaultContent;
       const lines = content.split("\n").filter((l: string) => l.trim());
-      return `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA ${num} — ${title}</p>${lines.map((l: string) => `<p style="${/^[a-z]\)/.test(l.trim()) ? "padding-left:16px;" : ""}margin-bottom:4px">${l}</p>`).join("")}`;
+      return `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA ${num} — ${title}</p>${lines.map((l: string) => `<p style="${/^[a-z]\)/.test(l.trim()) ? "padding-left:16px;" : ""}margin-bottom:4px">${l}</p>`).join("")}`;
     };
 
     const name = contractName.trim() || info.userName || "_______________";
@@ -1120,14 +1125,14 @@ export function PaymentPage() {
     html += `<p style="margin-bottom:8px">${CONTRACT_PREAMBLE}</p>`;
 
     // Clause 1
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 1 — DAS PARTES</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 1 — DAS PARTES</p>`;
     html += `<p style="margin-bottom:4px"><strong>EDITORA:</strong> ${COMPANY_NAME}, ${COMPANY_DESC}.</p>`;
     const cleanCpfDoc = cpf.replace(/\D/g, "");
     const docLabel = cleanCpfDoc.length === 14 ? "CNPJ" : "CPF";
     html += `<p style="margin-bottom:8px"><strong>CONTRATANTE:</strong> ${name}${cleanCpfDoc.length === 11 || cleanCpfDoc.length === 14 ? `, inscrito(a) no ${docLabel} sob o n. ${cpf}` : ""}${email.includes("@") ? `, e-mail ${email}` : ""}.</p>`;
 
     // Clause 2
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 2 — DO OBJETO</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 2 — DO OBJETO</p>`;
     html += `<p style="margin-bottom:4px">O presente contrato tem por objeto a prestacao dos seguintes servicos editoriais pela EDITORA ao CONTRATANTE:</p>`;
     if (info.services?.length > 0) {
       const svcMap: Record<string, string> = { completo: "Servico editorial completo", diagramacao: "Diagramacao", capa: "Design de capa", revisao: "Revisao textual", isbn: "Registro ISBN", impressao: "Impressao" };
@@ -1145,7 +1150,7 @@ export function PaymentPage() {
     html += getClauseText(4, "DAS OBRIGACOES DO CONTRATANTE", "O CONTRATANTE se obriga a:\na) Fornecer todos os materiais necessarios para a execucao dos servicos em formato digital adequado;\nb) Efetuar o pagamento conforme as condicoes estipuladas neste contrato;\nc) Responder as solicitacoes da EDITORA em ate 10 (dez) dias uteis;\nd) Revisar e aprovar ou solicitar ajustes na prova digital em ate 15 (quinze) dias uteis apos o envio;\ne) Garantir que possui todos os direitos autorais sobre o conteudo fornecido, isentando a EDITORA de qualquer responsabilidade sobre plagio ou violacao de direitos de terceiros.");
 
     // Clause 5
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 5 — DO PRECO E CONDICOES DE PAGAMENTO</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 5 — DO PRECO E CONDICOES DE PAGAMENTO</p>`;
     html += `<p style="margin-bottom:4px">O valor total dos servicos e de <strong>${formatCurrency(info.price)}</strong>, conforme detalhado no orcamento apresentado.</p>`;
     if (info.depositPercent > 0 && info.depositPercent < 100) {
       html += `<p style="padding-left:16px;margin-bottom:2px">a) Entrada (${info.depositPercent}%): ${formatCurrency(info.chargeAmount)}, a ser paga no ato da contratacao;</p>`;
@@ -1166,7 +1171,7 @@ export function PaymentPage() {
     }
 
     // Clause 6
-    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 6 — DO PRAZO</p>`;
+    html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 6 — DO PRAZO</p>`;
     if (info.estimatedDeadline) {
       html += `<p style="margin-bottom:8px">O prazo estimado para a execucao dos servicos e de <strong>${info.estimatedDeadline}</strong>, contados a partir do recebimento integral dos arquivos necessarios e da confirmacao do pagamento.</p>`;
     } else {
@@ -1186,15 +1191,15 @@ export function PaymentPage() {
         const parsed = JSON.parse(info.customClauses);
         if (Array.isArray(parsed)) {
           parsed.forEach((clause: any, idx: number) => {
-            html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA ${13 + idx} — ${clause.title ? clause.title.toUpperCase() : `DISPOSICOES ESPECIFICAS ${idx + 1}`}</p>`;
+            html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA ${13 + idx} — ${clause.title ? clause.title.toUpperCase() : `DISPOSICOES ESPECIFICAS ${idx + 1}`}</p>`;
             html += `<p style="margin-bottom:8px;white-space:pre-wrap">${clause.content}</p>`;
           });
         } else {
-          html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 13 — DISPOSICOES ESPECIFICAS DESTE PROJETO</p>`;
+          html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 13 — DISPOSICOES ESPECIFICAS DESTE PROJETO</p>`;
           html += `<p style="margin-bottom:8px;white-space:pre-wrap">${info.customClauses}</p>`;
         }
       } catch {
-        html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLAUSULA 13 — DISPOSICOES ESPECIFICAS DESTE PROJETO</p>`;
+        html += `<p style="font-weight:700;margin-top:16px;margin-bottom:4px;color:#052413">CLÁUSULA 13 — DISPOSICOES ESPECIFICAS DESTE PROJETO</p>`;
         html += `<p style="margin-bottom:8px;white-space:pre-wrap">${info.customClauses}</p>`;
       }
     }
@@ -1341,7 +1346,10 @@ export function PaymentPage() {
               </p>
               {info?.depositPercent && info.depositPercent > 0 && info.depositPercent < 100 && info.remainderAmount ? (
                 <p className="text-xs text-[#856C42] mb-4" style={{ fontFamily: "Inter, sans-serif" }}>
-                  Valor total: {formatCurrency(info.price)} · Restante na entrega: {formatCurrency(info.remainderAmount)}
+                  Valor total: {formatCurrency(info.price)} ·{" "}
+                  {info.installmentPlan?.enabled
+                    ? `Restante em ${info.installmentPlan.totalInstallments}x via PIX: ${formatCurrency(info.remainderAmount)}`
+                    : `Restante na entrega: ${formatCurrency(info.remainderAmount)}`}
                 </p>
               ) : null}
               {info?.paidAt && (
@@ -1358,7 +1366,17 @@ export function PaymentPage() {
               {info?.depositPercent && info.depositPercent > 0 && info.depositPercent < 100 && info.remainderAmount ? (
                 <div className="mt-3 p-3 rounded-xl border" style={{ backgroundColor: "rgba(235,191,116,0.06)", borderColor: "rgba(235,191,116,0.2)" }}>
                   <p className="text-xs text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
-                    O saldo restante de <strong className="text-[#052413]">{formatCurrency(info.remainderAmount)}</strong> será cobrado na entrega do projeto finalizado.
+                    {info.installmentPlan?.enabled ? (
+                      <>
+                        O saldo restante de <strong className="text-[#052413]">{formatCurrency(info.remainderAmount)}</strong> sera pago em{" "}
+                        <strong className="text-[#052413]">{info.installmentPlan.totalInstallments} parcelas via PIX</strong>.
+                        Acesse <strong>Financeiro</strong> na sua area do cliente para acompanhar e pagar cada parcela.
+                      </>
+                    ) : (
+                      <>
+                        O saldo restante de <strong className="text-[#052413]">{formatCurrency(info.remainderAmount)}</strong> sera cobrado na entrega do projeto finalizado.
+                      </>
+                    )}
                   </p>
                 </div>
               ) : null}
@@ -1461,7 +1479,9 @@ export function PaymentPage() {
                       </div>
                       <div className="flex items-center justify-between px-4 py-2.5 rounded-xl" style={{ backgroundColor: "rgba(133,108,66,0.05)" }}>
                         <span className="text-xs text-[#856C42]/70" style={{ fontFamily: "Inter, sans-serif" }}>
-                          Restante na entrega do projeto
+                          {info.installmentPlan?.enabled
+                            ? `Restante via parcelamento PIX (${info.installmentPlan.totalInstallments}x)`
+                            : "Restante na entrega do projeto"}
                         </span>
                         <span className="text-sm font-semibold text-[#856C42]/70 tracking-tight" style={{ fontFamily: "Inter, sans-serif" }}>
                           {formatCurrency(info.remainderAmount)}
@@ -1609,7 +1629,7 @@ export function PaymentPage() {
 
                             <p className="mb-3">{CONTRACT_PREAMBLE}</p>
 
-                            <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 1 — {getClauseContent(1)?.title || "DAS PARTES"}</p>
+                            <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 1 — {getClauseContent(1)?.title || "DAS PARTES"}</p>
                             <p className="mb-3"><strong>CONTRATADA:</strong> {COMPANY_NAME}, {COMPANY_DESC}, doravante denominada simplesmente "EDITORA".</p>
                             <p className="mb-3">
                               <strong>CONTRATANTE:</strong>{" "}
@@ -1627,7 +1647,7 @@ export function PaymentPage() {
                               , doravante denominado(a) simplesmente "CONTRATANTE".
                             </p>
 
-                            <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 2 — DO OBJETO</p>
+                            <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 2 — DO OBJETO</p>
                             <p className="mb-2">O presente contrato tem por objeto a prestacao dos seguintes servicos editoriais pela EDITORA ao CONTRATANTE:</p>
                             <div className="mb-2 pl-3">
                               {info.services && info.services.length > 0 ? (
@@ -1663,7 +1683,7 @@ export function PaymentPage() {
 
                             {renderStaticClause(4, "DAS OBRIGACOES DO CONTRATANTE", "O CONTRATANTE se obriga a:\na) Fornecer todos os materiais necessarios para a execucao dos servicos em formato digital adequado;\nb) Efetuar o pagamento conforme as condicoes estipuladas neste contrato;\nc) Responder as solicitacoes da EDITORA em ate 10 (dez) dias uteis;\nd) Revisar e aprovar ou solicitar ajustes na prova digital em ate 15 (quinze) dias uteis apos o envio;\ne) Garantir que possui todos os direitos autorais sobre o conteudo fornecido, isentando a EDITORA de qualquer responsabilidade sobre plagio ou violacao de direitos de terceiros.")}
 
-                            <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 5 — DO PRECO E CONDICOES DE PAGAMENTO</p>
+                            <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 5 — DO PRECO E CONDICOES DE PAGAMENTO</p>
                             <p className="mb-2">O valor total dos servicos e de <strong>{formatCurrency(info.price)}</strong>, conforme detalhado no orcamento apresentado.</p>
                             {info.depositPercent > 0 && info.depositPercent < 100 ? (
                               <div className="mb-2 p-2 rounded-lg" style={{ backgroundColor: "rgba(22,91,54,0.04)", borderLeft: "3px solid rgba(22,91,54,0.2)" }}>
@@ -1694,7 +1714,7 @@ export function PaymentPage() {
                               </div>
                             )}
 
-                            <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 6 — DO PRAZO</p>
+                            <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 6 — DO PRAZO</p>
                             {info.estimatedDeadline ? (
                               <>
                                 <p className="mb-2">O prazo estimado para a execucao dos servicos e de <strong className="text-[#165B36]">{info.estimatedDeadline}</strong>, contados a partir do recebimento integral dos arquivos necessarios e da confirmacao do pagamento.</p>
@@ -1722,14 +1742,14 @@ export function PaymentPage() {
                               if (clauses.length === 0) {
                                 return (
                                   <>
-                                    <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA 13 — DISPOSICOES ESPECIFICAS DESTE PROJETO</p>
+                                    <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA 13 — DISPOSICOES ESPECIFICAS DESTE PROJETO</p>
                                     <p className="mb-3 whitespace-pre-wrap">{info.customClauses}</p>
                                   </>
                                 );
                               }
                               return clauses.map((clause, idx) => (
                                 <div key={idx}>
-                                  <p className="font-semibold text-[#052413] mb-1 mt-4">CLAUSULA {13 + idx} — {clause.title ? clause.title.toUpperCase() : `DISPOSICOES ESPECIFICAS ${idx + 1}`}</p>
+                                  <p className="font-semibold text-[#052413] mb-1 mt-4">CLÁUSULA {13 + idx} — {clause.title ? clause.title.toUpperCase() : `DISPOSICOES ESPECIFICAS ${idx + 1}`}</p>
                                   <p className="mb-3 whitespace-pre-wrap">{clause.content}</p>
                                 </div>
                               ));

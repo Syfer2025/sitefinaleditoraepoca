@@ -1,122 +1,115 @@
-import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { RevealOnScroll } from "./RevealOnScroll";
-import { Quote } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getAuthors, type VideoSection } from "../data/api";
 
-const authors = [
-  {
-    id: 1,
-    name: "Marina Alves",
-    specialty: "Romance Contemporâneo",
-    books: 12,
-    image:
-      "https://images.unsplash.com/photo-1680356475155-3ca8fa2192aa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGF1dGhvciUyMHdyaXRlciUyMHBvcnRyYWl0fGVufDF8fHx8MTc3MjM3ODM2OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    quote: "Escrever é encontrar a beleza no caos do cotidiano.",
-  },
-  {
-    id: 2,
-    name: "Rafael Mendes",
-    specialty: "Contos e Crônicas",
-    books: 8,
-    image:
-      "https://images.unsplash.com/photo-1686543972836-ad63f87f984b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMG1hbiUyMGF1dGhvciUyMHdyaXRlciUyMHBvcnRyYWl0fGVufDF8fHx8MTc3MjQ1NzMxOXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    quote: "Cada conto é um universo inteiro em poucas páginas.",
-  },
-  {
-    id: 3,
-    name: "Lúcia Ferreira",
-    specialty: "Ficção Literária",
-    books: 15,
-    image:
-      "https://images.unsplash.com/photo-1742179212941-9e2de84047bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3cml0ZXIlMjBhdXRob3IlMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwxfHx8fDE3NzI0NTczMTh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    quote: "A ficção nos ensina verdades que a realidade esconde.",
-  },
-];
+const DEFAULT_VIDEO: VideoSection = {
+  url: "",
+  title: "Conheça a Época Editora",
+  text: "Há mais de três décadas transformamos manuscritos em obras publicadas com excelência editorial. Assista ao vídeo e descubra como podemos dar vida à sua história.",
+};
+
+function getEmbedUrl(url: string): string | null {
+  try {
+    const u = new URL(url);
+    let id = "";
+    if (u.hostname.includes("youtu.be")) {
+      id = u.pathname.slice(1).split("?")[0];
+    } else if (u.hostname.includes("youtube.com")) {
+      id = u.searchParams.get("v") || u.pathname.split("/embed/")[1]?.split("?")[0] || "";
+    }
+    if (!id) return null;
+    return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&color=white`;
+  } catch {
+    return null;
+  }
+}
 
 export function AuthorsSection() {
-  return (
-    <section id="autores" className="py-16 px-6 bg-background">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <RevealOnScroll direction="up" className="text-center mb-10">
-          <p
-            className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3"
-            style={{ fontFamily: "Inter, sans-serif" }}
-          >
-            Nossos Autores
-          </p>
-          <h2
-            className="text-[2.5rem] md:text-[3rem] text-foreground mb-4"
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              lineHeight: 1.15,
-            }}
-          >
-            Vozes que <span className="italic">inspiram</span>
-          </h2>
-          <p
-            className="text-muted-foreground max-w-xl mx-auto"
-            style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
-          >
-            Conheça os talentos por trás das nossas obras mais celebradas.
-          </p>
-        </RevealOnScroll>
+  const [video, setVideo] = useState<VideoSection>(DEFAULT_VIDEO);
 
-        {/* Authors grid */}
-        <div className="grid md:grid-cols-3 gap-8">
-          {authors.map((author, i) => (
-            <RevealOnScroll key={author.id} direction="up" delay={i * 0.15}>
-              <div className="group text-center">
-                <div className="relative w-40 h-40 mx-auto mb-5">
-                  {/* Decorative ring */}
-                  <div
-                    className="absolute inset-[-4px] rounded-full transition-all duration-500 group-hover:inset-[-6px] group-hover:rotate-12"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #EBBF74 0%, #856C42 50%, #EBBF74 100%)",
-                      opacity: 0.5,
-                    }}
-                  />
-                  <div className="relative w-full h-full rounded-full overflow-hidden">
-                    <ImageWithFallback
-                      src={author.image}
-                      alt={author.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                    />
-                  </div>
-                </div>
-                <h3
-                  className="text-[1.375rem] text-foreground mb-1"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
+  useEffect(() => {
+    getAuthors()
+      .then((data) => { if (data?.videoSection?.url) setVideo(data.videoSection); })
+      .catch(() => {});
+  }, []);
+
+  const embedUrl = getEmbedUrl(video.url);
+
+  return (
+    <section id="autores" className="py-20 px-6 bg-background relative overflow-hidden">
+      {/* Decorative glow */}
+      <div
+        className="absolute top-1/2 left-1/2 w-[700px] h-[700px] rounded-full opacity-[0.03] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+        style={{ background: "radial-gradient(circle, #165B36 0%, transparent 65%)" }}
+      />
+
+      <div className="max-w-6xl mx-auto relative z-10">
+        <div className="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
+
+          {/* Vídeo — second on mobile, first on desktop */}
+          <RevealOnScroll direction="left" className="order-2 md:order-1">
+            <div
+              className="relative w-full rounded-2xl overflow-hidden"
+              style={{
+                aspectRatio: "16/9",
+                boxShadow: "0 16px 48px rgba(5,36,19,0.12)",
+                border: "1px solid rgba(133,108,66,0.15)",
+              }}
+            >
+              {embedUrl ? (
+                <iframe
+                  src={embedUrl}
+                  title={video.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                  style={{ border: "none" }}
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+                  style={{ backgroundColor: "rgba(5,36,19,0.04)" }}
                 >
-                  {author.name}
-                </h3>
-                <p
-                  className="text-[0.875rem] text-primary mb-1"
-                  style={{ fontFamily: "Inter, sans-serif" }}
-                >
-                  {author.specialty}
-                </p>
-                <p
-                  className="text-[0.8rem] text-muted-foreground mb-4"
-                  style={{ fontFamily: "Inter, sans-serif" }}
-                >
-                  {author.books} livros publicados
-                </p>
-                <div className="relative max-w-xs mx-auto">
-                  <Quote className="w-4 h-4 text-[#EBBF74]/40 mb-2 mx-auto" />
-                  <p
-                    className="text-muted-foreground italic"
-                    style={{
-                      fontFamily: "'Playfair Display', serif",
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {author.quote}
+                  <svg viewBox="0 0 68 48" className="w-16 opacity-20" fill="none">
+                    <path d="M66.52 7.74A8.55 8.55 0 0 0 60.45 1.6C55.14 0 34 0 34 0S12.86 0 7.55 1.6A8.55 8.55 0 0 0 1.48 7.74 89.6 89.6 0 0 0 0 24a89.6 89.6 0 0 0 1.48 16.26 8.55 8.55 0 0 0 6.07 6.14C12.86 48 34 48 34 48s21.14 0 26.45-1.6a8.55 8.55 0 0 0 6.07-6.14A89.6 89.6 0 0 0 68 24a89.6 89.6 0 0 0-1.48-16.26Z" fill="#052413"/>
+                    <path d="M27 34l18-10-18-10v20Z" fill="#F7F4EE"/>
+                  </svg>
+                  <p className="text-foreground/30 text-sm" style={{ fontFamily: "Inter, sans-serif" }}>
+                    Configure o vídeo no painel admin → Autores
                   </p>
                 </div>
-              </div>
-            </RevealOnScroll>
-          ))}
+              )}
+            </div>
+          </RevealOnScroll>
+
+          {/* Texto lateral — first on mobile, second on desktop */}
+          <RevealOnScroll direction="right" delay={0.1} className="order-1 md:order-2">
+            <div className="text-center md:text-left">
+              <p
+                className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-4"
+                style={{ fontFamily: "Inter, sans-serif" }}
+              >
+                Nossos Autores
+              </p>
+              <h2
+                className="text-[2rem] md:text-[2.5rem] text-foreground mb-5"
+                style={{ fontFamily: "'Playfair Display', serif", lineHeight: 1.2 }}
+              >
+                {video.title}
+              </h2>
+              <p
+                className="text-muted-foreground leading-relaxed"
+                style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", lineHeight: 1.8 }}
+              >
+                {video.text}
+              </p>
+              <div
+                className="mt-8 h-px w-16 mx-auto md:mx-0"
+                style={{ background: "linear-gradient(90deg, #EBBF74, transparent)" }}
+              />
+            </div>
+          </RevealOnScroll>
+
         </div>
       </div>
     </section>

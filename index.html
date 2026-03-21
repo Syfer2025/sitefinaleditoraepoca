@@ -1,15 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Época Editora de Livros — Histórias que transformam</title>
+    <meta name="description" content="Época Editora de Livros — publicamos histórias que transformam vidas. Serviços editoriais completos: diagramação, revisão, ISBN, capa e distribuição digital." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://editoraepoca.com.br/" />
 
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Landing page para editora</title>
-    </head>
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Época Editora de Livros" />
+    <meta property="og:title" content="Época Editora de Livros — Histórias que transformam" />
+    <meta property="og:description" content="Publicamos histórias que transformam vidas. Serviços editoriais completos: diagramação, revisão, ISBN, capa e distribuição digital." />
+    <meta property="og:url" content="https://editoraepoca.com.br/" />
 
-    <body>
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-    </body>
-  </html>
-  
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Época Editora de Livros" />
+    <meta name="twitter:description" content="Publicamos histórias que transformam vidas." />
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+
+    <!-- Organization JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://editoraepoca.com.br/#organization",
+      "name": "Época Editora de Livros",
+      "url": "https://editoraepoca.com.br",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://editoraepoca.com.br/assets/logo.png"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Maringá",
+        "addressRegion": "PR",
+        "addressCountry": "BR"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "Portuguese"
+      }
+    }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -11,7 +11,7 @@ import { GoldButton } from "./GoldButton";
 import { getInstallmentCheckout, generateInstallmentPayoff, regenerateInstallmentPix, regeneratePayoffPix, acceptContract, getPublicContractTemplate } from "../data/api";
 import { useUserAuth } from "./UserAuthContext";
 import { toast, Toaster } from "sonner";
-import logoImg from "figma:asset/866134e81312444c262030ef8ad8f59cefad5b17.png";
+import logoImg from "/assets/logo.png";
 
 // ============================================
 // Types
@@ -235,9 +235,9 @@ export function InstallmentCheckoutPage() {
         contractSnapshot: snapshot || undefined,
         screenResolution: `${window.screen.width}x${window.screen.height}`,
       });
-      setContractAccepted(true);
       toast.success("Contrato aceito com sucesso!");
       await fetchData();
+      setContractAccepted(true); // set after server confirms
     } catch (err: any) {
       toast.error(err.message || "Erro ao registrar aceite do contrato");
     } finally {
@@ -293,7 +293,7 @@ export function InstallmentCheckoutPage() {
       const title = tmpl?.title || defaultTitle;
       const content = tmpl?.content || defaultContent;
       const lines = content.split("\n").filter((l: string) => l.trim());
-      return `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLAUSULA ${num} — ${title}</p>` +
+      return `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLÁUSULA ${num} — ${title}</p>` +
         lines.map((l: string) => `<p style="margin-bottom:3px;${/^[a-z]\)/.test(l.trim()) ? "padding-left:12px;" : ""}">${l}</p>`).join("");
     };
 
@@ -304,7 +304,7 @@ export function InstallmentCheckoutPage() {
     html += `<p style="margin-bottom:10px;">${CONTRACT_PREAMBLE}</p>`;
 
     // Clause 1 - Parties
-    html += `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLAUSULA 1 — ${getClauseContent(1)?.title || "DAS PARTES"}</p>`;
+    html += `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLÁUSULA 1 — ${getClauseContent(1)?.title || "DAS PARTES"}</p>`;
     html += `<p style="margin-bottom:8px;"><strong>CONTRATADA:</strong> ${COMPANY_NAME}, ${COMPANY_DESC}, doravante denominada simplesmente "EDITORA".</p>`;
     html += `<p style="margin-bottom:8px;"><strong>CONTRATANTE:</strong> ${contractName.trim() || "[nome do contratante]"}`;
     if (contractCpf.replace(/\D/g, "").length >= 11) html += `, inscrito(a) no CPF/CNPJ sob o n. ${contractCpf}`;
@@ -312,7 +312,7 @@ export function InstallmentCheckoutPage() {
     html += `, doravante denominado(a) simplesmente "CONTRATANTE".</p>`;
 
     // Clause 2 - Object
-    html += `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLAUSULA 2 — DO OBJETO</p>`;
+    html += `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLÁUSULA 2 — DO OBJETO</p>`;
     html += `<p style="margin-bottom:6px;">O presente contrato tem por objeto a prestacao dos seguintes servicos editoriais pela EDITORA ao CONTRATANTE:</p>`;
     if (data.services?.length) {
       data.services.forEach((s: string) => {
@@ -335,7 +335,7 @@ export function InstallmentCheckoutPage() {
     html += getClauseText(4, "DAS OBRIGACOES DO CONTRATANTE", "O CONTRATANTE se obriga a:\na) Fornecer todos os materiais necessarios para a execucao dos servicos em formato digital adequado;\nb) Efetuar o pagamento conforme as condicoes estipuladas neste contrato;\nc) Responder as solicitacoes da EDITORA em ate 10 (dez) dias uteis;\nd) Revisar e aprovar ou solicitar ajustes na prova digital em ate 15 (quinze) dias uteis;\ne) Garantir que possui todos os direitos autorais sobre o conteudo fornecido.");
 
     // Clause 5 - Price + installments
-    html += `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLAUSULA 5 — DO PRECO E CONDICOES DE PAGAMENTO</p>`;
+    html += `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLÁUSULA 5 — DO PRECO E CONDICOES DE PAGAMENTO</p>`;
     html += `<p style="margin-bottom:6px;">O valor total dos servicos e de <strong>${formatCurrency(data.fullPrice)}</strong>.</p>`;
     if (data.depositPercent > 0 && data.depositPercent < 100) {
       html += `<p style="margin-bottom:2px;padding-left:12px;">a) <strong>Entrada (${data.depositPercent}%):</strong> ${formatCurrency(data.chargeAmount)}, a ser paga no ato da contratacao;</p>`;
@@ -349,7 +349,7 @@ export function InstallmentCheckoutPage() {
     }
 
     // Clauses 6-12
-    html += `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLAUSULA 6 — DO PRAZO</p>`;
+    html += `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLÁUSULA 6 — DO PRAZO</p>`;
     html += `<p style="margin-bottom:8px;">${data.estimatedDeadline ? `O prazo estimado para execucao e de <strong>${data.estimatedDeadline}</strong>.` : "O prazo sera definido apos a aprovacao do orcamento."}</p>`;
     html += getClauseText(7, "DA REVISAO E APROVACAO", "O CONTRATANTE tera direito a uma rodada de revisao incluida no preco. Ajustes adicionais poderao ser orcados separadamente.");
     html += getClauseText(8, "DA RESCISAO", "O contrato podera ser rescindido por qualquer das partes, mediante aviso previo por escrito com 15 dias de antecedencia. Em caso de rescisao pelo CONTRATANTE, os valores ja pagos nao serao restituidos.");
@@ -361,7 +361,7 @@ export function InstallmentCheckoutPage() {
     // Custom clauses
     if (data.customClauses?.length) {
       data.customClauses.forEach((cl: any, i: number) => {
-        html += `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLAUSULA ${13 + i} — ${cl.title}</p>`;
+        html += `<p style="font-weight:bold;margin-top:14px;margin-bottom:4px;">CLÁUSULA ${13 + i} — ${cl.title}</p>`;
         html += `<p style="margin-bottom:8px;">${cl.content}</p>`;
       });
     }
@@ -629,6 +629,9 @@ export function InstallmentCheckoutPage() {
                   >
                     <RefreshCw className="w-3 h-3" /> Tentar novamente
                   </button>
+                  <p className="text-[0.6rem] text-[#856C42]/40 leading-relaxed" style={{ fontFamily: f.inter }}>
+                    Se o problema persistir, entre em contato com a editora para prosseguir com o pagamento.
+                  </p>
                 </div>
               ) : contractTemplate ? (
                 <div>
@@ -759,8 +762,44 @@ export function InstallmentCheckoutPage() {
           </motion.div>
         )}
 
+        {/* DEPOSIT GATE — installments locked until deposit is paid */}
+        {!needsContract && hasDeposit && !depositPaid && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="rounded-2xl overflow-hidden mb-6"
+            style={{ background: "white", border: "2px solid rgba(235,191,116,0.4)", boxShadow: "0 4px 24px rgba(235,191,116,0.1)" }}
+          >
+            <div className="px-5 py-4 flex items-start gap-4" style={{ background: "linear-gradient(135deg, rgba(235,191,116,0.1), rgba(133,108,66,0.04))" }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}>
+                <Lock className="w-5 h-5 text-[#052413]" />
+              </div>
+              <div className="flex-1">
+                <p className="text-base font-bold text-[#052413] mb-1" style={{ fontFamily: f.inter }}>
+                  Parcelas bloqueadas
+                </p>
+                <p className="text-sm text-[#856C42]/80 leading-relaxed mb-4" style={{ fontFamily: f.inter }}>
+                  O pagamento das parcelas so e liberado apos a confirmacao da entrada de <strong className="text-[#052413]">{formatCurrency(data.chargeAmount)}</strong>.
+                  Pague a entrada para dar inicio aos trabalhos e desbloquear as parcelas.
+                </p>
+                {data.depositPaymentUrl && (
+                  <a
+                    href={`/pagamento/${data.projectId}`}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-[#052413] transition-all hover:shadow-md hover:opacity-90"
+                    style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    Pagar entrada — {formatCurrency(data.chargeAmount)}
+                  </a>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* PIX SECTIONS — only shown if contract is not required OR contract has been accepted */}
-        {!needsContract && (<>
+        {!needsContract && (!hasDeposit || depositPaid) && (<>
 
         {/* Current Installment PIX - Prominent */}
         {currentInstallment && !showPayoff && (
@@ -856,12 +895,17 @@ export function InstallmentCheckoutPage() {
 
               <div className="mt-4 p-3 rounded-xl flex items-start gap-2.5" style={{ background: "rgba(235,191,116,0.08)" }}>
                 <Shield className="w-4 h-4 text-[#856C42] mt-0.5 flex-shrink-0" />
-                <p className="text-[0.7rem] text-[#856C42]/70 leading-relaxed" style={{ fontFamily: f.inter }}>
-                  {hasDeposit && currentInstallment?.number === 1
-                    ? "Esta e a 1ª parcela, com vencimento 30 dias apos o pagamento da entrada. Apos a confirmacao, o PIX da proxima parcela sera gerado automaticamente."
-                    : "Apos o pagamento ser confirmado, o PIX da proxima parcela sera gerado automaticamente. Voce pode acompanhar o progresso abaixo."
-                  }
-                </p>
+                <div>
+                  <p className="text-[0.7rem] text-[#856C42]/70 leading-relaxed" style={{ fontFamily: f.inter }}>
+                    {hasDeposit && currentInstallment?.number === 1
+                      ? "Esta e a 1ª parcela, com vencimento 30 dias apos o pagamento da entrada. Apos a confirmacao, o PIX da proxima parcela sera gerado automaticamente."
+                      : "Apos o pagamento ser confirmado, o PIX da proxima parcela sera gerado automaticamente. Voce pode acompanhar o progresso abaixo."
+                    }
+                  </p>
+                  <p className="text-[0.65rem] text-[#856C42]/50 mt-1" style={{ fontFamily: f.inter }}>
+                    A confirmacao do PIX pode levar alguns minutos. Esta pagina atualiza automaticamente a cada 30 segundos.
+                  </p>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -1048,16 +1092,22 @@ export function InstallmentCheckoutPage() {
           className="rounded-2xl overflow-hidden"
           style={{ background: "white", border: "1px solid rgba(133,108,66,0.12)", boxShadow: "0 2px 12px rgba(133,108,66,0.06)" }}
         >
-          <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(133,108,66,0.08)" }}>
-            <h3 className="text-sm font-semibold text-[#052413]" style={{ fontFamily: f.inter }}>
-              {hasDeposit ? "Entrada + Parcelas" : "Todas as parcelas"}
-            </h3>
-            <span className="text-xs text-[#856C42]/60" style={{ fontFamily: f.inter }}>
-              {hasDeposit
-                ? `Entrada + ${installmentPlan.totalInstallments}x de ~${formatCurrency(data.totalPrice / installmentPlan.totalInstallments)}`
-                : `${installmentPlan.totalInstallments}x de ~${formatCurrency(data.totalPrice / installmentPlan.totalInstallments)}`
-              }
-            </span>
+          <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(133,108,66,0.08)" }}>
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="text-sm font-semibold text-[#052413]" style={{ fontFamily: f.inter }}>
+                {hasDeposit ? "Entrada + Parcelas" : "Todas as parcelas"}
+              </h3>
+              <span className="text-xs text-[#856C42]/60" style={{ fontFamily: f.inter }}>
+                {hasDeposit
+                  ? `Entrada + ${installmentPlan.totalInstallments}x de ~${formatCurrency(data.totalPrice / installmentPlan.totalInstallments)}`
+                  : `${installmentPlan.totalInstallments}x de ~${formatCurrency(data.totalPrice / installmentPlan.totalInstallments)}`
+                }
+              </span>
+            </div>
+            <p className="text-[0.6rem] text-[#856C42]/50 flex items-center gap-1" style={{ fontFamily: f.inter }}>
+              <QrCode className="w-3 h-3" />
+              Parcelas pagas exclusivamente via PIX — cada codigo expira na data de vencimento
+            </p>
           </div>
 
           <div className="divide-y" style={{ borderColor: "rgba(133,108,66,0.06)" }}>
@@ -1107,7 +1157,7 @@ export function InstallmentCheckoutPage() {
                         color: "#052413",
                       }}
                     >
-                      Pagar entrada
+                      Pagar entrada — {formatCurrency(data.chargeAmount)}
                     </a>
                   )}
                 </div>
@@ -1165,49 +1215,84 @@ export function InstallmentCheckoutPage() {
                         Vencimento: {formatDateShort(inst.dueDate)}
                         {isPaid && inst.paidAt && ` · Pago em ${formatDateTime(inst.paidAt)}`}
                       </p>
+                      {isOverdue && !isPaid && hasPix && (
+                        <p className="text-[0.6rem] text-red-500/70 mt-0.5" style={{ fontFamily: f.inter }}>
+                          Vencida — o codigo PIX expirou. Clique em "Renovar PIX" para gerar um novo.
+                        </p>
+                      )}
                     </div>
 
                     {/* Actions */}
                     {!isPaid && hasPix && (
                       <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <button
-                          onClick={() => handleCopyPix(inst.number, inst.pixCode!)}
-                          className="px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer"
-                          style={{
-                            fontFamily: f.inter,
-                            background: copiedPix === inst.number ? "#165B36" : "rgba(22,91,54,0.08)",
-                            color: copiedPix === inst.number ? "white" : "#165B36",
-                          }}
-                        >
-                          {copiedPix === inst.number ? "Copiado!" : "Copiar PIX"}
-                        </button>
-                        {inst.pixQrCode && (
-                          <button
-                            onClick={() => setShowQr(showQr === inst.number ? null : inst.number)}
-                            className="p-2 rounded-lg text-[#856C42]/50 hover:text-[#165B36] hover:bg-[#165B36]/5 transition-colors cursor-pointer"
-                            title="Ver QR Code"
-                          >
-                            <QrCode className="w-4 h-4" />
-                          </button>
-                        )}
-                        {user && (
-                          <button
-                            onClick={() => handleRegeneratePix(inst.number)}
-                            disabled={regenerating === inst.number}
-                            className="p-2 rounded-lg text-[#856C42]/50 hover:text-[#856C42] hover:bg-[#856C42]/8 transition-colors cursor-pointer disabled:opacity-50"
-                            title="Regenerar PIX"
-                          >
-                            {regenerating === inst.number ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <RefreshCw className="w-4 h-4" />
+                        {isOverdue ? (
+                          /* Overdue: PIX likely expired — show regenerate prominently */
+                          user && (
+                            <button
+                              onClick={() => handleRegeneratePix(inst.number)}
+                              disabled={regenerating === inst.number}
+                              className="px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                              style={{ fontFamily: f.inter, background: "rgba(239,68,68,0.08)", color: "#dc2626" }}
+                              title="PIX vencido — gerar novo codigo"
+                            >
+                              {regenerating === inst.number ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                              Renovar PIX
+                            </button>
+                          )
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => handleCopyPix(inst.number, inst.pixCode!)}
+                              className="px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer"
+                              style={{
+                                fontFamily: f.inter,
+                                background: copiedPix === inst.number ? "#165B36" : "rgba(22,91,54,0.08)",
+                                color: copiedPix === inst.number ? "white" : "#165B36",
+                              }}
+                            >
+                              {copiedPix === inst.number ? "Copiado!" : "Copiar PIX"}
+                            </button>
+                            {inst.pixQrCode && (
+                              <button
+                                onClick={() => setShowQr(showQr === inst.number ? null : inst.number)}
+                                className="p-2 rounded-lg text-[#856C42]/50 hover:text-[#165B36] hover:bg-[#165B36]/5 transition-colors cursor-pointer"
+                                title="Ver QR Code"
+                              >
+                                <QrCode className="w-4 h-4" />
+                              </button>
                             )}
-                          </button>
+                            {user && (
+                              <button
+                                onClick={() => handleRegeneratePix(inst.number)}
+                                disabled={regenerating === inst.number}
+                                className="p-2 rounded-lg text-[#856C42]/50 hover:text-[#856C42] hover:bg-[#856C42]/8 transition-colors cursor-pointer disabled:opacity-50"
+                                title="Regenerar PIX"
+                              >
+                                {regenerating === inst.number ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                              </button>
+                            )}
+                          </>
                         )}
                       </div>
                     )}
 
-                    {!isPaid && !hasPix && (
+                    {!isPaid && !hasPix && user && (
+                      <button
+                        onClick={() => handleRegeneratePix(inst.number)}
+                        disabled={regenerating === inst.number}
+                        className="px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
+                        style={{ fontFamily: f.inter, background: "rgba(22,91,54,0.08)", color: "#165B36" }}
+                        title="Gerar código PIX para esta parcela"
+                      >
+                        {regenerating === inst.number ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <QrCode className="w-3.5 h-3.5" />
+                        )}
+                        Gerar PIX
+                      </button>
+                    )}
+                    {!isPaid && !hasPix && !user && (
                       <span className="text-[0.65rem] text-[#856C42]/40 italic flex-shrink-0" style={{ fontFamily: f.inter }}>
                         Aguardando
                       </span>

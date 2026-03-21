@@ -11,18 +11,36 @@ import {
   ChevronRight,
   FolderKanban,
   ScrollText,
+  HelpCircle,
+  Mail,
+  DollarSign,
+  UserRound,
+  Quote,
+  BarChart2,
+  ImageIcon,
+  CreditCard,
+  Phone,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { api, clearToken } from "../../data/api";
+import { api, clearToken, getAdminToken, getAdminRefreshToken } from "../../data/api";
 import { Toaster } from "sonner";
 
 const navItems = [
-  { path: "/admin/dashboard", label: "Visao Geral", icon: LayoutDashboard },
+  { path: "/admin/dashboard", label: "Visão Geral", icon: LayoutDashboard },
   { path: "/admin/projetos", label: "Projetos", icon: FolderKanban },
   { path: "/admin/contratos", label: "Contratos", icon: ScrollText },
   { path: "/admin/mensagens", label: "Mensagens", icon: MessageSquare },
-  { path: "/admin/usuarios", label: "Usuarios", icon: Users },
+  { path: "/admin/usuarios", label: "Usuários", icon: Users },
   { path: "/admin/livros", label: "Livros", icon: BookOpen },
+  { path: "/admin/planos", label: "Planos", icon: DollarSign },
+  { path: "/admin/newsletter", label: "Newsletter", icon: Mail },
+  { path: "/admin/autores", label: "Autores", icon: UserRound },
+  { path: "/admin/depoimentos", label: "Depoimentos", icon: Quote },
+  { path: "/admin/sobre", label: "Sobre", icon: BarChart2 },
+  { path: "/admin/faq", label: "FAQ", icon: HelpCircle },
+  { path: "/admin/logo", label: "Logo", icon: ImageIcon },
+  { path: "/admin/pagamentos", label: "Pagamentos", icon: CreditCard },
+  { path: "/admin/contato", label: "Contato", icon: Phone },
 ];
 
 export function AdminLayout() {
@@ -33,13 +51,16 @@ export function AdminLayout() {
   const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("admin_token");
-    if (!token || token === "null" || token === "undefined" || token.trim() === "") {
+    const token = getAdminToken();
+    const hasRefresh = !!getAdminRefreshToken();
+    // If no token AND no refresh token, redirect immediately
+    if (!token && !hasRefresh) {
       clearToken();
       navigate("/admin");
       return;
     }
 
+    // api() auto-refreshes the token if expired before calling /auth/me
     api("/auth/me")
       .then((data) => {
         setUserEmail(data.email);

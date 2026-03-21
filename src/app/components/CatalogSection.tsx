@@ -1,22 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Star, BookX } from "lucide-react";
 import { GoldButton } from "./GoldButton";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { motion, AnimatePresence } from "motion/react";
-import { featuredBooks, genres as allGenres } from "../data/books";
-
-const genres = allGenres.filter(
-  (g) => g === "Todos" || featuredBooks.some((b) => b.genre === g)
-);
+import { featuredBooks } from "../data/books";
+import { getBooks } from "../data/api";
+import { buildWhatsAppUrl } from "../data/constants";
 
 export function CatalogSection() {
   const [activeGenre, setActiveGenre] = useState("Todos");
+  const [allBooks, setAllBooks] = useState(featuredBooks);
 
-  const filteredBooks =
-    activeGenre === "Todos"
-      ? featuredBooks
-      : featuredBooks.filter((b) => b.genre === activeGenre);
+  useEffect(() => {
+    getBooks()
+      .then((data) => { if (Array.isArray(data?.books) && data.books.length > 0) setAllBooks(data.books); })
+      .catch(() => {/* silently use defaults */});
+  }, []);
+
+  const featured = useMemo(() => allBooks.slice(0, 9), [allBooks]);
+  const genres = useMemo(
+    () => ["Todos", ...Array.from(new Set(featured.map((b) => b.genre)))],
+    [featured]
+  );
+  const filteredBooks = useMemo(
+    () => activeGenre === "Todos" ? featured : featured.filter((b) => b.genre === activeGenre),
+    [featured, activeGenre]
+  );
 
   return (
     <section id="catalogo" className="py-16 px-6 bg-secondary/30">
@@ -157,7 +167,13 @@ export function CatalogSection() {
                     >
                       por {book.author}
                     </p>
-                    <GoldButton className="w-full py-2.5">
+                    <GoldButton
+                      className="w-full py-2.5 block"
+                      {...(book.slug
+                        ? { to: `/livros/${book.slug}` }
+                        : { href: buildWhatsAppUrl(`Olá! Gostaria de saber mais sobre o livro "${book.title}".`), target: "_blank" }
+                      )}
+                    >
                       Ver detalhes
                     </GoldButton>
                   </div>
@@ -167,15 +183,6 @@ export function CatalogSection() {
           </AnimatePresence>
         </div>
 
-        {/* CTA */}
-        <RevealOnScroll direction="up" delay={0.2} className="text-center mt-10">
-          <GoldButton
-            href="/catalogo"
-            className="px-8 py-3.5"
-          >
-            Ver catálogo completo
-          </GoldButton>
-        </RevealOnScroll>
       </div>
     </section>
   );

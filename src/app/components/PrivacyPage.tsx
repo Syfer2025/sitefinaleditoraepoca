@@ -1,30 +1,34 @@
 import { useEffect } from "react";
-import { Link } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { Shield, ArrowLeft } from "lucide-react";
+import { useSEO } from "../hooks/useSEO";
 
 const F = "Inter, sans-serif";
 const PF = "'Playfair Display', serif";
 
 export function PrivacyPage() {
-  useEffect(() => {
-    document.title = "Politica de Privacidade — Epoca Editora de Livros";
-    window.scrollTo(0, 0);
-  }, []);
+  const navigate = useNavigate();
+  useSEO({
+    title: "Política de Privacidade",
+    description: "Saiba como a Época Editora de Livros coleta, usa e protege seus dados pessoais, em conformidade com a LGPD (Lei n. 13.709/2018).",
+    canonical: "https://editoraepoca.com.br/privacidade",
+  });
+  useEffect(() => { window.scrollTo(0, 0); }, []);
 
   return (
     <>
       <Navbar />
       <main className="min-h-screen pt-24 pb-16 px-4 md:px-6" style={{ backgroundColor: "#FFFDF8" }}>
         <div className="max-w-3xl mx-auto">
-          <Link
-            to="/"
+          <button
+            onClick={() => navigate(-1)}
             className="inline-flex items-center gap-1.5 text-sm text-[#856C42] hover:text-[#165B36] transition-colors mb-6"
             style={{ fontFamily: F }}
           >
-            <ArrowLeft className="w-4 h-4" /> Voltar ao inicio
-          </Link>
+            <ArrowLeft className="w-4 h-4" /> Voltar
+          </button>
 
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>
@@ -34,7 +38,7 @@ export function PrivacyPage() {
               <h1 className="text-2xl md:text-3xl font-semibold text-[#052413]" style={{ fontFamily: PF }}>
                 Politica de Privacidade
               </h1>
-              <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>Ultima atualizacao: 03 de marco de 2026</p>
+              <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>Ultima atualizacao: 21 de marco de 2026</p>
             </div>
           </div>
 
@@ -54,7 +58,7 @@ export function PrivacyPage() {
               <ul className="list-disc pl-6 space-y-1 mt-2">
                 <li><strong>Dados cadastrais:</strong> nome completo, e-mail, CPF ou CNPJ, razao social (para PJ);</li>
                 <li><strong>Dados de contato:</strong> telefone (quando fornecido), endereco de e-mail;</li>
-                <li><strong>Dados de navegacao:</strong> endereco IP, tipo de navegador, resolucao de tela, paginas visitadas;</li>
+                <li><strong>Dados de navegacao:</strong> endereco IP (coletado automaticamente pelo servidor para seguranca e prevencao a fraudes), tipo de navegador, resolucao de tela, paginas visitadas;</li>
                 <li><strong>Dados contratuais:</strong> informacoes do projeto editorial, valores, historico de pagamentos;</li>
                 <li><strong>Dados de geolocalizacao:</strong> coordenadas GPS (somente com consentimento explicito no aceite do contrato);</li>
                 <li><strong>Dados de pagamento:</strong> processados diretamente pelo Mercado Pago — nao armazenamos dados de cartao de credito.</li>
@@ -78,7 +82,9 @@ export function PrivacyPage() {
               <p>Seus dados pessoais podem ser compartilhados com:</p>
               <ul className="list-disc pl-6 space-y-1 mt-2">
                 <li><strong>Mercado Pago:</strong> para processamento de pagamentos;</li>
-                <li><strong>Supabase:</strong> infraestrutura de hospedagem e armazenamento de dados;</li>
+                <li><strong>Supabase:</strong> infraestrutura de hospedagem e armazenamento de dados. Os servidores da Supabase podem estar localizados fora do Brasil (EUA/UE). A transferencia internacional e realizada com base em clausulas contratuais adequadas, conforme art. 33 da LGPD;</li>
+                <li><strong>ViaCEP (viacep.com.br):</strong> servico publico de consulta de CEP utilizado no preenchimento automatico de endereco no cadastro — somente o CEP informado e enviado, sem outros dados pessoais;</li>
+                <li><strong>ReceitaWS (receitaws.com.br):</strong> API publica de consulta de CNPJ utilizada, mediante acao explicita do usuario, para validacao de pessoa juridica — somente o CNPJ informado e enviado;</li>
                 <li><strong>Autoridades fiscais:</strong> para cumprimento de obrigacoes legais e tributarias;</li>
                 <li><strong>Autoridades judiciais:</strong> quando houver determinacao legal.</li>
               </ul>
@@ -109,8 +115,15 @@ export function PrivacyPage() {
                 <li>Obter informacoes sobre entidades publicas e privadas com as quais compartilhamos dados.</li>
               </ul>
               <p className="mt-2">
-                Para exercer esses direitos, entre em contato pelo e-mail informado na secao de contato do nosso site.
-                Responderemos em ate <strong>15 dias uteis</strong>.
+                Para exercer esses direitos, acesse nossa{" "}
+                <Link to="/meus-dados" className="text-[#165B36] hover:underline">
+                  pagina de solicitacao de dados
+                </Link>{" "}
+                ou entre em contato pelo e-mail{" "}
+                <a href="mailto:privacidade@epocaeditora.com.br" className="text-[#165B36] hover:underline">
+                  privacidade@epocaeditora.com.br
+                </a>
+                . Responderemos em ate <strong>15 dias uteis</strong>.
               </p>
             </section>
 
@@ -143,9 +156,34 @@ export function PrivacyPage() {
             <section>
               <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>9. Encarregado de Dados (DPO)</h2>
               <p>
-                Para questoes relacionadas a protecao de dados pessoais, nosso Encarregado de Dados pode ser
-                contactado pelo e-mail disponivel na secao de contato do site.
+                Nosso Encarregado de Dados (DPO), designado conforme art. 37 da LGPD, pode ser contactado para
+                questoes relacionadas a protecao de dados pessoais:
               </p>
+              <p className="mt-2">
+                <strong>E-mail:</strong>{" "}
+                <a href="mailto:privacidade@epocaeditora.com.br" className="text-[#165B36] hover:underline">
+                  privacidade@epocaeditora.com.br
+                </a>
+              </p>
+              <p className="mt-1 text-sm text-[#052413]/60">
+                Responderemos a solicitacoes relacionadas a dados pessoais em ate 15 dias uteis, conforme art. 18, § 5 da LGPD.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>9a. Incidentes de Seguranca (Art. 48 LGPD)</h2>
+              <p>
+                Em caso de incidente de seguranca que possa acarretar risco ou dano relevante aos titulares,
+                a Epoca Editora notificara a Autoridade Nacional de Protecao de Dados (ANPD) e os titulares
+                afetados em prazo razoavel, conforme art. 48 da LGPD, informando:
+              </p>
+              <ul className="list-disc pl-6 space-y-1 mt-2">
+                <li>A natureza dos dados afetados;</li>
+                <li>As informacoes sobre os titulares envolvidos;</li>
+                <li>As medidas tecnicas e de seguranca adotadas;</li>
+                <li>Os riscos relacionados ao incidente;</li>
+                <li>As medidas que foram ou que serao adotadas para reverter ou mitigar os efeitos do incidente.</li>
+              </ul>
             </section>
 
             <section>

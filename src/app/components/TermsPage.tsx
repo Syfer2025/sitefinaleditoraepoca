@@ -1,30 +1,34 @@
 import { useEffect } from "react";
-import { Link } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { ScrollText, ArrowLeft } from "lucide-react";
+import { useSEO } from "../hooks/useSEO";
 
 const F = "Inter, sans-serif";
 const PF = "'Playfair Display', serif";
 
 export function TermsPage() {
-  useEffect(() => {
-    document.title = "Termos de Uso — Epoca Editora de Livros";
-    window.scrollTo(0, 0);
-  }, []);
+  const navigate = useNavigate();
+  useSEO({
+    title: "Termos de Uso",
+    description: "Leia os Termos de Uso da Época Editora de Livros. Condições para contratação de serviços editoriais, responsabilidades e direitos dos usuários.",
+    canonical: "https://editoraepoca.com.br/termos",
+  });
+  useEffect(() => { window.scrollTo(0, 0); }, []);
 
   return (
     <>
       <Navbar />
       <main className="min-h-screen pt-24 pb-16 px-4 md:px-6" style={{ backgroundColor: "#FFFDF8" }}>
         <div className="max-w-3xl mx-auto">
-          <Link
-            to="/"
+          <button
+            onClick={() => navigate(-1)}
             className="inline-flex items-center gap-1.5 text-sm text-[#856C42] hover:text-[#165B36] transition-colors mb-6"
             style={{ fontFamily: F }}
           >
-            <ArrowLeft className="w-4 h-4" /> Voltar ao inicio
-          </Link>
+            <ArrowLeft className="w-4 h-4" /> Voltar
+          </button>
 
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>

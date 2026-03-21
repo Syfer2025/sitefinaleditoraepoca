@@ -1,0 +1,17 @@
+---
+deployment:
+  tasks:
+    # 1. Instala as dependências
+    - export HOME=/home/SEU_USUARIO
+    - export NODE_PATH=/usr/local/lib/node_modules
+    - /usr/local/bin/npm install
+
+    # 2. Variáveis de ambiente do Supabase (substitua pelos seus valores reais)
+    - export VITE_SUPABASE_URL=https://SEU_PROJECT_ID.supabase.co
+    - export VITE_SUPABASE_ANON_KEY=SUA_ANON_KEY
+
+    # 3. Build do projeto com Vite
+    - /usr/local/bin/npm run build
+
+    # 4. Copia o conteúdo gerado para o public_html (raiz do domínio)
+    - /bin/cp -rf dist/. /home/SEU_USUARIO/public_html/

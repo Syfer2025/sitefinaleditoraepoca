@@ -38,6 +38,7 @@ interface UserInfo {
   email: string;
   name: string;
   role: string;
+  phone?: string;
 }
 
 interface UserAuthContextType {
@@ -46,7 +47,7 @@ interface UserAuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string, extra?: { documentType?: string; document?: string; companyName?: string; phone?: string; address?: any }) => Promise<void>;
   logout: () => void;
-  updateProfile: (name: string) => Promise<void>;
+  updateProfile: (fields: { name?: string; email?: string; phone?: string }) => Promise<void>;
 }
 
 const defaultContext: UserAuthContextType = {
@@ -72,7 +73,7 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchProfileWithRetry(accessToken: string, retries = 3, delayMs = 1500): Promise<Response | null> {
+    async function fetchProfileWithRetry(accessToken: string, retries = 3, delayMs = 800): Promise<Response | null> {
       for (let attempt = 1; attempt <= retries; attempt++) {
         if (cancelled) return null;
         try {
@@ -104,6 +105,7 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
         email: session.user.email || "",
         name: session.user.user_metadata?.name || session.user.email || "",
         role: session.user.user_metadata?.role || "user",
+        phone: session.user.user_metadata?.phone || "",
       };
     }
 
@@ -143,8 +145,14 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch {
-        clearUserData();
-        setUser(null);
+        // Network/unexpected error — preserve cached session if available
+        const cached = getUserData();
+        if (cached) {
+          setUser(cached);
+        } else {
+          clearUserData();
+          setUser(null);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -158,6 +166,24 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
         if (event === "SIGNED_OUT" || !session) {
           clearUserData();
           setUser(null);
+        } else if (event === "TOKEN_REFRESHED" && session) {
+          // Atualiza o cache do perfil silenciosamente quando o token é renovado
+          try {
+            const res = await fetch(`${BASE_URL}/user/me`, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${publicAnonKey}`,
+                "X-Access-Token": session.access_token,
+              },
+            });
+            if (res.ok) {
+              const data = await res.json();
+              setUser(data.user);
+              setUserData(data.user);
+            }
+          } catch {
+            // Silencioso — mantém dados do cache
+          }
         }
       }
     );
@@ -269,18 +295,19 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    await supabase.auth.signOut();
+    // scope: 'global' revokes all sessions/refresh tokens on the server
+    await supabase.auth.signOut({ scope: "global" });
     clearUserData();
     setUser(null);
     toast.success("Sessão encerrada com sucesso.");
   }, []);
 
-  const updateProfile = useCallback(async (name: string) => {
+  const updateProfile = useCallback(async (fields: { name?: string; email?: string; phone?: string }) => {
     try {
-      await userApi("/user/me", { method: "PUT", body: { name } });
-      setUser((prev) => (prev ? { ...prev, name } : null));
+      await userApi("/user/me", { method: "PUT", body: fields });
+      setUser((prev) => prev ? { ...prev, ...fields } : null);
       const current = getUserData();
-      if (current) setUserData({ ...current, name });
+      if (current) setUserData({ ...current, ...fields });
       toast.success("Perfil atualizado com sucesso!");
     } catch (err: any) {
       toast.error(err.message || "Erro ao atualizar perfil.");

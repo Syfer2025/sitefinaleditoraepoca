@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Eye, EyeOff, LogIn, BookOpen } from "lucide-react";
 import { motion } from "motion/react";
-import { api, setToken, clearToken } from "../../data/api";
+import { api, setToken, setAdminRefreshToken, clearToken } from "../../data/api";
 
 export function AdminLogin() {
   const navigate = useNavigate();
@@ -31,6 +31,7 @@ export function AdminLogin() {
       }
 
       setToken(data.access_token);
+      if (data.refresh_token) setAdminRefreshToken(data.refresh_token);
 
       // Small delay to ensure localStorage is synced
       await new Promise((r) => setTimeout(r, 100));

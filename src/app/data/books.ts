@@ -1,12 +1,14 @@
 export interface Book {
   id: number;
   title: string;
+  slug?: string;
   author: string;
   genre: string;
   rating: number;
   year: number;
   description: string;
   image: string;
+  photos?: string[];
 }
 
 export const genres = ["Todos", "Romance", "Ficção", "Contos", "Poesia", "Ensaios", "Suspense", "Crônicas"];
@@ -15,6 +17,7 @@ export const allBooks: Book[] = [
   {
     id: 1,
     title: "O Silêncio das Águas",
+    slug: "o-silencio-das-aguas",
     author: "Marina Alves",
     genre: "Romance",
     rating: 4.8,
@@ -27,6 +30,7 @@ export const allBooks: Book[] = [
   {
     id: 2,
     title: "Crônicas do Amanhecer",
+    slug: "cronicas-do-amanhecer",
     author: "Rafael Mendes",
     genre: "Contos",
     rating: 4.6,
@@ -39,6 +43,7 @@ export const allBooks: Book[] = [
   {
     id: 3,
     title: "A Última Estação",
+    slug: "a-ultima-estacao",
     author: "Lúcia Ferreira",
     genre: "Ficção",
     rating: 4.9,
@@ -51,6 +56,7 @@ export const allBooks: Book[] = [
   {
     id: 4,
     title: "Versos ao Vento",
+    slug: "versos-ao-vento",
     author: "Camila Duarte",
     genre: "Poesia",
     rating: 4.7,
@@ -63,6 +69,7 @@ export const allBooks: Book[] = [
   {
     id: 5,
     title: "O Peso das Ideias",
+    slug: "o-peso-das-ideias",
     author: "André Cavalcanti",
     genre: "Ensaios",
     rating: 4.5,
@@ -75,6 +82,7 @@ export const allBooks: Book[] = [
   {
     id: 6,
     title: "Noites de Outono",
+    slug: "noites-de-outono",
     author: "Beatriz Lemos",
     genre: "Romance",
     rating: 4.4,
@@ -87,6 +95,7 @@ export const allBooks: Book[] = [
   {
     id: 7,
     title: "Fragmentos do Real",
+    slug: "fragmentos-do-real",
     author: "Pedro Bastos",
     genre: "Contos",
     rating: 4.3,
@@ -99,6 +108,7 @@ export const allBooks: Book[] = [
   {
     id: 8,
     title: "Espelhos Invisíveis",
+    slug: "espelhos-invisiveis",
     author: "Lúcia Ferreira",
     genre: "Ficção",
     rating: 4.8,
@@ -111,6 +121,7 @@ export const allBooks: Book[] = [
   {
     id: 9,
     title: "Raízes e Asas",
+    slug: "raizes-e-asas",
     author: "Camila Duarte",
     genre: "Poesia",
     rating: 4.6,
@@ -123,6 +134,7 @@ export const allBooks: Book[] = [
   {
     id: 10,
     title: "Sombras no Espelho",
+    slug: "sombras-no-espelho",
     author: "Thiago Monteiro",
     genre: "Suspense",
     rating: 4.7,
@@ -135,6 +147,7 @@ export const allBooks: Book[] = [
   {
     id: 11,
     title: "Memórias de Além-Mar",
+    slug: "memorias-de-alem-mar",
     author: "Helena Barbosa",
     genre: "Romance",
     rating: 4.5,
@@ -147,6 +160,7 @@ export const allBooks: Book[] = [
   {
     id: 12,
     title: "Luz entre Linhas",
+    slug: "luz-entre-linhas",
     author: "Sofia Alencar",
     genre: "Crônicas",
     rating: 4.4,
@@ -159,6 +173,7 @@ export const allBooks: Book[] = [
   {
     id: 13,
     title: "O Labirinto Interior",
+    slug: "o-labirinto-interior",
     author: "Thiago Monteiro",
     genre: "Suspense",
     rating: 4.6,
@@ -171,6 +186,7 @@ export const allBooks: Book[] = [
   {
     id: 14,
     title: "Diário de Cinzas",
+    slug: "diario-de-cinzas",
     author: "Marina Alves",
     genre: "Ficção",
     rating: 4.3,
@@ -183,6 +199,7 @@ export const allBooks: Book[] = [
   {
     id: 15,
     title: "Páginas em Branco",
+    slug: "paginas-em-branco",
     author: "André Cavalcanti",
     genre: "Ensaios",
     rating: 4.2,
