@@ -20,6 +20,7 @@ function buildWhatsAppUrl(planName: string) {
 export function PricingSection() {
   const [plans, setPlans] = useState(DEFAULT_PLANS);
   const [servicesCard, setServicesCard] = useState<ServicesCard | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     getPlans()
@@ -27,7 +28,8 @@ export function PricingSection() {
         if (Array.isArray(data?.plans) && data.plans.length > 0) setPlans(data.plans);
         if (data?.servicesCard?.active) setServicesCard(data.servicesCard);
       })
-      .catch(() => {/* silently use defaults */});
+      .catch(() => {/* silently use defaults */})
+      .finally(() => setLoaded(true));
   }, []);
   return (
     <section id="planos" className="py-16 px-6 bg-secondary/30">
@@ -57,7 +59,7 @@ export function PricingSection() {
           </p>
         </RevealOnScroll>
 
-        {!servicesCard && <div className="grid md:grid-cols-3 gap-6 lg:gap-8 items-start">
+        {loaded && !servicesCard && <div className="grid md:grid-cols-3 gap-6 lg:gap-8 items-start">
           {plans.map((plan, i) => (
             <RevealOnScroll key={plan.id || plan.name} direction="up" delay={i * 0.12}>
               <div
@@ -205,7 +207,7 @@ export function PricingSection() {
           ))}
         </div>}
 
-        {servicesCard && (
+        {loaded && servicesCard && (
           <RevealOnScroll direction="up" delay={0.2}>
             <div
               className="relative rounded-2xl overflow-hidden"
