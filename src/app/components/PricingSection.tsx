@@ -81,7 +81,7 @@ export function PricingSection() {
           <p
             className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3"
           >
-            Planos
+            Serviços Editoriais
           </p>
           <h2
             className="text-[2.5rem] md:text-[3rem] text-foreground mb-4 font-serif leading-[1.15]"
@@ -92,8 +92,9 @@ export function PricingSection() {
             className="text-muted-foreground max-w-2xl mx-auto"
             style={{ lineHeight: 1.7 }}
           >
-            Escolha o plano ideal para transformar seu manuscrito em uma obra
-            publicada. Todos incluem acompanhamento editorial personalizado.
+            {servicesCard
+              ? "Da revisão ao lançamento, cuidamos de cada etapa da sua obra com dedicação e profissionalismo."
+              : "Escolha o plano ideal para transformar seu manuscrito em uma obra publicada. Todos incluem acompanhamento editorial personalizado."}
           </p>
         </RevealOnScroll>
 
@@ -259,7 +260,7 @@ export function PricingSection() {
                 }}
               >
                 <Star className="w-3.5 h-3.5 fill-current" />
-                Serviços incluídos
+                Serviços Editoriais
               </div>
 
               <div className="p-8">
