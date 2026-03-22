@@ -23,7 +23,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [logoImg, setLogoImg] = useState<string>(() => {
-    try { return localStorage.getItem("epoca_logo_navbar") || ""; } catch { return ""; }
+    try { return localStorage.getItem("epoca_logo_navbar") || "/assets/logo.png"; } catch { return "/assets/logo.png"; }
   });
   const { user } = useUserAuth();
   const location = useLocation();
@@ -97,8 +97,6 @@ export function Navbar() {
             className="h-10 transition-all duration-300"
             style={{
               filter: scrolled ? "none" : "brightness(0) invert(1)",
-              opacity: logoImg ? 1 : 0,
-              transition: "opacity 0.25s ease, filter 0.3s ease",
             }}
           />
         </Link>
