@@ -139,11 +139,11 @@ export function PasswordResetPage() {
               </div>
               <div>
                 <p className="text-base font-semibold text-[#052413] font-serif">
-                  {mode === "request" ? "E-mail enviado!" : "Senha redefinida!"}
+                  {mode === "request" ? "Solicitação enviada!" : "Senha redefinida!"}
                 </p>
                 <p className="text-sm text-[#856C42] mt-1">
                   {mode === "request"
-                    ? `Verifique sua caixa de entrada (${email}) e clique no link para redefinir sua senha.`
+                    ? `Se o endereço ${email} estiver cadastrado em nossa plataforma, você receberá um link para redefinir sua senha em instantes. Verifique também a pasta de spam.`
                     : "Sua senha foi atualizada. Redirecionando para o login..."
                   }
                 </p>
