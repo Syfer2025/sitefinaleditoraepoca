@@ -4,6 +4,9 @@ import { Eye, EyeOff, ArrowLeft, CheckCircle, AlertCircle, Loader2, KeyRound, Ma
 import { motion } from "motion/react";
 import { GoldButton } from "./GoldButton";
 import { supabase } from "../data/supabaseClient";
+import { projectId, publicAnonKey } from "/utils/supabase/info";
+
+const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-e413165d`;
 
 const F = "Inter, sans-serif";
 const PF = "'Playfair Display', serif";
@@ -59,10 +62,13 @@ export function PasswordResetPage() {
     }
     setLoading(true);
     try {
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/recuperar-senha`,
+      const res = await fetch(`${BASE_URL}/auth/request-reset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${publicAnonKey}` },
+        body: JSON.stringify({ email: email.trim() }),
       });
-      if (resetError) throw resetError;
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao enviar e-mail de recuperação.");
       setDone(true);
     } catch (e: any) {
       setError(e.message || "Erro ao enviar e-mail de recuperação. Tente novamente.");

@@ -473,6 +473,75 @@ app.get(`${P}/user/me`, async (c) => {
   } catch (e) { return err(c, `Erro ao buscar perfil: ${e}`); }
 });
 
+// ── Password recovery via own SMTP ────────────────────────────────────────────
+app.post(`${P}/auth/request-reset`, async (c) => {
+  try {
+    const ip = c.req.header("x-forwarded-for") || c.req.header("cf-connecting-ip") || "unknown";
+    if (isRateLimited(`reset:${ip}`, 5, 15 * 60 * 1000)) {
+      return err(c, "Muitas tentativas. Aguarde 15 minutos.", 429);
+    }
+    const { email } = await c.req.json();
+    if (!email || !email.includes("@")) return err(c, "E-mail inválido.", 400);
+
+    const emailCfg: any = await kv.get("email_config") || {};
+    const smtpReady = !!(emailCfg.host && emailCfg.user && emailCfg.password);
+
+    // Generate the recovery link via Supabase Admin API
+    const sb = getAdminClient();
+    const siteUrl = Deno.env.get("SITE_URL") || "https://editoraepoca.com.br";
+    const { data, error } = await sb.auth.admin.generateLink({
+      type: "recovery",
+      email: email.trim(),
+      options: { redirectTo: `${siteUrl}/recuperar-senha` },
+    });
+
+    if (error) {
+      // Don't reveal if email exists — silently succeed
+      console.log(`[reset] generateLink error for ${email}: ${error.message}`);
+      return c.json({ success: true });
+    }
+
+    const resetLink = (data as any)?.properties?.action_link || "";
+
+    if (smtpReady && resetLink) {
+      // Send via own SMTP
+      await sendEmail(
+        email.trim(),
+        "Recuperação de senha — Época Editora",
+        `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:#FFFDF8">
+          <div style="text-align:center;margin-bottom:24px">
+            <h1 style="color:#165B36;font-size:22px;margin:0;font-family:Georgia,serif">Época Editora de Livros</h1>
+          </div>
+          <h2 style="color:#052413;font-size:18px;margin:0 0 12px">Redefinição de senha</h2>
+          <p style="color:#374151;font-size:14px;line-height:1.7;margin:0 0 20px">
+            Recebemos uma solicitação para redefinir a senha da sua conta.<br>
+            Clique no botão abaixo para criar uma nova senha:
+          </p>
+          <div style="text-align:center;margin:28px 0">
+            <a href="${resetLink}" style="background:linear-gradient(135deg,#165B36,#052413);color:#EBBF74;text-decoration:none;padding:14px 32px;border-radius:50px;font-size:14px;font-weight:bold;display:inline-block">
+              Redefinir minha senha
+            </a>
+          </div>
+          <p style="color:#6b7280;font-size:12px;line-height:1.6;margin:0">
+            Se você não solicitou a redefinição, ignore este e-mail.<br>
+            O link expira em <strong>1 hora</strong>.
+          </p>
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0"/>
+          <p style="color:#9ca3af;font-size:11px;text-align:center;margin:0">
+            Época Editora de Livros · <a href="${siteUrl}" style="color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a>
+          </p>
+        </div>`,
+      );
+      auditLog("password_reset_sent_smtp", { email });
+    } else if (resetLink) {
+      // Fallback: let Supabase send its default email (already triggered by generateLink)
+      auditLog("password_reset_sent_supabase_fallback", { email });
+    }
+
+    return c.json({ success: true });
+  } catch (e) { return err(c, `Erro ao processar solicitação: ${e}`); }
+});
+
 app.put(`${P}/user/me`, async (c) => {
   try {
     const auth = await verifyAuth(c.req.raw);
