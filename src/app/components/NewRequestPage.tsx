@@ -58,6 +58,23 @@ const SERVICE_OPTIONS = [
 const ACCEPTED_FILE_TYPES =
   ".doc,.docx,.pdf,.txt,.rtf,.odt,.epub,.indd,.idml,.psd,.ai,.jpg,.jpeg,.png,.tiff,.tif,.svg,.zip,.rar,.7z";
 
+const ACCEPTED_MIME_TYPES = new Set([
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/pdf",
+  "text/plain",
+  "application/rtf", "text/rtf",
+  "application/vnd.oasis.opendocument.text",
+  "application/epub+zip",
+  "application/x-indesign", "application/x-idml",
+  "image/vnd.adobe.photoshop",
+  "application/postscript",
+  "image/jpeg", "image/png", "image/tiff", "image/svg+xml",
+  "application/zip", "application/x-zip-compressed",
+  "application/x-rar-compressed", "application/vnd.rar",
+  "application/x-7z-compressed",
+]);
+
 const WIZARD_STEPS = [
   { label: "Obra", icon: BookOpen },
   { label: "Serviços", icon: Package },
@@ -215,6 +232,10 @@ export function NewRequestPage() {
     const maxSize = 50 * 1024 * 1024;
     const valid = arr.filter((f) => {
       if (f.size > maxSize) { setError(`"${f.name}" excede o limite de 50 MB.`); return false; }
+      const ext = "." + f.name.split(".").pop()?.toLowerCase();
+      const mimeOk = !f.type || ACCEPTED_MIME_TYPES.has(f.type);
+      const extOk = ACCEPTED_FILE_TYPES.split(",").includes(ext);
+      if (!mimeOk && !extOk) { setError(`"${f.name}" não é um tipo de arquivo permitido.`); return false; }
       return true;
     });
     setFiles((prev) => [...prev, ...valid].slice(0, 10));

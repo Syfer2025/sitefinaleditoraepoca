@@ -8,7 +8,6 @@ import { Footer } from "./Footer";
 import { BackToTop } from "./BackToTop";
 import { WhatsAppButton } from "./WhatsAppButton";
 import { motion, AnimatePresence } from "motion/react";
-import logoFallback from "/assets/logo.png";
 import { allBooks } from "../data/books";
 import { getBooks, getLogos } from "../data/api";
 import { buildWhatsAppUrl } from "../data/constants";
@@ -25,7 +24,9 @@ export function CatalogPage() {
   const [sortBy, setSortBy] = useState("recent");
   const [showFilters, setShowFilters] = useState(false);
   const [books, setBooks] = useState(allBooks);
-  const [logoImg, setLogoImg] = useState<string>(logoFallback);
+  const [logoImg, setLogoImg] = useState<string>(() => {
+    try { return localStorage.getItem("epoca_logo_navbar") || "/assets/logo.png"; } catch { return "/assets/logo.png"; }
+  });
 
   useSEO({
     title: "Catálogo de Livros",
@@ -187,6 +188,8 @@ export function CatalogPage() {
             </select>
             <button
               onClick={() => setShowFilters(!showFilters)}
+              aria-label="Mostrar filtros de gênero"
+              aria-expanded={showFilters}
               className="sm:hidden flex items-center gap-2 px-4 py-3 rounded-xl bg-card border border-border text-foreground transition-all duration-300 cursor-pointer"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
@@ -204,6 +207,8 @@ export function CatalogPage() {
             <button
               key={genre}
               onClick={() => setActiveGenre(genre)}
+              aria-label={`Filtrar por ${genre}`}
+              aria-pressed={activeGenre === genre}
               className="px-4 py-2 rounded-full transition-all duration-300 cursor-pointer text-[0.875rem]"
               style={{
                 fontFamily: "Inter, sans-serif",
@@ -302,6 +307,7 @@ export function CatalogPage() {
                       src={book.image}
                       alt={book.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="absolute top-4 left-4 flex gap-2">

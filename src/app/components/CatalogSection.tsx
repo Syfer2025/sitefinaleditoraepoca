@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { LoadingSpinner } from "./LoadingSpinner";
 import { Star, BookX } from "lucide-react";
 import { GoldButton } from "./GoldButton";
 import { RevealOnScroll } from "./RevealOnScroll";
@@ -11,11 +12,13 @@ import { buildWhatsAppUrl } from "../data/constants";
 export function CatalogSection() {
   const [activeGenre, setActiveGenre] = useState("Todos");
   const [allBooks, setAllBooks] = useState(featuredBooks);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getBooks()
       .then((data) => { if (Array.isArray(data?.books) && data.books.length > 0) setAllBooks(data.books); })
-      .catch(() => {/* silently use defaults */});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const featured = useMemo(() => allBooks.slice(0, 9), [allBooks]);
@@ -64,6 +67,8 @@ export function CatalogSection() {
               <button
                 key={genre}
                 onClick={() => setActiveGenre(genre)}
+                aria-label={`Filtrar por ${genre}`}
+                aria-pressed={activeGenre === genre}
                 className="px-5 py-2 rounded-full transition-all duration-300 cursor-pointer"
                 style={{
                   fontFamily: "Inter, sans-serif",
@@ -88,6 +93,19 @@ export function CatalogSection() {
 
         {/* Books grid */}
         <div className="grid md:grid-cols-3 gap-6">
+          {loading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-card rounded-2xl overflow-hidden border border-border animate-pulse">
+                <div className="h-64 bg-muted" />
+                <div className="p-5 space-y-3">
+                  <div className="h-3 bg-muted rounded w-1/4" />
+                  <div className="h-5 bg-muted rounded w-3/4" />
+                  <div className="h-3 bg-muted rounded w-1/2" />
+                  <div className="h-10 bg-muted rounded" />
+                </div>
+              </div>
+            ))
+          ) : (
           <AnimatePresence mode="popLayout">
             {filteredBooks.length === 0 ? (
               <motion.div
@@ -182,6 +200,7 @@ export function CatalogSection() {
               ))
             )}
           </AnimatePresence>
+          )}
         </div>
 
       </div>

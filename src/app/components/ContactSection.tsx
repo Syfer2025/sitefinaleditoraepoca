@@ -200,30 +200,36 @@ export function ContactSection() {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <label
+                          htmlFor="contact-name"
                           className="block text-[0.875rem] text-foreground mb-1.5"
                           style={{ fontFamily: "Inter, sans-serif" }}
                         >
-                          Nome
+                          Nome <span className="text-red-500">*</span>
                         </label>
                         <input
+                          id="contact-name"
                           type="text"
                           name="name"
                           placeholder="Seu nome"
+                          required
                           className="w-full px-4 py-3 rounded-lg bg-input-background border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-300"
                           style={{ fontFamily: "Inter, sans-serif" }}
                         />
                       </div>
                       <div>
                         <label
+                          htmlFor="contact-email"
                           className="block text-[0.875rem] text-foreground mb-1.5"
                           style={{ fontFamily: "Inter, sans-serif" }}
                         >
-                          Email
+                          Email <span className="text-red-500">*</span>
                         </label>
                         <input
+                          id="contact-email"
                           type="email"
                           name="email"
                           placeholder="seu@email.com"
+                          required
                           className="w-full px-4 py-3 rounded-lg bg-input-background border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-300"
                           style={{ fontFamily: "Inter, sans-serif" }}
                         />
@@ -250,15 +256,18 @@ export function ContactSection() {
                     </div>
                     <div>
                       <label
+                        htmlFor="contact-message"
                         className="block text-[0.875rem] text-foreground mb-1.5"
                         style={{ fontFamily: "Inter, sans-serif" }}
                       >
-                        Mensagem
+                        Mensagem <span className="text-red-500">*</span>
                       </label>
                       <textarea
+                        id="contact-message"
                         name="message"
                         rows={4}
                         placeholder="Sua mensagem..."
+                        required
                         className="w-full px-4 py-3 rounded-lg bg-input-background border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-300 resize-none"
                         style={{ fontFamily: "Inter, sans-serif" }}
                       />

@@ -20,7 +20,7 @@ export function BookDetailPage() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
   useSEO({
-    title: book ? book.title : "Livro",
+    title: book ? `${book.title} — Época Editora de Livros` : "Livro não encontrado — Época Editora",
     description: book
       ? `${book.title}${book.author ? ` — ${book.author}` : ""}. ${book.description ? book.description.slice(0, 140) : "Conheça este título no catálogo da Época Editora de Livros."}`
       : "Conheça este título no catálogo da Época Editora de Livros.",
@@ -43,10 +43,18 @@ export function BookDetailPage() {
         "author": book.author ? { "@type": "Person", "name": book.author } : undefined,
         "image": book.cover || undefined,
         "description": book.description || undefined,
+        "datePublished": book.year ? String(book.year) : undefined,
+        "inLanguage": "pt-BR",
         "publisher": {
           "@type": "Organization",
           "@id": "https://editoraepoca.com.br/#organization",
           "name": "Época Editora de Livros",
+        },
+        "offers": {
+          "@type": "Offer",
+          "url": `https://editoraepoca.com.br/livros/${slug}`,
+          "availability": "https://schema.org/InStock",
+          "seller": { "@type": "Organization", "name": "Época Editora de Livros" },
         },
         "url": `https://editoraepoca.com.br/livros/${slug}`,
       });
