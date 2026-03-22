@@ -52,6 +52,7 @@ const navItems = [
   { path: "/admin/integracoes", label: "Integrações", icon: Plug },
   { path: "/admin/email-config", label: "Config. SMTP", icon: Settings2 },
   { path: "/admin/email-marketing", label: "Email Marketing", icon: Megaphone },
+  { path: "/admin/compor-email", label: "Compor E-mail", icon: Mail },
   { path: "/admin/hero", label: "Hero (Banner)", icon: Sparkles },
   { path: "/admin/sobre-texto", label: "Sobre (Texto)", icon: FileText },
   { path: "/admin/cta-banner", label: "CTA Banner", icon: Megaphone },

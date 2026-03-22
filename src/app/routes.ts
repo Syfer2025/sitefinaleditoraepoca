@@ -51,6 +51,7 @@ export const router = createBrowserRouter([
       { path: "integracoes", lazy: () => import("./components/admin/AdminTracking").then(m => ({ Component: m.AdminTracking })) },
       { path: "email-config", lazy: () => import("./components/admin/AdminEmailConfig").then(m => ({ Component: m.AdminEmailConfig })) },
       { path: "email-marketing", lazy: () => import("./components/admin/AdminEmailMarketing").then(m => ({ Component: m.AdminEmailMarketing })) },
+      { path: "compor-email", lazy: () => import("./components/admin/AdminComposeMail").then(m => ({ Component: m.AdminComposeMail })) },
       { path: "hero", lazy: () => import("./components/admin/AdminHero").then(m => ({ Component: m.AdminHero })) },
       { path: "sobre-texto", lazy: () => import("./components/admin/AdminAboutContent").then(m => ({ Component: m.AdminAboutContent })) },
       { path: "cta-banner", lazy: () => import("./components/admin/AdminCtaBanner").then(m => ({ Component: m.AdminCtaBanner })) },

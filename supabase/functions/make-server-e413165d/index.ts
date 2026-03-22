@@ -2809,6 +2809,86 @@ app.post(`${P}/admin/email-config/test`, async (c) => {
   } catch (e) { return err(c, `Erro ao enviar e-mail de teste: ${e}`); }
 });
 
+// ── Admin: Compose & send email ───────────────────────────────────────────────
+app.post(`${P}/admin/compose-email`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+
+    const { to, subject, body, replyTo } = await c.req.json();
+    if (!to || !subject || !body) return err(c, "Campos obrigatórios: to, subject, body.", 400);
+
+    const recipients: string[] = Array.isArray(to) ? to : [to];
+    if (recipients.length === 0) return err(c, "Informe ao menos um destinatário.", 400);
+
+    const cfg: any = await kv.get("email_config") || {};
+    if (!cfg.host || !cfg.user || !cfg.password) return err(c, "SMTP não configurado.", 400);
+
+    const siteUrl = Deno.env.get("SITE_URL") || "https://editoraepoca.com.br";
+    const fromName = cfg.from_name || "Época Editora";
+
+    // Convert plain text → HTML paragraphs
+    const bodyHtml = body
+      .split(/\n\n+/)
+      .map((p: string) => `<p style="margin:0 0 14px;color:#374151;font-size:14px;line-height:1.75">${p.replace(/\n/g, "<br>")}</p>`)
+      .join("");
+
+    const signature = `
+      <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb">
+        <table cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding-right:14px;border-right:3px solid #EBBF74;vertical-align:middle">
+              <p style="margin:0;font-family:Georgia,serif;font-style:italic;font-size:15px;color:#052413;font-weight:bold">${fromName}</p>
+            </td>
+            <td style="padding-left:14px;vertical-align:middle">
+              <p style="margin:0 0 2px;font-size:11px;color:#856C42;letter-spacing:0.05em">Editorial · Publicação · Literatura</p>
+              <a href="${siteUrl}" style="font-size:11px;color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a>
+            </td>
+          </tr>
+        </table>
+      </div>`;
+
+    const html = `
+      <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+        <div style="background:linear-gradient(135deg,#165B36,#052413);padding:22px 24px">
+          <h1 style="color:#EBBF74;font-size:20px;margin:0;font-family:Georgia,serif;font-style:italic">${fromName}</h1>
+        </div>
+        <div style="padding:32px 28px">
+          ${bodyHtml}
+          ${signature}
+        </div>
+        <div style="background:#F0E8D4;padding:12px 24px;text-align:center;border-top:1px solid #e5e7eb">
+          <p style="color:#9ca3af;font-size:10px;margin:0">${fromName} · <a href="${siteUrl}" style="color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a></p>
+        </div>
+      </div>`;
+
+    // Send to all recipients
+    const nodemailer = await import("npm:nodemailer");
+    const decryptedPassword = await decryptPassword(cfg.password);
+    const transporter = nodemailer.default.createTransport({
+      host: cfg.host,
+      port: parseInt(cfg.port || "587"),
+      secure: cfg.encryption === "ssl",
+      requireTLS: cfg.encryption === "tls",
+      auth: { user: cfg.user, pass: decryptedPassword },
+    });
+    const fromField = cfg.from_name
+      ? `"${cfg.from_name}" <${cfg.from_email || cfg.user}>`
+      : (cfg.from_email || cfg.user);
+
+    await transporter.sendMail({
+      from: fromField,
+      to: recipients.join(", "),
+      replyTo: replyTo || cfg.reply_to || cfg.from_email || cfg.user,
+      subject,
+      html,
+    });
+
+    auditLog("compose_email_sent", { by: auth.email, to: recipients, subject });
+    return c.json({ ok: true, sent: recipients.length });
+  } catch (e) { return err(c, `Erro ao enviar: ${e}`); }
+});
+
 // ── Admin: Test all email templates ───────────────────────────────────────────
 app.post(`${P}/admin/email-config/test-template`, async (c) => {
   try {

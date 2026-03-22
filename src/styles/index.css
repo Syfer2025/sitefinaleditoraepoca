@@ -1,3 +1,11 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+.compose-editor:empty:before {
+  content: attr(data-placeholder);
+  color: rgba(133, 108, 66, 0.4);
+  pointer-events: none;
+}
+.compose-editor ul { list-style: disc; padding-left: 1.4em; margin: 0 0 12px; }
+.compose-editor a { color: #165B36; text-decoration: underline; }
