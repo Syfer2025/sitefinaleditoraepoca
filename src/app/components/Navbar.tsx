@@ -22,13 +22,20 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
-  const [logoImg, setLogoImg] = useState<string>("");
+  const [logoImg, setLogoImg] = useState<string>(() => {
+    try { return sessionStorage.getItem("epoca_logo_navbar") || ""; } catch { return ""; }
+  });
   const { user } = useUserAuth();
   const location = useLocation();
   const isHomePage = location.pathname === "/";
 
   useEffect(() => {
-    getLogos().then((logos) => { if (logos.logo_navbar) setLogoImg(logos.logo_navbar); });
+    getLogos().then((logos) => {
+      if (logos.logo_navbar) {
+        setLogoImg(logos.logo_navbar);
+        try { sessionStorage.setItem("epoca_logo_navbar", logos.logo_navbar); } catch {}
+      }
+    });
   }, []);
 
   useEffect(() => {
