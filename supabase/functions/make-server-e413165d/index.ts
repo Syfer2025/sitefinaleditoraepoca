@@ -2907,7 +2907,7 @@ app.post(`${P}/admin/compose-email`, async (c) => {
 
     // Send to all recipients
     const nodemailer = await import("npm:nodemailer");
-    const decryptedPassword = await decryptPassword(cfg.password);
+    const decryptedPassword = await decryptSecret(cfg.password);
     const transporter = nodemailer.default.createTransport({
       host: cfg.host,
       port: parseInt(cfg.port || "587"),
@@ -3079,7 +3079,7 @@ app.post(`${P}/admin/email-config/test-template`, async (c) => {
 // ── Admin: IMAP Inbox ─────────────────────────────────────────────────────────
 async function withImap<T>(cfg: any, fn: (client: any) => Promise<T>): Promise<T> {
   const { ImapFlow } = await import("npm:imapflow");
-  const decryptedPassword = await decryptPassword(cfg.password);
+  const decryptedPassword = await decryptSecret(cfg.password);
   const imapHost = cfg.imap_host || cfg.host;
   const imapPort = parseInt(cfg.imap_port || "993");
   const imapSecure = imapPort === 993 || cfg.imap_encryption === "ssl" || !cfg.imap_port;
