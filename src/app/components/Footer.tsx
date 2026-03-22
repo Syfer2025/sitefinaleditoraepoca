@@ -67,9 +67,7 @@ export function Footer() {
                   <img
                     src={footerLogoImg}
                     alt="Época Editora"
-                    className="h-8"
-                    width={138}
-                    height={32}
+                    className="h-8 w-auto"
                     loading="lazy"
                   />
                 </Link>
