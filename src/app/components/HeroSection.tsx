@@ -27,7 +27,7 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative h-[70vh] min-h-[480px] flex items-center justify-center overflow-hidden"
+      className="relative h-[70vh] min-h-[480px] flex items-center justify-center overflow-hidden mt-[72px]"
     >
       {/* Background image with parallax */}
       <div className="absolute inset-0">

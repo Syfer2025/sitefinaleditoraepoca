@@ -289,11 +289,11 @@ export function BookDetailPage() {
               className="text-muted-foreground mb-8"
               style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
             >
-              Conheça nossos planos editoriais e transforme seu manuscrito em uma obra publicada.
+              Quer publicar sua obra? Entre em contato e transforme seu manuscrito em um livro publicado.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <GoldButton href="/#planos" className="px-8 py-3.5">
-                Ver planos
+              <GoldButton to="/nova-solicitacao" className="px-8 py-3.5">
+                Publicar minha obra
               </GoldButton>
               <Link
                 to="/catalogo"

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Menu, X, LogIn, ChevronRight } from "lucide-react";
-import { Link, useLocation } from "react-router";
+import { Menu, X, LogIn, LogOut } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { useUserAuth } from "./UserAuthContext";
 import { getLogos } from "../data/api";
@@ -20,13 +20,13 @@ const navLinks = [
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [logoImg, setLogoImg] = useState<string>(() => {
     try { return localStorage.getItem("epoca_logo_navbar") || "/assets/logo.png"; } catch { return "/assets/logo.png"; }
   });
-  const { user } = useUserAuth();
+  const { user, logout } = useUserAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const isHomePage = location.pathname === "/";
 
   useEffect(() => {
@@ -38,16 +38,6 @@ export function Navbar() {
     });
   }, []);
 
-  useEffect(() => {
-    if (!isHomePage) {
-      setScrolled(true);
-      return;
-    }
-    setScrolled(window.scrollY > 40);
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [isHomePage]);
 
   // Active section detection via IntersectionObserver
   useEffect(() => {
@@ -77,16 +67,12 @@ export function Navbar() {
   return (
     <>
     <nav
-      className="fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow] duration-300"
+      className="fixed top-0 left-0 right-0 z-50"
       style={{
-        backgroundColor: scrolled
-          ? "rgba(247, 244, 238, 0.95)"
-          : "transparent",
-        backdropFilter: scrolled ? "blur(12px)" : "none",
-        borderBottom: scrolled
-          ? "1px solid rgba(133, 108, 66, 0.15)"
-          : "1px solid transparent",
-        boxShadow: scrolled ? "0 1px 20px rgba(5, 36, 19, 0.06)" : "none",
+        backgroundColor: "rgba(247, 244, 238, 0.97)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(133, 108, 66, 0.15)",
+        boxShadow: "0 1px 20px rgba(5, 36, 19, 0.06)",
       }}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -94,10 +80,7 @@ export function Navbar() {
           <img
             src={logoImg || LOGO_PLACEHOLDER}
             alt="Época Editora"
-            className="h-10 transition-all duration-300"
-            style={{
-              filter: scrolled ? "none" : "brightness(0) invert(1)",
-            }}
+            className="h-10"
           />
         </Link>
 
@@ -112,38 +95,15 @@ export function Navbar() {
                 className="relative py-1 transition-colors duration-300 group"
                 style={{
                   fontFamily: "Inter, sans-serif",
-                  color: isActive
-                    ? scrolled
-                      ? "#165B36"
-                      : "#EBBF74"
-                    : scrolled
-                      ? "#856C42"
-                      : "rgba(255,255,255,0.75)",
+                  color: isActive ? "#165B36" : "#856C42",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = scrolled
-                    ? "#165B36"
-                    : "#EBBF74";
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.color = scrolled
-                      ? "#856C42"
-                      : "rgba(255,255,255,0.75)";
-                  } else {
-                    e.currentTarget.style.color = scrolled
-                      ? "#165B36"
-                      : "#EBBF74";
-                  }
-                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "#165B36"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = isActive ? "#165B36" : "#856C42"; }}
               >
                 {link.label}
                 <span
                   className="absolute bottom-0 left-0 h-[1.5px] transition-all duration-300"
-                  style={{
-                    backgroundColor: scrolled ? "#165B36" : "#EBBF74",
-                    width: isActive ? "100%" : "0%",
-                  }}
+                  style={{ backgroundColor: "#165B36", width: isActive ? "100%" : "0%" }}
                 />
               </a>
             );
@@ -154,32 +114,15 @@ export function Navbar() {
             <Link
               to="/minha-conta"
               className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 hover:scale-105"
-              style={{
-                background: scrolled
-                  ? "linear-gradient(135deg, #165B36, #052413)"
-                  : "rgba(255,255,255,0.12)",
-                border: scrolled
-                  ? "none"
-                  : "1px solid rgba(255,255,255,0.15)",
-              }}
+              style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
             >
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-[0.6rem] font-semibold"
-                style={{
-                  background: "linear-gradient(135deg, #EBBF74, #D4AF5A)",
-                  color: "#052413",
-                  fontFamily: "Inter, sans-serif",
-                }}
+                style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)", color: "#052413", fontFamily: "Inter, sans-serif" }}
               >
                 {user.name?.[0]?.toUpperCase() || user.email[0]?.toUpperCase()}
               </div>
-              <span
-                className="text-sm max-w-[80px] truncate"
-                style={{
-                  fontFamily: "Inter, sans-serif",
-                  color: scrolled ? "#EBBF74" : "rgba(255,255,255,0.9)",
-                }}
-              >
+              <span className="text-sm max-w-[80px] truncate" style={{ fontFamily: "Inter, sans-serif", color: "#EBBF74" }}>
                 {user.name?.split(" ")[0] || "Conta"}
               </span>
             </Link>
@@ -187,16 +130,7 @@ export function Navbar() {
             <Link
               to="/entrar"
               className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm transition-all duration-300 hover:scale-105"
-              style={{
-                fontFamily: "Inter, sans-serif",
-                background: scrolled
-                  ? "linear-gradient(135deg, #165B36, #052413)"
-                  : "rgba(255,255,255,0.1)",
-                color: scrolled ? "#EBBF74" : "rgba(255,255,255,0.85)",
-                border: scrolled
-                  ? "none"
-                  : "1px solid rgba(255,255,255,0.15)",
-              }}
+              style={{ fontFamily: "Inter, sans-serif", background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
             >
               <LogIn className="w-3.5 h-3.5" />
               Entrar
@@ -210,14 +144,7 @@ export function Navbar() {
             <Link
               to="/minha-conta"
               className="w-8 h-8 rounded-full flex items-center justify-center text-[0.6rem] font-semibold"
-              style={{
-                background: scrolled
-                  ? "linear-gradient(135deg, #165B36, #052413)"
-                  : "rgba(255,255,255,0.15)",
-                color: scrolled ? "#EBBF74" : "#ffffff",
-                border: scrolled ? "none" : "1px solid rgba(255,255,255,0.3)",
-                fontFamily: "Inter, sans-serif",
-              }}
+              style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74", fontFamily: "Inter, sans-serif" }}
               aria-label="Minha conta"
             >
               {user.name?.[0]?.toUpperCase() || user.email[0]?.toUpperCase()}
@@ -225,15 +152,8 @@ export function Navbar() {
           ) : (
             <Link
               to="/entrar"
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-300"
-              style={{
-                fontFamily: "Inter, sans-serif",
-                background: scrolled
-                  ? "linear-gradient(135deg, #165B36, #052413)"
-                  : "rgba(255,255,255,0.12)",
-                color: scrolled ? "#EBBF74" : "rgba(255,255,255,0.9)",
-                border: scrolled ? "none" : "1px solid rgba(255,255,255,0.2)",
-              }}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium"
+              style={{ fontFamily: "Inter, sans-serif", background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
             >
               <LogIn className="w-3.5 h-3.5" />
               Entrar
@@ -241,8 +161,7 @@ export function Navbar() {
           )}
 
           <button
-            className="transition-colors duration-300"
-            style={{ color: scrolled ? "#052413" : "#ffffff" }}
+            className="text-[#052413]"
             onClick={() => setIsOpen(!isOpen)}
             aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
             aria-expanded={isOpen}
@@ -315,22 +234,33 @@ export function Navbar() {
             style={{ borderTop: "1px solid rgba(133,108,66,0.1)" }}
           >
             {user ? (
-              <Link
-                to="/minha-conta"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 min-w-0"
-                style={{ fontFamily: "Inter, sans-serif" }}
-              >
-                <div
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-[0.6rem] font-semibold flex-shrink-0"
-                  style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
+              <div className="flex items-center gap-2 min-w-0">
+                <Link
+                  to="/minha-conta"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 min-w-0"
+                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
-                  {user.name?.[0]?.toUpperCase() || user.email[0]?.toUpperCase()}
-                </div>
-                <span className="text-xs text-[#052413] font-medium truncate">
-                  {user.name?.split(" ")[0] || "Minha Conta"}
-                </span>
-              </Link>
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center text-[0.6rem] font-semibold flex-shrink-0"
+                    style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
+                  >
+                    {user.name?.[0]?.toUpperCase() || user.email[0]?.toUpperCase()}
+                  </div>
+                  <span className="text-xs text-[#052413] font-medium truncate">
+                    {user.name?.split(" ")[0] || "Minha Conta"}
+                  </span>
+                </Link>
+                <button
+                  onClick={() => { logout(); setIsOpen(false); navigate("/entrar"); }}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-[#856C42] hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer flex-shrink-0"
+                  style={{ fontFamily: "Inter, sans-serif" }}
+                  aria-label="Sair da conta"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Sair
+                </button>
+              </div>
             ) : (
               <Link
                 to="/entrar"

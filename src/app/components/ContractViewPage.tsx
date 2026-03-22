@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { ArrowLeft, Download, Loader2, Printer, AlertTriangle } from "lucide-react";
 import { getPaymentInfo, getPublicContractTemplate, getContractPdfUrl, getLogos } from "../data/api";
 import { toast, Toaster } from "sonner";
-import logoImg from "/assets/logo.png";
+const logoImg = "/assets/logo.png";
 
 const f = { play: "'Playfair Display', serif", inter: "Inter, sans-serif" };
 
@@ -13,6 +13,7 @@ function formatCurrency(v: number): string {
 
 export function ContractViewPage() {
   const { projectId } = useParams();
+  const navigate = useNavigate();
   const [info, setInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -259,7 +260,7 @@ export function ContractViewPage() {
       {/* Top bar */}
       <div className="sticky top-0 z-20 border-b print:hidden" style={{ backgroundColor: "rgba(255,253,248,0.95)", backdropFilter: "blur(8px)", borderColor: "rgba(133,108,66,0.1)" }}>
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <button onClick={() => window.history.back()} className="flex items-center gap-1.5 text-sm text-[#856C42] hover:text-[#052413] transition-colors cursor-pointer" style={{ fontFamily: f.inter }}>
+          <button onClick={() => { if (window.history.length > 1) navigate(-1 as any); else navigate("/minha-conta"); }} className="flex items-center gap-1.5 text-sm text-[#856C42] hover:text-[#052413] transition-colors cursor-pointer" style={{ fontFamily: f.inter }}>
             <ArrowLeft className="w-4 h-4" /> Voltar
           </button>
           <div className="flex items-center gap-2">
