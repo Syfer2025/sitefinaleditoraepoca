@@ -841,6 +841,10 @@ export async function testAdminEmailConfig(to?: string) {
   return api("/admin/email-config/test", { method: "POST", body: { to } });
 }
 
+export async function testAdminEmailTemplate(template: string, to?: string) {
+  return api("/admin/email-config/test-template", { method: "POST", body: { template, to } });
+}
+
 // ── EMAIL MARKETING ────────────────────────────────────────────────────────────
 export interface EmailCampaign {
   id: string;

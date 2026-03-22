@@ -2809,6 +2809,157 @@ app.post(`${P}/admin/email-config/test`, async (c) => {
   } catch (e) { return err(c, `Erro ao enviar e-mail de teste: ${e}`); }
 });
 
+// ── Admin: Test all email templates ───────────────────────────────────────────
+app.post(`${P}/admin/email-config/test-template`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { template, to } = await c.req.json();
+    const cfg: any = await kv.get("email_config") || {};
+    if (!cfg.host || !cfg.user || !cfg.password) return err(c, "SMTP não configurado.", 400);
+    const siteUrl = Deno.env.get("SITE_URL") || "https://editoraepoca.com.br";
+    const recipient = to || cfg.from_email || cfg.user;
+    const fromName = cfg.from_name || "Época Editora";
+
+    const header = `
+      <div style="background:linear-gradient(135deg,#165B36,#052413);padding:28px 24px;text-align:center">
+        <h1 style="color:#EBBF74;font-size:22px;margin:0;font-family:Georgia,serif;font-style:italic">${fromName}</h1>
+        <p style="color:rgba(255,255,255,0.6);font-size:11px;margin:6px 0 0;letter-spacing:0.08em;text-transform:uppercase">Prévia de modelo</p>
+      </div>`;
+    const footer = `
+      <div style="background:#F0E8D4;padding:14px 24px;text-align:center;border-top:1px solid #e5e7eb">
+        <p style="color:#9ca3af;font-size:10px;margin:0">Época Editora de Livros · <a href="${siteUrl}" style="color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a></p>
+        <p style="color:#b5b5b5;font-size:10px;margin:4px 0 0">⚠️ Este é um e-mail de teste — não é um envio real.</p>
+      </div>`;
+    const wrap = (body: string) =>
+      `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">${header}${body}${footer}</div>`;
+
+    let subject = "";
+    let html = "";
+
+    switch (template) {
+      case "smtp_test":
+        subject = `✅ Teste SMTP — ${fromName}`;
+        html = wrap(`
+          <div style="padding:32px 24px">
+            <h2 style="color:#165B36;margin:0 0 8px">Configuração SMTP funcionando!</h2>
+            <p style="color:#374151;font-size:14px;line-height:1.7">Se você recebeu este e-mail, as configurações de SMTP estão corretas e o servidor está respondendo normalmente.</p>
+            <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0"/>
+            <p style="font-size:12px;color:#9ca3af">Servidor: <strong>${cfg.host}:${cfg.port}</strong> · Usuário: <strong>${cfg.user}</strong></p>
+          </div>`);
+        break;
+
+      case "password_reset":
+        subject = `Recuperação de senha — ${fromName}`;
+        html = wrap(`
+          <div style="padding:32px 24px">
+            <h2 style="color:#052413;font-size:18px;margin:0 0 12px">Redefinição de senha</h2>
+            <p style="color:#374151;font-size:14px;line-height:1.7;margin:0 0 20px">
+              Recebemos uma solicitação para redefinir a senha da sua conta.<br>
+              Clique no botão abaixo para criar uma nova senha:
+            </p>
+            <div style="text-align:center;margin:28px 0">
+              <a href="${siteUrl}" style="background:linear-gradient(135deg,#165B36,#052413);color:#EBBF74;text-decoration:none;padding:14px 32px;border-radius:50px;font-size:14px;font-weight:bold;display:inline-block">
+                Redefinir minha senha
+              </a>
+            </div>
+            <p style="color:#6b7280;font-size:12px;line-height:1.6;margin:0">
+              Se você não solicitou a redefinição, ignore este e-mail.<br>O link expira em <strong>1 hora</strong>.
+            </p>
+          </div>`);
+        break;
+
+      case "newsletter_welcome":
+        subject = `Bem-vindo à newsletter da ${fromName}!`;
+        html = wrap(`
+          <div style="padding:32px 24px">
+            <h2 style="color:#052413;font-size:18px;margin:0 0 12px">Você está inscrito! 🎉</h2>
+            <p style="color:#374151;font-size:14px;line-height:1.7;margin:0 0 20px">
+              Obrigado por se inscrever na nossa newsletter. A partir de agora você receberá em primeira mão:
+            </p>
+            <ul style="color:#374151;font-size:14px;line-height:2;margin:0 0 24px;padding-left:20px">
+              <li>Lançamentos e novidades do catálogo</li>
+              <li>Artigos e dicas para autores</li>
+              <li>Ofertas exclusivas de publicação</li>
+              <li>Eventos e encontros literários</li>
+            </ul>
+            <div style="text-align:center;margin:28px 0">
+              <a href="${siteUrl}/catalogo" style="background:linear-gradient(135deg,#165B36,#052413);color:#EBBF74;text-decoration:none;padding:14px 32px;border-radius:50px;font-size:14px;font-weight:bold;display:inline-block">
+                Explorar catálogo
+              </a>
+            </div>
+          </div>`);
+        break;
+
+      case "contact_notification":
+        subject = `📬 Nova mensagem de João Silva — ${fromName}`;
+        html = wrap(`
+          <div style="padding:28px 24px">
+            <p style="color:#374151;font-size:13px;margin:0 0 16px">Uma nova mensagem foi recebida pelo formulário de contato do site.</p>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;color:#374151">
+              <tr><td style="padding:8px 0;border-bottom:1px solid #f0e8d4;width:100px"><strong style="color:#052413">De:</strong></td><td style="padding:8px 0;border-bottom:1px solid #f0e8d4">João Silva</td></tr>
+              <tr><td style="padding:8px 0;border-bottom:1px solid #f0e8d4"><strong style="color:#052413">E-mail:</strong></td><td style="padding:8px 0;border-bottom:1px solid #f0e8d4"><a href="mailto:autor@exemplo.com" style="color:#165B36">autor@exemplo.com</a></td></tr>
+              <tr><td style="padding:8px 0;border-bottom:1px solid #f0e8d4"><strong style="color:#052413">Assunto:</strong></td><td style="padding:8px 0;border-bottom:1px solid #f0e8d4">Interesse em publicar meu manuscrito</td></tr>
+              <tr><td style="padding:8px 0;border-bottom:1px solid #f0e8d4"><strong style="color:#052413">Data:</strong></td><td style="padding:8px 0;border-bottom:1px solid #f0e8d4">${new Date().toLocaleString("pt-BR")}</td></tr>
+            </table>
+            <div style="margin-top:20px;padding:16px;background:#F7F4EE;border-radius:8px;border-left:3px solid #165B36">
+              <p style="color:#052413;font-size:14px;line-height:1.7;margin:0">
+                Olá! Sou escritor há 10 anos e gostaria de conhecer os planos de publicação da editora. Tenho um romance já revisado e gostaria de uma avaliação. Podem me contatar?
+              </p>
+            </div>
+            <div style="text-align:center;margin:24px 0">
+              <a href="${siteUrl}/admin/mensagens" style="background:linear-gradient(135deg,#165B36,#052413);color:#EBBF74;text-decoration:none;padding:12px 28px;border-radius:50px;font-size:13px;font-weight:bold;display:inline-block">
+                Ver no painel
+              </a>
+            </div>
+          </div>`);
+        break;
+
+      case "marketing_campaign":
+        subject = `📚 Lançamentos de verão — Novidades da ${fromName}`;
+        html = `<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;background:#F7F4EE;padding:24px 0">
+          <tr><td align="center">
+            <table width="520" cellpadding="0" cellspacing="0" style="background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;max-width:520px">
+              <tr><td style="background:linear-gradient(135deg,#165B36,#052413);padding:32px 24px;text-align:center">
+                <h1 style="color:#EBBF74;font-size:26px;margin:0;font-family:Georgia,serif;font-style:italic">${fromName}</h1>
+                <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:8px 0 0">Histórias que transformam</p>
+              </td></tr>
+              <tr><td style="padding:32px 24px">
+                <h2 style="color:#052413;font-size:20px;margin:0 0 16px;font-family:Georgia,serif">Lançamentos desta temporada 📖</h2>
+                <p style="color:#374151;font-size:14px;line-height:1.8;margin:0 0 20px">
+                  Descubra as novas obras que chegaram ao nosso catálogo. Histórias envolventes, autores talentosos e muito mais aguardam você!
+                </p>
+                <div style="background:#F0E8D4;border-radius:8px;padding:16px;margin:0 0 20px;border-left:3px solid #EBBF74">
+                  <p style="color:#052413;font-size:14px;font-weight:bold;margin:0 0 4px">🌟 Destaque do mês</p>
+                  <p style="color:#374151;font-size:13px;line-height:1.6;margin:0">«As Vozes do Amanhã» — Um conto emocionante sobre família, memória e redenção que já conquistou leitores em todo o Brasil.</p>
+                </div>
+                <div style="text-align:center;margin:28px 0">
+                  <a href="${siteUrl}/catalogo" style="background:linear-gradient(90deg,#8B6914,#D4AF5A,#EBBF74,#D4AF5A,#8B6914);color:#1a1206;text-decoration:none;padding:14px 36px;border-radius:50px;font-size:14px;font-weight:bold;display:inline-block">
+                    Ver catálogo completo
+                  </a>
+                </div>
+                <p style="color:#6b7280;font-size:12px;line-height:1.6;text-align:center">
+                  Você recebe este e-mail por ser inscrito na newsletter da ${fromName}.
+                </p>
+              </td></tr>
+              <tr><td style="background:#F0E8D4;padding:14px 24px;text-align:center;border-top:1px solid #e5e7eb">
+                <p style="color:#9ca3af;font-size:10px;margin:0"><a href="${siteUrl}" style="color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a> · ⚠️ Prévia de modelo — não é envio real</p>
+              </td></tr>
+            </table>
+          </td></tr>
+        </table>`;
+        break;
+
+      default:
+        return err(c, "Modelo inválido.", 400);
+    }
+
+    await sendEmail(recipient, subject, html);
+    auditLog("email_template_tested", { by: auth.email, template, to: recipient });
+    return c.json({ ok: true });
+  } catch (e) { return err(c, `Erro ao enviar modelo de teste: ${e}`); }
+});
+
 // ── Admin: Email Marketing Campaign endpoints ─────────────────────────────────
 app.get(`${P}/admin/email-campaigns`, async (c) => {
   try {

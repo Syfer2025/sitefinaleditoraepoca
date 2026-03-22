@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import {
   Save, Loader2, CheckCircle, XCircle, Eye, EyeOff,
   Send, Server, Lock, User, Mail, AtSign, RefreshCw, ShieldCheck, AlertTriangle,
+  Wifi, KeyRound, Newspaper, Bell, Megaphone,
 } from "lucide-react";
-import { getAdminEmailConfig, updateAdminEmailConfig, testAdminEmailConfig } from "../../data/api";
+import { getAdminEmailConfig, updateAdminEmailConfig, testAdminEmailTemplate } from "../../data/api";
 import { toast } from "sonner";
 
 
@@ -39,12 +40,10 @@ export function AdminEmailConfig() {
   const [cfg, setCfg] = useState<Config>(EMPTY);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [testing, setTesting] = useState(false);
   const [testTo, setTestTo] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const [testResult, setTestResult] = useState<"ok" | "fail" | null>(null);
-  const [testError, setTestError] = useState("");
+  const [templateResults, setTemplateResults] = useState<Record<string, { status: "ok" | "fail" | "loading" | null; error: string }>>({});
 
   useEffect(() => {
     getAdminEmailConfig()
@@ -56,7 +55,7 @@ export function AdminEmailConfig() {
   function set(field: keyof Config, value: string) {
     setCfg((prev) => ({ ...prev, [field]: value }));
     setDirty(true);
-    setTestResult(null);
+    setTemplateResults({});
   }
 
   function applyPreset(name: string) {
@@ -64,7 +63,7 @@ export function AdminEmailConfig() {
     if (!p) return;
     setCfg((prev) => ({ ...prev, host: p.host, port: p.port, encryption: p.encryption }));
     setDirty(true);
-    setTestResult(null);
+    setTemplateResults({});
   }
 
   async function handleSave() {
@@ -96,25 +95,20 @@ export function AdminEmailConfig() {
     }
   }
 
-  async function handleTest() {
+  async function testTemplate(key: string) {
     if (!cfg.configured && !dirty) {
       toast.error("Configure e salve o SMTP antes de testar.");
       return;
     }
-    setTesting(true);
-    setTestResult(null);
-    setTestError("");
+    setTemplateResults((prev) => ({ ...prev, [key]: { status: "loading", error: "" } }));
     try {
-      await testAdminEmailConfig(testTo || undefined);
-      setTestResult("ok");
-      toast.success("E-mail de teste enviado com sucesso!");
+      await testAdminEmailTemplate(key, testTo || undefined);
+      setTemplateResults((prev) => ({ ...prev, [key]: { status: "ok", error: "" } }));
+      toast.success("Prévia de e-mail enviada com sucesso!");
     } catch (e: any) {
-      setTestResult("fail");
-      const msg = e.message || "Falha no envio";
-      setTestError(msg);
+      const msg = (e as any).message || "Falha no envio";
+      setTemplateResults((prev) => ({ ...prev, [key]: { status: "fail", error: msg } }));
       toast.error(`Falha: ${msg}`);
-    } finally {
-      setTesting(false);
     }
   }
 
@@ -342,58 +336,93 @@ export function AdminEmailConfig() {
         </div>
       </div>
 
-      {/* Test */}
+      {/* Test all templates */}
       <div
-        className="rounded-2xl p-6 border space-y-4"
+        className="rounded-2xl p-6 border space-y-5"
         style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.15)" }}
       >
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-[#165B36]" />
           <h2 className="text-sm font-semibold text-[#052413]">
-            Testar Configuração
+            Testar Modelos de E-mail
           </h2>
         </div>
         <p className="text-xs text-[#856C42]">
-          Salve as configurações antes de testar. Se vazio, o e-mail é enviado para o próprio endereço remetente configurado.
+          Salve as configurações antes de testar. Cada botão envia uma prévia real do modelo correspondente para o endereço abaixo.
         </p>
         <p className="text-[0.7rem] text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
-          ⚠️ <strong>cPanel/Hosting:</strong> o destino do teste deve ser do mesmo domínio do remetente (ex.: outro e-mail do seu domínio). Servidores cPanel bloqueiam envios para e-mails externos.
+          ⚠️ <strong>cPanel/Hosting:</strong> o destino deve ser do mesmo domínio do remetente. Servidores cPanel bloqueiam envios para e-mails externos.
         </p>
-        <div className="flex gap-3">
+
+        {/* Shared recipient input */}
+        <div className="flex gap-3 items-center">
+          <Mail className="w-4 h-4 text-[#856C42] flex-shrink-0" />
           <input
             type="email"
             value={testTo}
             onChange={(e) => setTestTo(e.target.value)}
-            placeholder={`Deixe vazio para usar ${cfg.from_email || cfg.user || 'o endereço remetente'}`}
+            placeholder={`Destino (vazio = ${cfg.from_email || cfg.user || "remetente configurado"})`}
             className="flex-1 px-3 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
             style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
           />
-          <button
-            onClick={handleTest}
-            disabled={testing}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all disabled:opacity-50 cursor-pointer"
-            style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
-          >
-            {testing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            Enviar teste
-          </button>
         </div>
 
-        {testResult === "ok" && (
-          <div className="flex items-center gap-2 p-3 rounded-xl" style={{ background: "rgba(22,91,54,0.08)" }}>
-            <CheckCircle className="w-4 h-4 text-[#165B36] flex-shrink-0" />
-            <p className="text-xs text-[#165B36]">E-mail de teste enviado com sucesso!</p>
-          </div>
-        )}
-        {testResult === "fail" && (
-          <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background: "rgba(220,38,38,0.06)" }}>
-            <XCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-medium text-red-600">Falha no envio</p>
-              <p className="text-[0.65rem] text-red-500 mt-0.5">{testError}</p>
-            </div>
-          </div>
-        )}
+        {/* Template cards grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {([
+            { key: "smtp_test",           Icon: Wifi,      label: "Conexão SMTP",          desc: "Testa a conectividade básica do servidor SMTP e autenticação." },
+            { key: "password_reset",      Icon: KeyRound,  label: "Redefinição de senha",  desc: "E-mail enviado quando um usuário solicita nova senha." },
+            { key: "newsletter_welcome",  Icon: Newspaper, label: "Boas-vindas newsletter",desc: "Enviado ao inscrever-se na newsletter do site." },
+            { key: "contact_notification",Icon: Bell,      label: "Alerta de contato",     desc: "Notificação ao admin quando o formulário de contato é enviado." },
+            { key: "marketing_campaign",  Icon: Megaphone, label: "Campanha de marketing", desc: "Prévia do modelo padrão usado nas campanhas de e-mail." },
+          ] as const).map(({ key, Icon, label, desc }) => {
+            const res = templateResults[key];
+            const isLoading = res?.status === "loading";
+            return (
+              <div
+                key={key}
+                className="flex flex-col gap-3 p-4 rounded-xl border transition-all"
+                style={{ backgroundColor: "#F7F4EE", borderColor: "rgba(133,108,66,0.15)" }}
+              >
+                <div className="flex items-start gap-3">
+                  <span
+                    className="flex-shrink-0 p-2 rounded-lg"
+                    style={{ background: "rgba(22,91,54,0.08)" }}
+                  >
+                    <Icon className="w-4 h-4 text-[#165B36]" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-[#052413]">{label}</p>
+                    <p className="text-[0.65rem] text-[#856C42] mt-0.5 leading-relaxed">{desc}</p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => testTemplate(key)}
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all disabled:opacity-50 cursor-pointer"
+                  style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
+                >
+                  {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                  {isLoading ? "Enviando…" : "Enviar prévia"}
+                </button>
+
+                {res?.status === "ok" && (
+                  <div className="flex items-center gap-1.5 text-[0.65rem] text-[#165B36]" style={{ color: "#165B36" }}>
+                    <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>Enviado com sucesso!</span>
+                  </div>
+                )}
+                {res?.status === "fail" && (
+                  <div className="flex items-start gap-1.5 text-[0.65rem] text-red-500">
+                    <XCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                    <span className="break-words">{res.error || "Falha no envio"}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Info box */}
