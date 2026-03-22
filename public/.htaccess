@@ -39,9 +39,9 @@ RewriteRule ^ index.html [QSA,L]
   #   - style-src needs 'unsafe-inline' because React renders style={{}} as inline style attributes
   #   - script-src allows Google Tag Manager and Analytics for tracking
   #   - connect-src allows Supabase API calls
-  #   - img-src allows https: broadly for Unsplash, Supabase Storage, and user-uploaded images
+  #   - frame-src allows YouTube embeds and MercadoPago checkout
   # ============================================
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net; frame-src https://www.google.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self';"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://pagead2.googlesyndication.com https://sdk.mercadopago.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://api.mercadopago.com; frame-src https://www.google.com https://www.youtube.com https://youtube.com https://www.mercadopago.com.br; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self';"
 
 </IfModule>
 
