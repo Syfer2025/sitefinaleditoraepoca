@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { Menu, X, LogIn, ChevronRight } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
-import logoImgFallback from "/assets/logo.png";
 import { useUserAuth } from "./UserAuthContext";
 import { getLogos } from "../data/api";
+
+// 1×1 transparent placeholder — evita o ícone de imagem quebrada enquanto a logo carrega
+const LOGO_PLACEHOLDER = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 const navLinks = [
   { label: "Início", href: "#hero", sectionId: "hero" },
@@ -20,7 +22,7 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
-  const [logoImg, setLogoImg] = useState<string>(logoImgFallback);
+  const [logoImg, setLogoImg] = useState<string>("");
   const { user } = useUserAuth();
   const location = useLocation();
   const isHomePage = location.pathname === "/";
@@ -83,11 +85,13 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link to={isHomePage ? "#hero" : "/"} className="flex items-center">
           <img
-            src={logoImg}
+            src={logoImg || LOGO_PLACEHOLDER}
             alt="Época Editora"
             className="h-10 transition-all duration-300"
             style={{
               filter: scrolled ? "none" : "brightness(0) invert(1)",
+              opacity: logoImg ? 1 : 0,
+              transition: "opacity 0.25s ease, filter 0.3s ease",
             }}
           />
         </Link>
