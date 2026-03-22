@@ -23,6 +23,7 @@ import {
   Plug,
   Settings2,
   Megaphone,
+  Youtube,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { api, clearToken, getAdminToken, getAdminRefreshToken } from "../../data/api";
@@ -37,6 +38,7 @@ const navItems = [
   { path: "/admin/livros", label: "Livros", icon: BookOpen },
   { path: "/admin/planos", label: "Planos", icon: DollarSign },
   { path: "/admin/newsletter", label: "Newsletter", icon: Mail },
+  { path: "/admin/video", label: "Vídeo da Home", icon: Youtube },
   { path: "/admin/autores", label: "Autores", icon: UserRound },
   { path: "/admin/depoimentos", label: "Depoimentos", icon: Quote },
   { path: "/admin/sobre", label: "Sobre", icon: BarChart2 },

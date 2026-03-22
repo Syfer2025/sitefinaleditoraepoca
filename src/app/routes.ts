@@ -41,6 +41,7 @@ export const router = createBrowserRouter([
       { path: "faq", lazy: () => import("./components/admin/AdminFaq").then(m => ({ Component: m.AdminFaq })) },
       { path: "newsletter", lazy: () => import("./components/admin/AdminNewsletter").then(m => ({ Component: m.AdminNewsletter })) },
       { path: "planos", lazy: () => import("./components/admin/AdminPlans").then(m => ({ Component: m.AdminPlans })) },
+      { path: "video", lazy: () => import("./components/admin/AdminVideo").then(m => ({ Component: m.AdminVideo })) },
       { path: "autores", lazy: () => import("./components/admin/AdminAuthors").then(m => ({ Component: m.AdminAuthors })) },
       { path: "depoimentos", lazy: () => import("./components/admin/AdminTestimonials").then(m => ({ Component: m.AdminTestimonials })) },
       { path: "sobre", lazy: () => import("./components/admin/AdminAbout").then(m => ({ Component: m.AdminAbout })) },
