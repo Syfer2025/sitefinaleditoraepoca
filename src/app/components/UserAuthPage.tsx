@@ -431,16 +431,18 @@ export function UserAuthPage() {
           <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors mb-6">
             <ArrowLeft className="w-4 h-4" /> Voltar ao site
           </Link>
-          <Link to="/" className="block mb-5">
-            <img src="/assets/logo.png" alt="Época Editora" className="h-10 brightness-0 invert" />
-          </Link>
-          <h1 className="text-3xl md:text-4xl text-white font-serif leading-[1.2]">
-            {mode === "login" ? "Bem-vindo " : "Crie sua "}
-            <span className="italic text-[#EBBF74]">{mode === "login" ? "de volta" : "conta"}</span>
-          </h1>
-          <p className="text-white/50 mt-2 text-sm">
-            {mode === "login" ? "Entre na sua conta para acompanhar seus projetos." : "Cadastre-se como pessoa fisica ou juridica para solicitar servicos editoriais."}
-          </p>
+          <div className="text-center">
+            <Link to="/" className="inline-block mb-5">
+              <img src="/assets/logo.png" alt="Época Editora" className="h-10 brightness-0 invert" />
+            </Link>
+            <h1 className="text-3xl md:text-4xl text-white font-serif leading-[1.2]">
+              {mode === "login" ? "Bem-vindo " : "Crie sua "}
+              <span className="italic text-[#EBBF74]">{mode === "login" ? "de volta" : "conta"}</span>
+            </h1>
+            <p className="text-white/50 mt-2 text-sm">
+              {mode === "login" ? "Entre na sua conta para acompanhar seus projetos." : "Cadastre-se como pessoa fisica ou juridica para solicitar servicos editoriais."}
+            </p>
+          </div>
         </div>
       </div>
 
