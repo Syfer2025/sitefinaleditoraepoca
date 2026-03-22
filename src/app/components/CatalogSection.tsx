@@ -38,22 +38,17 @@ export function CatalogSection() {
         <RevealOnScroll direction="up" className="text-center mb-10">
           <p
             className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             Nosso Catálogo
           </p>
           <h2
-            className="text-[2.5rem] md:text-[3rem] text-foreground mb-4"
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              lineHeight: 1.15,
-            }}
+            className="text-[2.5rem] md:text-[3rem] text-foreground mb-4 font-serif leading-[1.15]"
           >
             Destaques <span className="italic">editoriais</span>
           </h2>
           <p
             className="text-muted-foreground max-w-xl mx-auto"
-            style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
+            style={{ lineHeight: 1.7 }}
           >
             Confira nossas obras mais aclamadas pela crítica e amadas pelos
             leitores.
@@ -71,7 +66,6 @@ export function CatalogSection() {
                 aria-pressed={activeGenre === genre}
                 className="px-5 py-2 rounded-full transition-all duration-300 cursor-pointer"
                 style={{
-                  fontFamily: "Inter, sans-serif",
                   backgroundColor:
                     activeGenre === genre ? "#165B36" : "var(--background)",
                   color:
@@ -92,7 +86,7 @@ export function CatalogSection() {
         </RevealOnScroll>
 
         {/* Books grid */}
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-6" aria-live="polite">
           {loading ? (
             Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="bg-card rounded-2xl overflow-hidden border border-border animate-pulse">
@@ -119,7 +113,6 @@ export function CatalogSection() {
                 <BookX className="w-12 h-12 text-muted-foreground/40 mb-4" />
                 <p
                   className="text-muted-foreground text-[1.1rem]"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   Nenhum livro encontrado neste gênero.
                 </p>
@@ -158,7 +151,6 @@ export function CatalogSection() {
                     <div className="absolute top-4 left-4">
                       <span
                         className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-[0.75rem]"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         {book.genre}
                       </span>
@@ -169,20 +161,17 @@ export function CatalogSection() {
                       <Star className="w-4 h-4 fill-[#EBBF74] text-[#EBBF74]" />
                       <span
                         className="text-[0.875rem] text-muted-foreground"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         {book.rating}
                       </span>
                     </div>
                     <h3
-                      className="text-[1.375rem] text-foreground mb-1"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
+                      className="text-[1.375rem] text-foreground mb-1 font-serif"
                     >
                       {book.title}
                     </h3>
                     <p
                       className="text-[0.875rem] text-muted-foreground mb-3"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       por {book.author}
                     </p>

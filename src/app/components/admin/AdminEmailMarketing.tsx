@@ -12,8 +12,6 @@ import {
 } from "../../data/api";
 import { toast } from "sonner";
 
-const F = "Inter, sans-serif";
-const PF = "'Playfair Display', serif";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -45,8 +43,8 @@ function PreviewModal({ html, subject, onClose }: { html: string; subject: strin
       >
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "rgba(133,108,66,0.12)" }}>
           <div>
-            <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>Pré-visualização</p>
-            <p className="text-sm font-semibold text-[#052413] truncate max-w-[400px]" style={{ fontFamily: F }}>{subject}</p>
+            <p className="text-xs text-[#856C42]">Pré-visualização</p>
+            <p className="text-sm font-semibold text-[#052413] truncate max-w-[400px]">{subject}</p>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 cursor-pointer"><X className="w-4 h-4 text-[#856C42]" /></button>
         </div>
@@ -88,18 +86,18 @@ function ConfirmSend({ campaign, subscriberCount, onConfirm, onCancel, sending }
             <Send className="w-5 h-5 text-[#856C42]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[#052413]" style={{ fontFamily: F }}>Confirmar envio</p>
-            <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>Esta ação não pode ser desfeita</p>
+            <p className="text-sm font-semibold text-[#052413]">Confirmar envio</p>
+            <p className="text-xs text-[#856C42]">Esta ação não pode ser desfeita</p>
           </div>
         </div>
         <div className="rounded-xl p-4 mb-5 space-y-2" style={{ background: "rgba(22,91,54,0.05)" }}>
-          <p className="text-xs text-[#052413]" style={{ fontFamily: F }}>
+          <p className="text-xs text-[#052413]">
             <strong>Campanha:</strong> {campaign.name}
           </p>
-          <p className="text-xs text-[#052413]" style={{ fontFamily: F }}>
+          <p className="text-xs text-[#052413]">
             <strong>Assunto:</strong> {campaign.subject}
           </p>
-          <p className="text-xs text-[#052413]" style={{ fontFamily: F }}>
+          <p className="text-xs text-[#052413]">
             <strong>Destinatários:</strong> {subscriberCount} inscritos
           </p>
         </div>
@@ -108,7 +106,7 @@ function ConfirmSend({ campaign, subscriberCount, onConfirm, onCancel, sending }
             onClick={onCancel}
             disabled={sending}
             className="flex-1 py-2.5 rounded-xl text-sm border cursor-pointer disabled:opacity-50"
-            style={{ fontFamily: F, borderColor: "rgba(133,108,66,0.2)", color: "#856C42" }}
+            style={{ borderColor: "rgba(133,108,66,0.2)", color: "#856C42" }}
           >
             Cancelar
           </button>
@@ -116,7 +114,7 @@ function ConfirmSend({ campaign, subscriberCount, onConfirm, onCancel, sending }
             onClick={onConfirm}
             disabled={sending}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white cursor-pointer disabled:opacity-50"
-            style={{ background: "linear-gradient(135deg, #165B36, #052413)", fontFamily: F }}
+            style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
           >
             {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             Enviar agora
@@ -150,14 +148,14 @@ function CampaignEditor({
           <button onClick={onCancel} className="p-1.5 rounded-lg hover:bg-[#F0E8D4] transition-colors cursor-pointer">
             <ArrowLeft className="w-4 h-4 text-[#856C42]" />
           </button>
-          <h2 className="text-lg font-semibold text-[#052413]" style={{ fontFamily: F }}>
+          <h2 className="text-lg font-semibold text-[#052413]">
             {initial?.id ? "Editar campanha" : "Nova campanha"}
           </h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>
+            <label className="block text-xs font-medium text-[#052413] mb-1.5">
               Nome da campanha
             </label>
             <input
@@ -166,11 +164,11 @@ function CampaignEditor({
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Newsletter de Março 2026"
               className="w-full px-3 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-              style={{ fontFamily: F, backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
+              style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>
+            <label className="block text-xs font-medium text-[#052413] mb-1.5">
               Assunto do e-mail
             </label>
             <input
@@ -179,7 +177,7 @@ function CampaignEditor({
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Ex: Novidades da Época Editora — Março 2026"
               className="w-full px-3 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-              style={{ fontFamily: F, backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
+              style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
             />
           </div>
         </div>
@@ -194,7 +192,6 @@ function CampaignEditor({
                   onClick={() => setActiveTab(tab)}
                   className="px-4 py-1.5 rounded-md text-xs transition-all cursor-pointer"
                   style={{
-                    fontFamily: F,
                     backgroundColor: activeTab === tab ? "#FFFDF8" : "transparent",
                     color: activeTab === tab ? "#052413" : "#856C42",
                     fontWeight: activeTab === tab ? 500 : 400,
@@ -208,7 +205,6 @@ function CampaignEditor({
               <button
                 onClick={() => setShowPreview(true)}
                 className="flex items-center gap-1.5 text-xs text-[#165B36] hover:underline cursor-pointer"
-                style={{ fontFamily: F }}
               >
                 <Eye className="w-3.5 h-3.5" /> Pré-visualizar
               </button>
@@ -231,10 +227,10 @@ function CampaignEditor({
               rows={12}
               placeholder="Versão em texto simples (para clientes que não exibem HTML)..."
               className="w-full px-3 py-3 rounded-xl border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 resize-y"
-              style={{ fontFamily: F, backgroundColor: "#F7F4EE", borderColor: "rgba(133,108,66,0.2)", lineHeight: 1.7 }}
+              style={{ backgroundColor: "#F7F4EE", borderColor: "rgba(133,108,66,0.2)", lineHeight: 1.7 }}
             />
           )}
-          <p className="text-[0.65rem] text-[#856C42] mt-1.5" style={{ fontFamily: F }}>
+          <p className="text-[0.65rem] text-[#856C42] mt-1.5">
             {activeTab === "html"
               ? "Dica: use HTML inline styles para melhor compatibilidade com clientes de e-mail."
               : "Dica: o texto simples é gerado automaticamente do HTML se deixado em branco."}
@@ -245,7 +241,7 @@ function CampaignEditor({
           <button
             onClick={onCancel}
             className="px-5 py-2.5 rounded-xl text-sm border cursor-pointer"
-            style={{ fontFamily: F, borderColor: "rgba(133,108,66,0.2)", color: "#856C42" }}
+            style={{ borderColor: "rgba(133,108,66,0.2)", color: "#856C42" }}
           >
             Cancelar
           </button>
@@ -253,7 +249,7 @@ function CampaignEditor({
             onClick={() => onSave({ name, subject, html, text })}
             disabled={saving || !name.trim() || !subject.trim() || !html.trim()}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-[#052413] cursor-pointer disabled:opacity-40"
-            style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)", fontFamily: F }}
+            style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)" }}
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
             Salvar rascunho
@@ -291,11 +287,10 @@ function CampaignCard({ campaign, onEdit, onDelete, onSend, onPreview }: {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="text-sm font-semibold text-[#052413] truncate" style={{ fontFamily: F }}>{campaign.name}</p>
+          <p className="text-sm font-semibold text-[#052413] truncate">{campaign.name}</p>
           <span
             className="text-[0.6rem] px-2 py-0.5 rounded-full font-medium"
             style={{
-              fontFamily: F,
               background: sent ? "rgba(22,91,54,0.1)" : "rgba(235,191,116,0.2)",
               color: sent ? "#165B36" : "#856C42",
             }}
@@ -303,15 +298,15 @@ function CampaignCard({ campaign, onEdit, onDelete, onSend, onPreview }: {
             {sent ? "Enviada" : "Rascunho"}
           </span>
         </div>
-        <p className="text-xs text-[#856C42] mt-0.5 truncate" style={{ fontFamily: F }}>
+        <p className="text-xs text-[#856C42] mt-0.5 truncate">
           Assunto: {campaign.subject}
         </p>
         <div className="flex items-center gap-4 mt-1.5">
-          <span className="text-[0.65rem] text-[#856C42]/70" style={{ fontFamily: F }}>
+          <span className="text-[0.65rem] text-[#856C42]/70">
             Criada {formatDate(campaign.createdAt)}
           </span>
           {sent && campaign.sentAt && (
-            <span className="text-[0.65rem] text-[#165B36]" style={{ fontFamily: F }}>
+            <span className="text-[0.65rem] text-[#165B36]">
               Enviada {formatDate(campaign.sentAt)} · {campaign.sentCount} destinatários
             </span>
           )}
@@ -346,7 +341,7 @@ function CampaignCard({ campaign, onEdit, onDelete, onSend, onPreview }: {
           <button
             onClick={onSend}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium text-white transition-all cursor-pointer ml-1"
-            style={{ background: "linear-gradient(135deg, #165B36, #052413)", fontFamily: F }}
+            style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
           >
             <Send className="w-3.5 h-3.5" /> Enviar
           </button>
@@ -508,17 +503,17 @@ export function AdminEmailMarketing() {
           <>
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-2xl font-semibold text-[#052413]" style={{ fontFamily: F }}>
+                <h1 className="text-2xl font-semibold text-[#052413]">
                   Email Marketing
                 </h1>
-                <p className="text-sm text-[#856C42] mt-1" style={{ fontFamily: F }}>
+                <p className="text-sm text-[#856C42] mt-1">
                   Crie e envie campanhas para os inscritos da newsletter.
                 </p>
               </div>
               <button
                 onClick={() => { setEditTarget(null); setView("new"); }}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-[#052413] cursor-pointer"
-                style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)", fontFamily: F }}
+                style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)" }}
               >
                 <Plus className="w-4 h-4" /> Nova campanha
               </button>
@@ -538,12 +533,12 @@ export function AdminEmailMarketing() {
                   style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.15)" }}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-[#856C42]" style={{ fontFamily: F }}>{stat.label}</span>
+                    <span className="text-xs text-[#856C42]">{stat.label}</span>
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: stat.bg }}>
                       <stat.icon className="w-3.5 h-3.5" style={{ color: stat.color }} />
                     </div>
                   </div>
-                  <p className="text-2xl font-bold text-[#052413]" style={{ fontFamily: F }}>{stat.value}</p>
+                  <p className="text-2xl font-bold text-[#052413]">{stat.value}</p>
                 </div>
               ))}
             </div>
@@ -555,7 +550,7 @@ export function AdminEmailMarketing() {
                 style={{ backgroundColor: "rgba(235,191,116,0.07)", borderColor: "rgba(235,191,116,0.25)" }}
               >
                 <AlertTriangle className="w-4 h-4 text-[#856C42] flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>
+                <p className="text-xs text-[#856C42]">
                   Nenhum inscrito encontrado. Aguarde inscrições pela newsletter do site, ou verifique as configurações SMTP em{" "}
                   <strong>E-mail → Configurações SMTP</strong> antes de enviar campanhas.
                 </p>
@@ -573,7 +568,7 @@ export function AdminEmailMarketing() {
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Buscar campanha..."
                     className="w-full pl-9 pr-3 py-2.5 rounded-xl border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                    style={{ fontFamily: F, backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.15)" }}
+                    style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.15)" }}
                   />
                 </div>
                 <div className="flex rounded-xl p-1" style={{ backgroundColor: "#F0E8D4" }}>
@@ -583,7 +578,6 @@ export function AdminEmailMarketing() {
                       onClick={() => setFilter(val)}
                       className="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer"
                       style={{
-                        fontFamily: F,
                         backgroundColor: filter === val ? "#FFFDF8" : "transparent",
                         color: filter === val ? "#052413" : "#856C42",
                         fontWeight: filter === val ? 500 : 400,
@@ -603,14 +597,14 @@ export function AdminEmailMarketing() {
                 style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.15)" }}
               >
                 <Mail className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(133,108,66,0.3)" }} />
-                <p className="text-sm text-[#856C42]" style={{ fontFamily: F }}>
+                <p className="text-sm text-[#856C42]">
                   {campaigns.length === 0 ? "Nenhuma campanha criada ainda." : "Nenhuma campanha encontrada."}
                 </p>
                 {campaigns.length === 0 && (
                   <button
                     onClick={() => { setEditTarget(null); setView("new"); }}
                     className="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-medium text-[#052413] cursor-pointer"
-                    style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)", fontFamily: F }}
+                    style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)" }}
                   >
                     <Plus className="w-4 h-4" /> Criar primeira campanha
                   </button>

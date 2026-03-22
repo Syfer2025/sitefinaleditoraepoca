@@ -94,7 +94,6 @@ const FORMAT_LABELS: Record<string, string> = {
   letter: "Letter (21,6x27,9 cm)", personalizado: "Personalizado",
 };
 
-const f = { play: "'Playfair Display', serif", inter: "Inter, sans-serif" };
 
 const STEP_DESCRIPTIONS: Record<string, string> = {
   solicitado: "Projeto solicitado à editora",
@@ -178,7 +177,7 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
   };
 
   const inputCls = "w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#052413] focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 transition-all";
-  const inputSt = { fontFamily: f.inter, backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
+  const inputSt = { backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
 
   return (
     <motion.div
@@ -199,7 +198,7 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
         style={{ backgroundColor: "#FFFDF8", boxShadow: "0 25px 50px -12px rgba(5,36,19,0.25), 0 0 0 1px rgba(133,108,66,0.1)" }}
       >
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-lg text-[#052413]" style={{ fontFamily: f.play }}>Editar perfil</h3>
+          <h3 className="text-lg text-[#052413] font-serif">Editar perfil</h3>
           <button onClick={onClose} className="p-1.5 rounded-lg text-[#856C42]/40 hover:bg-[#F0E8D4] hover:text-[#856C42] transition-colors cursor-pointer">
             <X className="w-4 h-4" />
           </button>
@@ -207,7 +206,7 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: f.inter }}>Nome</label>
+            <label className="block text-xs font-medium text-[#052413] mb-1.5">Nome</label>
             <input
               type="text"
               value={name}
@@ -219,7 +218,7 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: f.inter }}>E-mail</label>
+            <label className="block text-xs font-medium text-[#052413] mb-1.5">E-mail</label>
             <input
               type="email"
               value={email}
@@ -227,12 +226,12 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
               className={inputCls}
               style={inputSt}
             />
-            <p className="text-[0.6rem] text-[#856C42]/50 mt-1" style={{ fontFamily: f.inter }}>
+            <p className="text-[0.6rem] text-[#856C42]/50 mt-1">
               Alterar o e-mail requer confirmação pelo novo endereço.
             </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: f.inter }}>
+            <label className="block text-xs font-medium text-[#052413] mb-1.5">
               <span className="flex items-center gap-1"><Phone className="w-3 h-3 text-[#856C42]/50" /> Telefone / WhatsApp</span>
             </label>
             <input
@@ -252,7 +251,6 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
               type="button"
               onClick={() => setShowPasswordSection(!showPasswordSection)}
               className="flex items-center gap-1.5 text-xs text-[#165B36] hover:text-[#0a7c3e] transition-colors cursor-pointer"
-              style={{ fontFamily: f.inter }}
             >
               <Key className="w-3.5 h-3.5" />
               {showPasswordSection ? "Cancelar alteração de senha" : "Alterar senha"}
@@ -260,7 +258,7 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
             {showPasswordSection && (
               <div className="mt-3 space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: f.inter }}>Nova senha</label>
+                  <label className="block text-xs font-medium text-[#052413] mb-1.5">Nova senha</label>
                   <input
                     type="password"
                     value={newPassword}
@@ -271,7 +269,7 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: f.inter }}>Confirmar nova senha</label>
+                  <label className="block text-xs font-medium text-[#052413] mb-1.5">Confirmar nova senha</label>
                   <input
                     type="password"
                     value={confirmPassword}
@@ -289,12 +287,12 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
           <div className="pt-3 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
             <div className="flex items-center gap-1.5 mb-2.5">
               <Bell className="w-3.5 h-3.5 text-[#856C42]/60" />
-              <span className="text-xs font-medium text-[#052413]" style={{ fontFamily: f.inter }}>Notificações</span>
-              <span className="text-[0.55rem] px-1.5 py-0.5 rounded-full bg-[#F0E8D4] text-[#856C42]/60 ml-auto" style={{ fontFamily: f.inter }}>Em breve</span>
+              <span className="text-xs font-medium text-[#052413]">Notificações</span>
+              <span className="text-[0.55rem] px-1.5 py-0.5 rounded-full bg-[#F0E8D4] text-[#856C42]/60 ml-auto">Em breve</span>
             </div>
             <div className="space-y-2">
               <label className="flex items-center justify-between cursor-pointer">
-                <span className="text-xs text-[#052413]/70" style={{ fontFamily: f.inter }}>Alertas por e-mail</span>
+                <span className="text-xs text-[#052413]/70">Alertas por e-mail</span>
                 <input
                   type="checkbox"
                   checked={notifEmail}
@@ -303,7 +301,7 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
                 />
               </label>
               <label className="flex items-center justify-between cursor-pointer">
-                <span className="text-xs text-[#052413]/70" style={{ fontFamily: f.inter }}>Alertas por WhatsApp</span>
+                <span className="text-xs text-[#052413]/70">Alertas por WhatsApp</span>
                 <input
                   type="checkbox"
                   checked={notifWhatsapp}
@@ -319,7 +317,6 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
           <button
             onClick={onClose}
             className="flex-1 py-2.5 rounded-xl text-sm text-[#856C42] hover:bg-[#F0E8D4] transition-colors cursor-pointer"
-            style={{ fontFamily: f.inter }}
           >
             Cancelar
           </button>
@@ -375,7 +372,7 @@ function ProgressBar({ project }: { project: Project }) {
       <div className="flex items-center justify-between">
         <span
           className="inline-flex items-center gap-1.5 text-xs font-medium"
-          style={{ fontFamily: f.inter, color: getStatusColor(project.status) }}
+          style={{ color: getStatusColor(project.status) }}
         >
           <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: getStatusColor(project.status) }} />
           {getStatusLabel(project.status)}
@@ -385,7 +382,7 @@ function ProgressBar({ project }: { project: Project }) {
           {isFullyPaid && (
             <span
               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[0.5rem] font-semibold text-[#0a7c3e]"
-              style={{ backgroundColor: "rgba(10,124,62,0.08)", fontFamily: f.inter }}
+              style={{ backgroundColor: "rgba(10,124,62,0.08)" }}
             >
               <CheckCircle className="w-2.5 h-2.5" />
               Pago total
@@ -394,13 +391,13 @@ function ProgressBar({ project }: { project: Project }) {
           {isRemainderPending && (
             <span
               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[0.5rem] font-semibold text-[#856C42]"
-              style={{ backgroundColor: "rgba(235,191,116,0.15)", fontFamily: f.inter }}
+              style={{ backgroundColor: "rgba(235,191,116,0.15)" }}
             >
               <CreditCard className="w-2.5 h-2.5" />
               Restante pendente
             </span>
           )}
-          <span className="text-[0.6rem] text-[#856C42]/50" style={{ fontFamily: f.inter }}>
+          <span className="text-[0.6rem] text-[#856C42]/50">
             {currentIdx + 1}/{STATUS_FLOW.length}
           </span>
         </div>
@@ -425,7 +422,7 @@ function ProgressBar({ project }: { project: Project }) {
               <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block z-20 pointer-events-none">
                 <div
                   className="px-2 py-1 rounded-md text-white text-[0.5rem] whitespace-nowrap shadow-lg"
-                  style={{ backgroundColor: "#052413", fontFamily: f.inter }}
+                  style={{ backgroundColor: "#052413" }}
                 >
                   {STEP_DESCRIPTIONS[step.key] || step.label}
                 </div>
@@ -441,7 +438,7 @@ function ProgressBar({ project }: { project: Project }) {
               />
               <span
                 className="text-[0.5rem] mt-1 text-center leading-tight hidden sm:block"
-                style={{ fontFamily: f.inter, color: done ? "#052413" : "#856C42" + "60", fontWeight: isCurrent ? 600 : 400 }}
+                style={{ color: done ? "#052413" : "#856C42" + "60", fontWeight: isCurrent ? 600 : 400 }}
               >
                 {step.label}
               </span>
@@ -484,8 +481,8 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
         {/* Title row */}
         <div className="flex items-start justify-between gap-2 mb-2.5">
           <div className="min-w-0 flex-1">
-            <h3 className="text-[0.95rem] text-[#052413] truncate leading-snug" style={{ fontFamily: f.play }}>{project.title}</h3>
-            <p className="text-[0.7rem] text-[#856C42]/70 mt-0.5 truncate" style={{ fontFamily: f.inter }}>
+            <h3 className="text-[0.95rem] text-[#052413] truncate leading-snug font-serif">{project.title}</h3>
+            <p className="text-[0.7rem] text-[#856C42]/70 mt-0.5 truncate">
               {project.author} · {formatDate(project.createdAt)}
             </p>
           </div>
@@ -507,7 +504,7 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
         <div className="flex items-center justify-between">
           <span
             className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6rem] font-medium"
-            style={{ fontFamily: f.inter, color: getStatusColor(project.status), backgroundColor: `${getStatusColor(project.status)}10` }}
+            style={{ color: getStatusColor(project.status), backgroundColor: `${getStatusColor(project.status)}10` }}
           >
             <span className="w-1 h-1 rounded-full" style={{ backgroundColor: getStatusColor(project.status) }} />
             {getStatusLabel(project.status)}
@@ -519,7 +516,7 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
                 href={`/pagamento/${project.id}`}
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[0.6rem] font-semibold text-[#052413] hover:shadow-sm transition-all"
-                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
               >
                 <CreditCard className="w-3 h-3" />
                 {project.budget?.chargeAmount
@@ -532,7 +529,7 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
                 href={`/pagamento/${project.id}`}
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[0.6rem] font-semibold text-[#052413] hover:shadow-sm transition-all"
-                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
               >
                 <CreditCard className="w-3 h-3" />
                 {project.budget?.chargeAmount
@@ -547,7 +544,7 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[0.6rem] font-semibold text-[#052413] hover:shadow-sm transition-all"
-                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
               >
                 <CreditCard className="w-3 h-3" />
                 Pagar restante
@@ -556,7 +553,7 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
             {isRemainderPaid && (
               <span
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.55rem] font-medium text-[#0a7c3e]"
-                style={{ backgroundColor: "rgba(10,124,62,0.08)", fontFamily: f.inter }}
+                style={{ backgroundColor: "rgba(10,124,62,0.08)" }}
               >
                 <CheckCircle className="w-2.5 h-2.5" />
                 Pago total
@@ -603,10 +600,10 @@ function TabOverview({ project }: { project: Project }) {
             <Search className="w-4.5 h-4.5 text-[#052413]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[#052413]" style={{ fontFamily: f.inter }}>
+            <p className="text-sm font-semibold text-[#052413]">
               Projeto em analise
             </p>
-            <p className="text-xs text-[#856C42] mt-0.5 leading-relaxed" style={{ fontFamily: f.inter }}>
+            <p className="text-xs text-[#856C42] mt-0.5 leading-relaxed">
               Nossa equipe esta avaliando o seu projeto. Em breve entraremos em contato para apresentar o orcamento e os proximos passos.
             </p>
           </div>
@@ -623,8 +620,8 @@ function TabOverview({ project }: { project: Project }) {
             <CheckCircle className="w-4 h-4 text-[#0a7c3e]" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#0a7c3e]" style={{ fontFamily: f.inter }}>Pagamento total concluido</p>
-            <p className="text-[0.6rem] text-[#856C42]/70" style={{ fontFamily: f.inter }}>
+            <p className="text-xs font-semibold text-[#0a7c3e]">Pagamento total concluido</p>
+            <p className="text-[0.6rem] text-[#856C42]/70">
               Entrada + restante de {formatCurrency(project.budget!.price)} confirmados.
               {project.budget?.remainderPaidAt && ` Restante pago em ${formatDateTime(project.budget.remainderPaidAt)}.`}
             </p>
@@ -646,21 +643,21 @@ function TabOverview({ project }: { project: Project }) {
 
       {project.description && (
         <div className="p-3 rounded-xl bg-[#F0E8D4]/50">
-          <p className="text-[0.6rem] uppercase tracking-wider text-[#856C42]/70 mb-1" style={{ fontFamily: f.inter }}>Descricao</p>
-          <p className="text-sm text-[#052413] leading-relaxed" style={{ fontFamily: f.inter }}>{project.description}</p>
+          <p className="text-[0.6rem] uppercase tracking-wider text-[#856C42]/70 mb-1">Descricao</p>
+          <p className="text-sm text-[#052413] leading-relaxed">{project.description}</p>
         </div>
       )}
 
       {project.notes && (
         <div className="p-3 rounded-xl bg-[#F0E8D4]/50">
-          <p className="text-[0.6rem] uppercase tracking-wider text-[#856C42]/70 mb-1" style={{ fontFamily: f.inter }}>Observacoes</p>
-          <p className="text-sm text-[#052413] leading-relaxed" style={{ fontFamily: f.inter }}>{project.notes}</p>
+          <p className="text-[0.6rem] uppercase tracking-wider text-[#856C42]/70 mb-1">Observacoes</p>
+          <p className="text-sm text-[#052413] leading-relaxed">{project.notes}</p>
         </div>
       )}
 
       {/* Timeline */}
       <div>
-        <p className="text-[0.6rem] uppercase tracking-wider text-[#856C42]/70 mb-2" style={{ fontFamily: f.inter }}>Historico</p>
+        <p className="text-[0.6rem] uppercase tracking-wider text-[#856C42]/70 mb-2">Historico</p>
         <div className="space-y-0 pl-1">
           {project.steps.map((step, i) => (
             <div key={i} className="flex gap-2.5">
@@ -669,8 +666,8 @@ function TabOverview({ project }: { project: Project }) {
                 {i < project.steps.length - 1 && <div className="w-px flex-1 min-h-5" style={{ backgroundColor: "rgba(22,91,54,0.15)" }} />}
               </div>
               <div className="pb-2.5 min-w-0">
-                <p className="text-xs text-[#052413] font-medium" style={{ fontFamily: f.inter }}>{getStatusLabel(step.status)}</p>
-                <p className="text-[0.6rem] text-[#856C42]/50 truncate" style={{ fontFamily: f.inter }}>
+                <p className="text-xs text-[#052413] font-medium">{getStatusLabel(step.status)}</p>
+                <p className="text-[0.6rem] text-[#856C42]/50 truncate">
                   {formatDateTime(step.date)}{step.note && ` — ${step.note}`}
                 </p>
               </div>
@@ -685,8 +682,8 @@ function TabOverview({ project }: { project: Project }) {
 function InfoChip({ label, value }: { label: string; value: string }) {
   return (
     <div className="p-2.5 rounded-xl bg-[#F0E8D4]/40">
-      <p className="text-[0.55rem] uppercase tracking-wider text-[#856C42]/60 mb-0.5" style={{ fontFamily: f.inter }}>{label}</p>
-      <p className="text-xs text-[#052413] font-medium" style={{ fontFamily: f.inter }}>{value}</p>
+      <p className="text-[0.55rem] uppercase tracking-wider text-[#856C42]/60 mb-0.5">{label}</p>
+      <p className="text-xs text-[#052413] font-medium">{value}</p>
     </div>
   );
 }
@@ -730,7 +727,7 @@ function TabFiles({
     return (
       <div className="flex flex-col items-center py-8 text-center">
         <Folder className="w-10 h-10 text-[#856C42]/20 mb-3" />
-        <p className="text-sm text-[#856C42]/60" style={{ fontFamily: f.inter }}>Nenhum arquivo neste projeto</p>
+        <p className="text-sm text-[#856C42]/60">Nenhum arquivo neste projeto</p>
       </div>
     );
   }
@@ -765,7 +762,7 @@ function TabFiles({
           />
         ) : (
           <div className="p-3 rounded-xl border border-dashed" style={{ borderColor: "rgba(22,91,54,0.15)" }}>
-            <p className="text-xs text-[#856C42]/50 text-center" style={{ fontFamily: f.inter }}>Nenhum arquivo de revisao enviado ainda</p>
+            <p className="text-xs text-[#856C42]/50 text-center">Nenhum arquivo de revisao enviado ainda</p>
           </div>
         )
       )}
@@ -781,8 +778,8 @@ function TabFiles({
               <Download className="w-4.5 h-4.5 text-[#0a7c3e]" />
             </div>
             <div>
-              <p className="text-sm font-medium text-[#052413]" style={{ fontFamily: f.inter }}>Arquivo final pronto!</p>
-              <p className="text-[0.65rem] text-[#856C42]" style={{ fontFamily: f.inter }}>Sua diagramacao foi finalizada</p>
+              <p className="text-sm font-medium text-[#052413]">Arquivo final pronto!</p>
+              <p className="text-[0.65rem] text-[#856C42]">Sua diagramacao foi finalizada</p>
             </div>
           </div>
           <a
@@ -790,7 +787,7 @@ function TabFiles({
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ background: "linear-gradient(135deg, #165B36, #052413)", fontFamily: f.inter }}
+            style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
           >
             <Download className="w-4 h-4" />
             Baixar arquivo final
@@ -820,16 +817,16 @@ function FileGroup({
     <div>
       <div className="flex items-center gap-2 mb-2">
         {icon}
-        <span className="text-xs font-medium text-[#052413]" style={{ fontFamily: f.inter }}>{title}</span>
-        <span className="text-[0.55rem] px-1.5 py-0.5 rounded-full font-medium bg-[#F0E8D4] text-[#856C42]" style={{ fontFamily: f.inter }}>{count}</span>
+        <span className="text-xs font-medium text-[#052413]">{title}</span>
+        <span className="text-[0.55rem] px-1.5 py-0.5 rounded-full font-medium bg-[#F0E8D4] text-[#856C42]">{count}</span>
       </div>
       <div className="space-y-1.5">
         {files.map((file, idx) => (
           <div key={idx} className="flex items-center gap-2.5 p-2.5 rounded-lg bg-white/70 border border-[#F0E8D4]/50">
             <FileText className={`w-4 h-4 flex-shrink-0 ${accent === "green" ? "text-[#165B36]" : "text-[#856C42]"}`} />
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-[#052413] truncate font-medium" style={{ fontFamily: f.inter }}>{file.name}</p>
-              <p className="text-[0.55rem] text-[#856C42]/50" style={{ fontFamily: f.inter }}>
+              <p className="text-xs text-[#052413] truncate font-medium">{file.name}</p>
+              <p className="text-[0.55rem] text-[#856C42]/50">
                 {formatFileSize(file.size)} · {formatDate(file.uploadedAt)}
               </p>
             </div>
@@ -898,7 +895,7 @@ function ContractLink({
     <div className="flex items-center gap-2.5 py-2 border-t border-b" style={{ borderColor: "rgba(133,108,66,0.06)" }}>
       <ScrollText className="w-3.5 h-3.5 text-[#856C42]/40 flex-shrink-0" />
       <div className="min-w-0 flex-1">
-        <p className="text-[0.65rem] text-[#856C42]/60" style={{ fontFamily: f.inter }}>
+        <p className="text-[0.65rem] text-[#856C42]/60">
           Contrato aceito em {formatDate(contract.acceptedAt)} por {contract.acceptorName}
         </p>
       </div>
@@ -967,10 +964,9 @@ function InstallmentPlanClient({ installmentPlan, totalPrice, projectId, deposit
       <div className="px-4 py-3 flex items-center justify-between" style={{ background: allPaid ? "linear-gradient(135deg, rgba(10,124,62,0.04), rgba(10,124,62,0.08))" : "linear-gradient(135deg, rgba(235,191,116,0.08), rgba(133,108,66,0.04))" }}>
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4" style={{ color: allPaid ? "#0a7c3e" : "#856C42" }} />
-          <span className="text-xs font-semibold text-[#052413]" style={{ fontFamily: f.inter }}>Parcelamento PIX — {installmentPlan.totalInstallments}x</span>
+          <span className="text-xs font-semibold text-[#052413]">Parcelamento PIX — {installmentPlan.totalInstallments}x</span>
         </div>
         <span className="text-[0.6rem] font-medium px-2 py-0.5 rounded-full" style={{
-          fontFamily: f.inter,
           backgroundColor: allPaid ? "rgba(10,124,62,0.1)" : "rgba(235,191,116,0.2)",
           color: allPaid ? "#0a7c3e" : "#856C42"
         }}>
@@ -987,9 +983,9 @@ function InstallmentPlanClient({ installmentPlan, totalPrice, projectId, deposit
 
       {/* Summary */}
       <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottomWidth: 1, borderColor: "rgba(133,108,66,0.08)" }}>
-        <span className="text-xs text-[#856C42]/70 font-medium" style={{ fontFamily: f.inter }}>Pago: <strong className="text-[#052413]">R$ {paidAmount.toFixed(2).replace(".", ",")}</strong></span>
-        {!allPaid && <span className="text-xs text-[#856C42] font-bold" style={{ fontFamily: f.inter }}>Restante: R$ {pendingAmount.toFixed(2).replace(".", ",")}</span>}
-        {allPaid && <span className="text-xs text-[#0a7c3e] font-bold" style={{ fontFamily: f.inter }}>Totalmente pago!</span>}
+        <span className="text-xs text-[#856C42]/70 font-medium">Pago: <strong className="text-[#052413]">R$ {paidAmount.toFixed(2).replace(".", ",")}</strong></span>
+        {!allPaid && <span className="text-xs text-[#856C42] font-bold">Restante: R$ {pendingAmount.toFixed(2).replace(".", ",")}</span>}
+        {allPaid && <span className="text-xs text-[#0a7c3e] font-bold">Totalmente pago!</span>}
       </div>
 
       {/* Installment list with inline actions */}
@@ -1018,13 +1014,13 @@ function InstallmentPlanClient({ installmentPlan, totalPrice, projectId, deposit
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className={`text-xs font-semibold ${isNext ? "text-[#052413]" : "text-[#052413]/80"}`} style={{ fontFamily: f.inter }}>R$ {inst.amount.toFixed(2).replace(".", ",")}</span>
-                  {isPaid && <span className="text-[0.5rem] px-1 py-0.5 rounded-full bg-green-100 text-green-700 font-semibold" style={{ fontFamily: f.inter }}>Pago</span>}
-                  {isOverdue && <span className="text-[0.5rem] px-1 py-0.5 rounded-full bg-red-100 text-red-600 font-semibold" style={{ fontFamily: f.inter }}>Vencida</span>}
-                  {isNext && !isOverdue && <span className="text-[0.5rem] px-1 py-0.5 rounded-full bg-amber-100 text-amber-700 font-semibold" style={{ fontFamily: f.inter }}>Próxima</span>}
+                  <span className={`text-xs font-semibold ${isNext ? "text-[#052413]" : "text-[#052413]/80"}`}>R$ {inst.amount.toFixed(2).replace(".", ",")}</span>
+                  {isPaid && <span className="text-[0.5rem] px-1 py-0.5 rounded-full bg-green-100 text-green-700 font-semibold">Pago</span>}
+                  {isOverdue && <span className="text-[0.5rem] px-1 py-0.5 rounded-full bg-red-100 text-red-600 font-semibold">Vencida</span>}
+                  {isNext && !isOverdue && <span className="text-[0.5rem] px-1 py-0.5 rounded-full bg-amber-100 text-amber-700 font-semibold">Próxima</span>}
                 </div>
               </div>
-              <span className="text-[0.6rem] text-[#856C42]/50 flex-shrink-0" style={{ fontFamily: f.inter }}>
+              <span className="text-[0.6rem] text-[#856C42]/50 flex-shrink-0">
                 {formatDateBR(inst.dueDate)}
                 {isPaid && inst.paidAt ? " ✓" : ""}
               </span>
@@ -1033,7 +1029,6 @@ function InstallmentPlanClient({ installmentPlan, totalPrice, projectId, deposit
                   onClick={() => handleCopyPix(inst.number, inst.pixCode!)}
                   className="px-2 py-1 rounded-md text-[0.55rem] font-medium transition-all cursor-pointer flex-shrink-0"
                   style={{
-                    fontFamily: f.inter,
                     backgroundColor: copiedPix === inst.number ? "#165B36" : "rgba(22,91,54,0.08)",
                     color: copiedPix === inst.number ? "white" : "#165B36",
                   }}
@@ -1054,7 +1049,7 @@ function InstallmentPlanClient({ installmentPlan, totalPrice, projectId, deposit
             style={{ backgroundColor: "rgba(22,91,54,0.06)", border: "1px solid rgba(22,91,54,0.15)" }}
           >
             <Loader2 className="w-3 h-3 animate-spin text-[#165B36] flex-shrink-0" />
-            <p className="text-[0.62rem] text-[#165B36]" style={{ fontFamily: f.inter }}>
+            <p className="text-[0.62rem] text-[#165B36]">
               Aguardando confirmação do PIX... Esta página atualiza automaticamente.
             </p>
           </div>
@@ -1067,7 +1062,7 @@ function InstallmentPlanClient({ installmentPlan, totalPrice, projectId, deposit
           <a
             href={`/parcelas/${projectId}`}
             className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold text-[#052413] transition-all hover:shadow-md cursor-pointer"
-            style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+            style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
           >
             <CreditCard className="w-3.5 h-3.5" />
             {pendingCount > 1 ? "Pagar parcelas" : "Pagar parcela"}
@@ -1106,8 +1101,8 @@ function TabFinancial({ project }: { project: Project }) {
     return (
       <div className="flex flex-col items-center py-8 text-center">
         <Wallet className="w-10 h-10 text-[#856C42]/20 mb-3" />
-        <p className="text-sm text-[#856C42]/60" style={{ fontFamily: f.inter }}>Orçamento ainda não disponível</p>
-        <p className="text-xs text-[#856C42]/40 mt-1" style={{ fontFamily: f.inter }}>O orçamento será enviado após a análise do projeto</p>
+        <p className="text-sm text-[#856C42]/60">Orçamento ainda não disponível</p>
+        <p className="text-xs text-[#856C42]/40 mt-1">O orçamento será enviado após a análise do projeto</p>
       </div>
     );
   }
@@ -1142,7 +1137,7 @@ function TabFinancial({ project }: { project: Project }) {
             {isPaid ? <CheckCircle className="w-4.5 h-4.5 text-[#0a7c3e]" /> : <CreditCard className="w-4.5 h-4.5 text-[#856C42]" />}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-[#052413]" style={{ fontFamily: f.inter }}>
+            <p className="text-sm font-medium text-[#052413]">
               {isFullyPaid
                 ? "Pagamento total confirmado"
                 : budget.installmentPlan?.enabled
@@ -1153,15 +1148,15 @@ function TabFinancial({ project }: { project: Project }) {
                       ? "Entrada paga"
                       : "Orcamento disponivel"}
             </p>
-            <p className="text-[0.65rem] text-[#856C42] truncate" style={{ fontFamily: f.inter }}>{budget.description}</p>
+            <p className="text-[0.65rem] text-[#856C42] truncate">{budget.description}</p>
           </div>
         </div>
 
         {/* Price breakdown */}
         <div className="space-y-1 mb-3">
           <div className="flex items-center justify-between p-3 rounded-lg bg-white/60">
-            <span className="text-sm text-[#856C42] font-medium" style={{ fontFamily: f.inter }}>Valor total do servico</span>
-            <span className="text-lg font-bold text-[#052413] tracking-tight" style={{ fontFamily: f.inter }}>{formatCurrency(budget.price)}</span>
+            <span className="text-sm text-[#856C42] font-medium">Valor total do servico</span>
+            <span className="text-lg font-bold text-[#052413] tracking-tight">{formatCurrency(budget.price)}</span>
           </div>
 
           {hasDeposit && (
@@ -1177,11 +1172,11 @@ function TabFinancial({ project }: { project: Project }) {
               >
                 <div className="flex items-center gap-1.5">
                   {isPaid && <CheckCircle className="w-3 h-3 text-[#0a7c3e]" />}
-                  <span className={`text-sm font-medium ${isPaid ? "text-[#0a7c3e]" : "text-[#165B36]"}`} style={{ fontFamily: f.inter }}>
+                  <span className={`text-sm font-medium ${isPaid ? "text-[#0a7c3e]" : "text-[#165B36]"}`}>
                     Entrada ({budget.depositPercent}%)
                   </span>
                 </div>
-                <span className={`text-base font-bold tracking-tight ${isPaid ? "text-[#0a7c3e]" : "text-[#165B36]"}`} style={{ fontFamily: f.inter }}>
+                <span className={`text-base font-bold tracking-tight ${isPaid ? "text-[#0a7c3e]" : "text-[#165B36]"}`}>
                   {formatCurrency(budget.chargeAmount!)}
                 </span>
               </div>
@@ -1199,14 +1194,12 @@ function TabFinancial({ project }: { project: Project }) {
                   {isRemainderPaid ? <CheckCircle className="w-3 h-3 text-[#0a7c3e]" /> : isDepositPaid ? <Clock className="w-3 h-3 text-[#856C42]" /> : null}
                   <span
                     className={`text-sm font-medium ${isRemainderPaid ? "text-[#0a7c3e]" : isDepositPaid ? "text-[#856C42]" : "text-[#856C42]/50"}`}
-                    style={{ fontFamily: f.inter }}
                   >
                     {isRemainderPaid ? "Restante pago" : budget.installmentPlan?.enabled ? `Parcelado em ${budget.installmentPlan.totalInstallments}x` : isDepositPaid ? "Restante a pagar" : "Restante na entrega"}
                   </span>
                 </div>
                 <span
                   className={`text-base font-bold tracking-tight ${isRemainderPaid ? "text-[#0a7c3e]" : isDepositPaid ? "text-[#856C42]" : "text-[#856C42]/50"}`}
-                  style={{ fontFamily: f.inter }}
                 >
                   {formatCurrency(remainingAmount)}
                 </span>
@@ -1218,7 +1211,7 @@ function TabFinancial({ project }: { project: Project }) {
         {/* Payment status / action */}
         {isPaid ? (
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-[#0a7c3e]" style={{ fontFamily: f.inter }}>
+            <div className="flex items-center gap-2 text-sm text-[#0a7c3e]">
               <CheckCircle className="w-4 h-4" />
               <span className="font-medium">
                 {isDepositPaid ? `Entrada de ${formatCurrency(budget.chargeAmount!)} paga` : "Pagamento confirmado"}
@@ -1226,14 +1219,14 @@ function TabFinancial({ project }: { project: Project }) {
               {budget.paidAt && <span className="text-[0.65rem] text-[#856C42]/50 ml-1">em {formatDateTime(budget.paidAt)}</span>}
             </div>
             {isRemainderPaid && budget.remainderPaidAt && (
-              <div className="flex items-center gap-2 text-xs text-[#0a7c3e] mt-1" style={{ fontFamily: f.inter }}>
+              <div className="flex items-center gap-2 text-xs text-[#0a7c3e] mt-1">
                 <CheckCircle className="w-3.5 h-3.5" />
                 <span className="font-medium">Restante pago em {formatDateTime(budget.remainderPaidAt)}</span>
               </div>
             )}
             {isRemainderPending && budget.remainderPaymentUrl && (
               <div className="p-3 rounded-lg" style={{ backgroundColor: "rgba(235,191,116,0.1)", borderWidth: 1, borderColor: "rgba(235,191,116,0.25)" }}>
-                <p className="text-[0.7rem] text-[#856C42] leading-relaxed mb-2.5" style={{ fontFamily: f.inter }}>
+                <p className="text-[0.7rem] text-[#856C42] leading-relaxed mb-2.5">
                   O saldo restante de <strong className="text-[#052413]">{formatCurrency(remainingAmount)}</strong> esta disponivel para pagamento.
                 </p>
                 <a
@@ -1241,7 +1234,7 @@ function TabFinancial({ project }: { project: Project }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#052413] transition-all hover:shadow-md"
-                  style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+                  style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
                 >
                   <CreditCard className="w-3.5 h-3.5" />
                   Pagar restante de {formatCurrency(remainingAmount)}
@@ -1250,7 +1243,7 @@ function TabFinancial({ project }: { project: Project }) {
             )}
             {isRemainderPending && !budget.remainderPaymentUrl && !budget.installmentPlan?.enabled && (
               <div className="p-2.5 rounded-lg" style={{ backgroundColor: "rgba(235,191,116,0.1)", borderWidth: 1, borderColor: "rgba(235,191,116,0.2)" }}>
-                <p className="text-[0.7rem] text-[#856C42] leading-relaxed" style={{ fontFamily: f.inter }}>
+                <p className="text-[0.7rem] text-[#856C42] leading-relaxed">
                   O valor restante de <strong className="text-[#052413]">{formatCurrency(remainingAmount)}</strong> será cobrado na entrega do projeto finalizado.
                   Você será notificado quando o projeto estiver pronto.
                 </p>
@@ -1261,7 +1254,7 @@ function TabFinancial({ project }: { project: Project }) {
           <a
             href={`/pagamento/${project.id}`}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-[#052413] transition-all hover:shadow-md"
-            style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+            style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
           >
             <CreditCard className="w-4 h-4" />
             {hasDeposit ? `Pagar entrada de ${formatCurrency(budget.chargeAmount!)}` : "Pagar agora"}
@@ -1283,16 +1276,16 @@ function TabFinancial({ project }: { project: Project }) {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Receipt className="w-4 h-4 text-[#856C42]" />
-            <span className="text-xs font-medium text-[#052413]" style={{ fontFamily: f.inter }}>Notas Fiscais</span>
-            <span className="text-[0.55rem] px-1.5 py-0.5 rounded-full font-medium bg-[#F0E8D4] text-[#856C42]" style={{ fontFamily: f.inter }}>{invoices.length}</span>
+            <span className="text-xs font-medium text-[#052413]">Notas Fiscais</span>
+            <span className="text-[0.55rem] px-1.5 py-0.5 rounded-full font-medium bg-[#F0E8D4] text-[#856C42]">{invoices.length}</span>
           </div>
           <div className="space-y-1.5">
             {invoices.map((inv, idx) => (
               <div key={idx} className="flex items-center gap-2.5 p-2.5 rounded-lg bg-white/70 border border-[#F0E8D4]/50">
                 <Receipt className="w-3.5 h-3.5 text-[#856C42] flex-shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs text-[#052413] truncate font-medium" style={{ fontFamily: f.inter }}>{inv.description || inv.name}</p>
-                  <p className="text-[0.55rem] text-[#856C42]/50" style={{ fontFamily: f.inter }}>
+                  <p className="text-xs text-[#052413] truncate font-medium">{inv.description || inv.name}</p>
+                  <p className="text-[0.55rem] text-[#856C42]/50">
                     {inv.name} · {formatFileSize(inv.size)} · {formatDate(inv.uploadedAt)}
                   </p>
                 </div>
@@ -1321,13 +1314,13 @@ function TabFinancial({ project }: { project: Project }) {
       {/* Payment methods info */}
       {!isPaid && !budget.installmentPlan?.enabled && (
         <div className="pt-2 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
-          <p className="text-[0.6rem] text-[#856C42]/50 mb-1.5" style={{ fontFamily: f.inter }}>Meios aceitos via Mercado Pago</p>
+          <p className="text-[0.6rem] text-[#856C42]/50 mb-1.5">Meios aceitos via Mercado Pago</p>
           <div className="flex flex-wrap gap-1.5">
             {["Pix", "Credito", "Debito", "Boleto"].map((m) => (
-              <span key={m} className="text-[0.6rem] px-2 py-1 rounded-lg bg-white/70 text-[#052413] font-medium" style={{ fontFamily: f.inter }}>{m}</span>
+              <span key={m} className="text-[0.6rem] px-2 py-1 rounded-lg bg-white/70 text-[#052413] font-medium">{m}</span>
             ))}
           </div>
-          <p className="text-[0.5rem] text-[#856C42]/35 mt-1" style={{ fontFamily: f.inter }}>Parcele em ate 12x no cartao de credito</p>
+          <p className="text-[0.5rem] text-[#856C42]/35 mt-1">Parcele em ate 12x no cartao de credito</p>
         </div>
       )}
     </div>
@@ -1344,7 +1337,7 @@ function TabHistorico({ project }: { project: Project }) {
     return (
       <div className="flex flex-col items-center py-8 text-center">
         <History className="w-10 h-10 text-[#856C42]/20 mb-3" />
-        <p className="text-sm text-[#856C42]/60" style={{ fontFamily: f.inter }}>Sem histórico de pagamentos</p>
+        <p className="text-sm text-[#856C42]/60">Sem histórico de pagamentos</p>
       </div>
     );
   }
@@ -1389,8 +1382,8 @@ function TabHistorico({ project }: { project: Project }) {
     return (
       <div className="flex flex-col items-center py-8 text-center">
         <History className="w-10 h-10 text-[#856C42]/20 mb-3" />
-        <p className="text-sm text-[#856C42]/60" style={{ fontFamily: f.inter }}>Nenhum pagamento confirmado ainda</p>
-        <p className="text-xs text-[#856C42]/40 mt-1" style={{ fontFamily: f.inter }}>Os pagamentos confirmados aparecerão aqui</p>
+        <p className="text-sm text-[#856C42]/60">Nenhum pagamento confirmado ainda</p>
+        <p className="text-xs text-[#856C42]/40 mt-1">Os pagamentos confirmados aparecerão aqui</p>
       </div>
     );
   }
@@ -1399,7 +1392,7 @@ function TabHistorico({ project }: { project: Project }) {
 
   return (
     <div className="space-y-3">
-      <p className="text-[0.6rem] uppercase tracking-wider text-[#856C42]/70" style={{ fontFamily: f.inter }}>
+      <p className="text-[0.6rem] uppercase tracking-wider text-[#856C42]/70">
         Histórico de pagamentos
       </p>
       <div className="space-y-2">
@@ -1416,10 +1409,10 @@ function TabHistorico({ project }: { project: Project }) {
               <CheckCircle className="w-4 h-4 text-[#0a7c3e]" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-[#052413]" style={{ fontFamily: f.inter }}>{ev.label}</p>
-              <p className="text-[0.6rem] text-[#856C42]/60" style={{ fontFamily: f.inter }}>{formatDateTime(ev.date)}</p>
+              <p className="text-xs font-medium text-[#052413]">{ev.label}</p>
+              <p className="text-[0.6rem] text-[#856C42]/60">{formatDateTime(ev.date)}</p>
             </div>
-            <span className="text-sm font-bold text-[#0a7c3e] flex-shrink-0" style={{ fontFamily: f.inter }}>
+            <span className="text-sm font-bold text-[#0a7c3e] flex-shrink-0">
               {formatCurrency(ev.amount)}
             </span>
           </div>
@@ -1429,8 +1422,8 @@ function TabHistorico({ project }: { project: Project }) {
         className="flex items-center justify-between px-3 py-2.5 rounded-xl"
         style={{ backgroundColor: "rgba(133,108,66,0.06)", border: "1px solid rgba(133,108,66,0.1)" }}
       >
-        <span className="text-xs text-[#856C42] font-medium" style={{ fontFamily: f.inter }}>Total pago</span>
-        <span className="text-sm font-bold text-[#052413]" style={{ fontFamily: f.inter }}>{formatCurrency(totalPaid)}</span>
+        <span className="text-xs text-[#856C42] font-medium">Total pago</span>
+        <span className="text-sm font-bold text-[#052413]">{formatCurrency(totalPaid)}</span>
       </div>
     </div>
   );
@@ -1530,8 +1523,8 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
         <div className="flex-shrink-0 px-5 pt-5 pb-3 border-b" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
           <div className="flex items-start justify-between gap-3 mb-3">
             <div className="min-w-0">
-              <h2 className="text-lg text-[#052413] leading-snug" style={{ fontFamily: f.play }}>{liveProject.title}</h2>
-              <p className="text-xs text-[#856C42] mt-0.5" style={{ fontFamily: f.inter }}>{liveProject.author}</p>
+              <h2 className="text-lg text-[#052413] leading-snug font-serif">{liveProject.title}</h2>
+              <p className="text-xs text-[#856C42] mt-0.5">{liveProject.author}</p>
             </div>
             <button onClick={onClose} className="p-1.5 rounded-lg text-[#856C42]/40 hover:bg-[#F0E8D4] hover:text-[#856C42] transition-colors cursor-pointer flex-shrink-0">
               <X className="w-5 h-5" />
@@ -1558,7 +1551,6 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
                       ? "text-[#052413] bg-[#F0E8D4]/80"
                       : "text-[#856C42]/60 hover:text-[#856C42] hover:bg-[#F0E8D4]/30"
                   }`}
-                  style={{ fontFamily: f.inter }}
                 >
                   {tab.icon}
                   <span className="hidden sm:inline">{tab.label}</span>
@@ -1597,7 +1589,7 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
           <div className="flex-shrink-0 px-5 py-3 border-t bg-[#165B36]/[0.02] space-y-2.5" style={{ borderColor: "rgba(22,91,54,0.12)" }}>
             {/* Observations textarea */}
             <div>
-              <label className="block text-[0.6rem] text-[#856C42]/70 mb-1" style={{ fontFamily: f.inter }}>
+              <label className="block text-[0.6rem] text-[#856C42]/70 mb-1">
                 Observações ou solicitações de alteração <span className="text-[#856C42]/40">(opcional)</span>
               </label>
               <textarea
@@ -1607,10 +1599,10 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
                 rows={2}
                 maxLength={1000}
                 className="w-full px-3 py-2 text-xs rounded-lg border resize-none focus:outline-none focus:ring-1 focus:ring-[#165B36]/30"
-                style={{ fontFamily: f.inter, borderColor: "rgba(22,91,54,0.15)", backgroundColor: "rgba(255,255,255,0.7)" }}
+                style={{ borderColor: "rgba(22,91,54,0.15)", backgroundColor: "rgba(255,255,255,0.7)" }}
               />
               {reviewObservations.length > 0 && (
-                <p className="text-[0.5rem] text-[#856C42]/40 text-right mt-0.5" style={{ fontFamily: f.inter }}>{reviewObservations.length}/1000</p>
+                <p className="text-[0.5rem] text-[#856C42]/40 text-right mt-0.5">{reviewObservations.length}/1000</p>
               )}
             </div>
             {/* Terms checkbox with link */}
@@ -1622,13 +1614,12 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
                 className="w-3.5 h-3.5 rounded accent-[#165B36] mt-0.5 flex-shrink-0"
                 id="approve-checkbox"
               />
-              <label htmlFor="approve-checkbox" className="text-xs text-[#052413] cursor-pointer leading-relaxed" style={{ fontFamily: f.inter }}>
+              <label htmlFor="approve-checkbox" className="text-xs text-[#052413] cursor-pointer leading-relaxed">
                 Declaro que revisei o material entregue e aceito o projeto como está sendo entregue.{" "}
                 <button
                   type="button"
                   onClick={(e) => { e.preventDefault(); setShowTermsModal(true); }}
                   className="text-[#165B36] underline underline-offset-2 hover:text-[#0a7c3e] cursor-pointer text-[0.65rem]"
-                  style={{ fontFamily: f.inter }}
                 >
                   Ler termos e condições
                 </button>
@@ -1638,7 +1629,7 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
               onClick={handleApproveReview}
               disabled={!acceptTerms || approvingReview}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white disabled:opacity-40 transition-all cursor-pointer"
-              style={{ background: "linear-gradient(135deg, #165B36, #052413)", fontFamily: f.inter }}
+              style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
             >
               {approvingReview ? <Loader2 className="w-4 h-4 animate-spin" /> : <><CheckCircle className="w-4 h-4" /> Aprovar revisão</>}
             </button>
@@ -1663,10 +1654,10 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
                 className="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto shadow-2xl"
               >
                 <div className="sticky top-0 bg-white px-6 py-4 border-b flex items-center justify-between" style={{ borderColor: "rgba(133,108,66,0.1)" }}>
-                  <h3 className="text-sm font-semibold text-[#052413]" style={{ fontFamily: f.play }}>Termos e Condições de Aprovação</h3>
+                  <h3 className="text-sm font-semibold text-[#052413] font-serif">Termos e Condições de Aprovação</h3>
                   <button onClick={() => setShowTermsModal(false)} className="p-1 rounded-full hover:bg-gray-100 cursor-pointer"><X className="w-4 h-4 text-gray-400" /></button>
                 </div>
-                <div className="px-6 py-5 space-y-4 text-xs text-[#052413]/80 leading-relaxed" style={{ fontFamily: f.inter }}>
+                <div className="px-6 py-5 space-y-4 text-xs text-[#052413]/80 leading-relaxed">
                   <p className="font-semibold text-[#052413]">Ao aprovar a revisão do projeto, o CONTRATANTE declara e concorda com os seguintes termos:</p>
                   <div className="space-y-3">
                     <p><strong>1. Aceitação do Trabalho Entregue:</strong> Ao clicar em "Aprovar revisão", o CONTRATANTE declara ter revisado integralmente o material entregue pela Editora e o aceita como está, reconhecendo que o trabalho foi executado conforme o escopo contratado.</p>
@@ -1683,7 +1674,7 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
                   <button
                     onClick={() => setShowTermsModal(false)}
                     className="w-full py-2 rounded-lg text-xs font-medium text-white cursor-pointer"
-                    style={{ background: "linear-gradient(135deg, #165B36, #052413)", fontFamily: f.inter }}
+                    style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
                   >
                     Entendi
                   </button>
@@ -1701,7 +1692,7 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-[#052413] transition-all hover:shadow-md"
-              style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+              style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
             >
               <CreditCard className="w-4 h-4" />
               {liveProject.budget.depositPercent && liveProject.budget.depositPercent < 100 && liveProject.budget.chargeAmount
@@ -1725,7 +1716,7 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-[#052413] transition-all hover:shadow-md"
-                  style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+                  style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
                 >
                   <CreditCard className="w-4 h-4" />
                   Pagar restante — {formatCurrency(remAmt)}
@@ -1927,20 +1918,20 @@ export function UserAccountPage() {
           <div className="absolute -top-10 -right-10 w-80 h-80 rounded-full opacity-[0.06]" style={{ background: "radial-gradient(circle, #EBBF74, transparent)" }} />
         </div>
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 w-full">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors mb-4" style={{ fontFamily: f.inter }}>
+          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors mb-4">
             <ArrowLeft className="w-4 h-4" />
             Voltar ao site
           </Link>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <h1 className="text-2xl sm:text-3xl text-white" style={{ fontFamily: f.play }}>
+            <h1 className="text-2xl sm:text-3xl text-white font-serif">
               Minha <span className="italic text-[#EBBF74]">Conta</span>
             </h1>
             {/* Quick stats pills */}
             <div className="flex items-center gap-2">
-              <div className="px-3 py-1.5 rounded-full bg-white/10 text-white/80 text-xs" style={{ fontFamily: f.inter }}>
+              <div className="px-3 py-1.5 rounded-full bg-white/10 text-white/80 text-xs">
                 <span className="font-semibold text-[#EBBF74]">{totalActive}</span> em andamento
               </div>
-              <div className="px-3 py-1.5 rounded-full bg-white/10 text-white/80 text-xs" style={{ fontFamily: f.inter }}>
+              <div className="px-3 py-1.5 rounded-full bg-white/10 text-white/80 text-xs">
                 <span className="font-semibold text-[#EBBF74]">{totalCompleted}</span> concluido{totalCompleted !== 1 ? "s" : ""}
               </div>
             </div>
@@ -1964,8 +1955,8 @@ export function UserAccountPage() {
                 {/* Avatar with upload */}
                 <div className="relative flex-shrink-0 group">
                   <div
-                    className="relative w-11 h-11 rounded-xl flex items-center justify-center text-base font-semibold overflow-hidden cursor-pointer"
-                    style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74", fontFamily: f.play }}
+                    className="relative w-11 h-11 rounded-xl flex items-center justify-center text-base font-semibold overflow-hidden cursor-pointer font-serif"
+                    style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
                     onClick={() => avatarInputRef.current?.click()}
                     title="Trocar foto"
                   >
@@ -1985,25 +1976,25 @@ export function UserAccountPage() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-[#052413] truncate" style={{ fontFamily: f.play }}>{user.name || "Sem nome"}</p>
-                  <p className="text-[0.65rem] text-[#856C42] truncate" style={{ fontFamily: f.inter }}>{user.email}</p>
+                  <p className="text-sm font-medium text-[#052413] truncate font-serif">{user.name || "Sem nome"}</p>
+                  <p className="text-[0.65rem] text-[#856C42] truncate">{user.email}</p>
                   {user.phone && (
-                    <p className="text-[0.65rem] text-[#856C42]/60 truncate mt-0.5" style={{ fontFamily: f.inter }}>{user.phone}</p>
+                    <p className="text-[0.65rem] text-[#856C42]/60 truncate mt-0.5">{user.phone}</p>
                   )}
                   {/* Summary stats */}
                   <div className="flex items-center gap-3 mt-1.5 pt-1.5 border-t" style={{ borderColor: "rgba(133,108,66,0.06)" }}>
                     <div>
-                      <p className="text-xs font-bold text-[#052413]" style={{ fontFamily: f.inter }}>{totalActive}</p>
-                      <p className="text-[0.5rem] text-[#856C42]/50" style={{ fontFamily: f.inter }}>ativos</p>
+                      <p className="text-xs font-bold text-[#052413]">{totalActive}</p>
+                      <p className="text-[0.5rem] text-[#856C42]/50">ativos</p>
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-[#052413]" style={{ fontFamily: f.inter }}>{totalCompleted}</p>
-                      <p className="text-[0.5rem] text-[#856C42]/50" style={{ fontFamily: f.inter }}>concluídos</p>
+                      <p className="text-xs font-bold text-[#052413]">{totalCompleted}</p>
+                      <p className="text-[0.5rem] text-[#856C42]/50">concluídos</p>
                     </div>
                     {pendingActionCount > 0 && (
                       <div>
-                        <p className="text-xs font-bold text-red-500" style={{ fontFamily: f.inter }}>{pendingActionCount}</p>
-                        <p className="text-[0.5rem] text-red-400/70" style={{ fontFamily: f.inter }}>pendente{pendingActionCount !== 1 ? "s" : ""}</p>
+                        <p className="text-xs font-bold text-red-500">{pendingActionCount}</p>
+                        <p className="text-[0.5rem] text-red-400/70">pendente{pendingActionCount !== 1 ? "s" : ""}</p>
                       </div>
                     )}
                   </div>
@@ -2018,13 +2009,13 @@ export function UserAccountPage() {
               </div>
 
               <div className="space-y-1 pt-2 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
-                <a href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Gostaria%20de%20saber%20mais%20sobre%20os%20servi%C3%A7os%20da%20%C3%89poca%20Editora." target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2 rounded-lg text-xs text-[#052413] hover:bg-[#F0E8D4]/50 transition-colors" style={{ fontFamily: f.inter }}>
+                <a href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Gostaria%20de%20saber%20mais%20sobre%20os%20servi%C3%A7os%20da%20%C3%89poca%20Editora." target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2 rounded-lg text-xs text-[#052413] hover:bg-[#F0E8D4]/50 transition-colors">
                   <Mail className="w-3.5 h-3.5 text-[#165B36]" /> Fale conosco
                 </a>
-                <button onClick={handleLogout} className="w-full flex items-center gap-2 p-2 rounded-lg text-xs text-[#d4183d] hover:bg-[#d4183d]/5 transition-colors cursor-pointer" style={{ fontFamily: f.inter }}>
+                <button onClick={handleLogout} className="w-full flex items-center gap-2 p-2 rounded-lg text-xs text-[#d4183d] hover:bg-[#d4183d]/5 transition-colors cursor-pointer">
                   <LogOut className="w-3.5 h-3.5" /> Sair da conta
                 </button>
-                <Link to="/meus-dados" className="block text-center text-[0.6rem] text-[#856C42]/40 hover:text-[#856C42]/70 transition-colors pt-1" style={{ fontFamily: f.inter }}>
+                <Link to="/meus-dados" className="block text-center text-[0.6rem] text-[#856C42]/40 hover:text-[#856C42]/70 transition-colors pt-1">
                   Privacidade e dados pessoais
                 </Link>
               </div>
@@ -2047,7 +2038,7 @@ export function UserAccountPage() {
                 style={{ backgroundColor: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.18)" }}
               >
                 <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                <p className="text-xs text-[#052413]" style={{ fontFamily: f.inter }}>
+                <p className="text-xs text-[#052413]">
                   {pendingActionCount === 1
                     ? "Você tem 1 projeto aguardando ação — pagamento pendente ou parcela vencida."
                     : `Você tem ${pendingActionCount} projetos aguardando ação — pagamentos pendentes ou parcelas vencidas.`}
@@ -2066,7 +2057,7 @@ export function UserAccountPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm text-[#052413] bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#165B36]/15 focus:border-[#165B36]/30 transition-all"
-                  style={{ fontFamily: f.inter, borderColor: "rgba(133,108,66,0.12)" }}
+                  style={{ borderColor: "rgba(133,108,66,0.12)" }}
                 />
                 {searchQuery && (
                   <button
@@ -2101,7 +2092,6 @@ export function UserAccountPage() {
                       : "text-[#856C42]/60 hover:text-[#856C42] bg-white/60 hover:bg-white"
                   }`}
                   style={{
-                    fontFamily: f.inter,
                     ...(statusFilter === opt.key
                       ? { background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }
                       : { border: "1px solid rgba(133,108,66,0.12)" }),
@@ -2127,7 +2117,7 @@ export function UserAccountPage() {
                 {searchQuery || statusFilter !== "todos" ? (
                   <>
                     <Search className="w-10 h-10 text-[#856C42]/20 mx-auto mb-3" />
-                    <p className="text-sm text-[#856C42]/60" style={{ fontFamily: f.inter }}>
+                    <p className="text-sm text-[#856C42]/60">
                       {searchQuery
                         ? <>Nenhum projeto para "<span className="font-medium text-[#052413]">{searchQuery}</span>"</>
                         : "Nenhum projeto nessa categoria"}
@@ -2136,7 +2126,6 @@ export function UserAccountPage() {
                       <button
                         onClick={() => setStatusFilter("todos")}
                         className="mt-2 text-xs text-[#165B36] hover:underline cursor-pointer"
-                        style={{ fontFamily: f.inter }}
                       >
                         Ver todos os projetos
                       </button>
@@ -2147,8 +2136,8 @@ export function UserAccountPage() {
                     <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "rgba(235,191,116,0.1)" }}>
                       <Package className="w-6 h-6 text-[#856C42]/30" />
                     </div>
-                    <p className="text-[#052413] font-medium text-sm mb-1" style={{ fontFamily: f.play }}>Nenhum projeto ainda</p>
-                    <p className="text-xs text-[#856C42]/60 mb-4" style={{ fontFamily: f.inter }}>Solicite sua diagramacao e acompanhe aqui</p>
+                    <p className="text-[#052413] font-medium text-sm mb-1 font-serif">Nenhum projeto ainda</p>
+                    <p className="text-xs text-[#856C42]/60 mb-4">Solicite sua diagramacao e acompanhe aqui</p>
                     <GoldButton onClick={() => setShowNewForm(true)} className="px-5 py-2.5 text-sm font-semibold">
                       <Plus className="w-4 h-4" />
                       Solicitar diagramacao
@@ -2164,7 +2153,7 @@ export function UserAccountPage() {
                   {activeList.length > 0 && (
                     <>
                       {completedList.length > 0 && (
-                        <p className="text-[0.65rem] font-semibold text-[#856C42]/50 uppercase tracking-wider" style={{ fontFamily: f.inter }}>
+                        <p className="text-[0.65rem] font-semibold text-[#856C42]/50 uppercase tracking-wider">
                           Em andamento ({activeList.length})
                         </p>
                       )}
@@ -2177,7 +2166,7 @@ export function UserAccountPage() {
                   )}
                   {completedList.length > 0 && (
                     <>
-                      <p className="text-[0.65rem] font-semibold text-[#0a7c3e]/50 uppercase tracking-wider flex items-center gap-1.5 pt-2" style={{ fontFamily: f.inter }}>
+                      <p className="text-[0.65rem] font-semibold text-[#0a7c3e]/50 uppercase tracking-wider flex items-center gap-1.5 pt-2">
                         <CheckCircle className="w-3 h-3" />
                         Concluidos ({completedList.length})
                       </p>

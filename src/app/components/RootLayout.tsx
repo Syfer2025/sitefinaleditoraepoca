@@ -89,7 +89,6 @@ export function RootLayout() {
         position="bottom-right"
         toastOptions={{
           style: {
-            fontFamily: "Inter, sans-serif",
             borderRadius: "12px",
             border: "1px solid rgba(133, 108, 66, 0.15)",
             background: "#FFFDF8",

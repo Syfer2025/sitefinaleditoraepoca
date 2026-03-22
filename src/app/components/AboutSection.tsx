@@ -99,14 +99,12 @@ export function AboutSection() {
                 }}
               >
                 <p
-                  className="text-[2.25rem]"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
+                  className="text-[2.25rem] font-serif"
                 >
                   {about.yearsOfHistory}
                 </p>
                 <p
-                  className="text-[0.875rem] text-[#EBBF74]/80"
-                  style={{ fontFamily: "Inter, sans-serif" }}
+                  className="text-[0.875rem] text-[#EBBF74]/80 font-sans"
                 >
                   anos de história
                 </p>
@@ -118,17 +116,12 @@ export function AboutSection() {
           <div>
             <RevealOnScroll direction="up" delay={0.1}>
               <p
-                className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3"
-                style={{ fontFamily: "Inter, sans-serif" }}
+                className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3 font-sans"
               >
                 Nossa História
               </p>
               <h2
-                className="text-[2.5rem] md:text-[3rem] text-foreground mb-4"
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  lineHeight: 1.15,
-                }}
+                className="text-[2.5rem] md:text-[3rem] text-foreground mb-4 font-serif leading-[1.15]"
               >
                 Cultivando a literatura{" "}
                 <span className="italic">brasileira</span>
@@ -137,8 +130,7 @@ export function AboutSection() {
 
             <RevealOnScroll direction="up" delay={0.25}>
               <p
-                className="text-muted-foreground mb-4"
-                style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.8 }}
+                className="text-muted-foreground mb-4 font-sans leading-[1.8]"
               >
                 Fundada em 1987, a Época Editora nasceu do amor pela palavra
                 escrita. Ao longo de quase quatro décadas, construímos um
@@ -146,8 +138,7 @@ export function AboutSection() {
                 ensaios e literatura infantil.
               </p>
               <p
-                className="text-muted-foreground mb-8"
-                style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.8 }}
+                className="text-muted-foreground mb-8 font-sans leading-[1.8]"
               >
                 Nossa missão é dar voz a novos talentos e manter viva a chama da
                 literatura de qualidade, conectando autores e leitores em uma
@@ -165,8 +156,7 @@ export function AboutSection() {
                     </div>
                     <div>
                       <p
-                        className="text-[1.5rem] text-foreground"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
+                        className="text-[1.5rem] text-foreground font-serif"
                       >
                         <AnimatedCounter
                           target={stat.value}
@@ -174,8 +164,7 @@ export function AboutSection() {
                         />
                       </p>
                       <p
-                        className="text-[0.8rem] text-muted-foreground"
-                        style={{ fontFamily: "Inter, sans-serif" }}
+                        className="text-[0.8rem] text-muted-foreground font-sans"
                       >
                         {stat.label}
                       </p>

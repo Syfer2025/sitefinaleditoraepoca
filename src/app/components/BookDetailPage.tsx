@@ -112,18 +112,16 @@ export function BookDetailPage() {
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center py-20 px-6 text-center pt-[92px]">
           <p
-            className="text-[2rem] text-foreground mb-4"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-[2rem] text-foreground mb-4 font-serif"
           >
             Livro não encontrado
           </p>
-          <p className="text-muted-foreground mb-8" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-muted-foreground mb-8">
             O livro que você procura não está disponível.
           </p>
           <Link
             to="/catalogo"
             className="inline-flex items-center gap-2 text-primary underline underline-offset-4"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar ao catálogo
@@ -146,7 +144,6 @@ export function BookDetailPage() {
           <Link
             to="/catalogo"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar ao catálogo
@@ -182,19 +179,16 @@ export function BookDetailPage() {
                 <div>
                   <span
                     className="inline-block bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs mb-3"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {book.genre}
                   </span>
                   <h1
-                    className="text-[2.5rem] md:text-[3rem] text-foreground leading-tight"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
+                    className="text-[2.5rem] md:text-[3rem] text-foreground leading-tight font-serif"
                   >
                     {book.title}
                   </h1>
                   <p
                     className="text-muted-foreground mt-2"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     por {book.author} · {book.year}
                   </p>
@@ -204,13 +198,11 @@ export function BookDetailPage() {
                   <Star className="w-5 h-5 fill-[#EBBF74] text-[#EBBF74]" />
                   <span
                     className="text-lg font-semibold text-foreground"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {book.rating}
                   </span>
                   <span
                     className="text-sm text-muted-foreground"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     / 5.0
                   </span>
@@ -219,7 +211,7 @@ export function BookDetailPage() {
                 {book.description && (
                   <p
                     className="text-foreground/80 leading-relaxed text-[1.05rem]"
-                    style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.8 }}
+                    style={{ lineHeight: 1.8 }}
                   >
                     {book.description}
                   </p>
@@ -245,13 +237,11 @@ export function BookDetailPage() {
               <div className="text-center mb-10">
                 <p
                   className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   Projeto Gráfico
                 </p>
                 <h2
-                  className="text-[2rem] md:text-[2.5rem] text-foreground"
-                  style={{ fontFamily: "'Playfair Display', serif", lineHeight: 1.15 }}
+                  className="text-[2rem] md:text-[2.5rem] text-foreground font-serif leading-[1.15]"
                 >
                   <span className="italic">Diagramação</span> e layout
                 </h2>
@@ -284,7 +274,7 @@ export function BookDetailPage() {
           <section className="py-10 px-6 bg-secondary/20">
             <div className="max-w-7xl mx-auto text-center">
               <Images className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground" style={{ fontFamily: "Inter, sans-serif" }}>
+              <p className="text-sm text-muted-foreground">
                 Fotos de diagramação ainda não adicionadas.
               </p>
             </div>
@@ -295,14 +285,13 @@ export function BookDetailPage() {
         <section className="py-16 px-6 text-center">
           <div className="max-w-2xl mx-auto">
             <h2
-              className="text-[2rem] text-foreground mb-4"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-[2rem] text-foreground mb-4 font-serif"
             >
               Quer publicar o seu livro?
             </h2>
             <p
               className="text-muted-foreground mb-8"
-              style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
+              style={{ lineHeight: 1.7 }}
             >
               Quer publicar sua obra? Entre em contato e transforme seu manuscrito em um livro publicado.
             </p>
@@ -313,7 +302,7 @@ export function BookDetailPage() {
               <Link
                 to="/catalogo"
                 className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg border text-foreground hover:bg-secondary/50 transition-colors text-sm"
-                style={{ fontFamily: "Inter, sans-serif", borderColor: "var(--border)" }}
+                style={{ borderColor: "var(--border)" }}
               >
                 Mais livros
               </Link>
@@ -347,7 +336,7 @@ export function BookDetailPage() {
                 >
                   <ZoomOut className="w-4 h-4" />
                 </button>
-                <span className="text-xs text-white/50 min-w-[3rem] text-center" style={{ fontFamily: "Inter, sans-serif" }}>
+                <span className="text-xs text-white/50 min-w-[3rem] text-center">
                   {Math.round(lightboxZoom * 100)}%
                 </span>
                 <button
@@ -396,7 +385,7 @@ export function BookDetailPage() {
             </div>
 
             {/* Mobile hint */}
-            <p className="text-center text-[0.65rem] text-white/25 pb-3 sm:hidden" style={{ fontFamily: "Inter, sans-serif" }}>
+            <p className="text-center text-[0.65rem] text-white/25 pb-3 sm:hidden">
               Toque na imagem para ampliar · Toque fora para fechar
             </p>
           </motion.div>

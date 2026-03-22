@@ -94,8 +94,8 @@ export function FileViewer({ file, onClose }: { file: { name: string; url: strin
         <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           <FileText className="w-4 h-4 text-[#EBBF74] flex-shrink-0" />
           <div className="min-w-0">
-            <p className="text-xs sm:text-sm text-white truncate" style={{ fontFamily: "Inter, sans-serif" }}>{file.name}</p>
-            <p className="text-[0.55rem] text-white/40 hidden sm:block" style={{ fontFamily: "Inter, sans-serif" }}>
+            <p className="text-xs sm:text-sm text-white truncate">{file.name}</p>
+            <p className="text-[0.55rem] text-white/40 hidden sm:block">
               {getFileTypeLabel(file.name)} — {image ? "Use +/- para zoom, " : ""}Esc para fechar
             </p>
           </div>
@@ -104,7 +104,7 @@ export function FileViewer({ file, onClose }: { file: { name: string; url: strin
           {image && (
             <>
               <button onClick={() => setZoom((z) => Math.max(z - 25, 25))} className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" aria-label="Diminuir zoom"><ZoomOut className="w-4 h-4" /></button>
-              <span className="text-xs text-white/50 min-w-[2.5rem] text-center hidden sm:inline" style={{ fontFamily: "Inter, sans-serif" }}>{zoom}%</span>
+              <span className="text-xs text-white/50 min-w-[2.5rem] text-center hidden sm:inline">{zoom}%</span>
               <button onClick={() => setZoom((z) => Math.min(z + 25, 300))} className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" aria-label="Aumentar zoom"><ZoomIn className="w-4 h-4" /></button>
               <button onClick={() => setZoom(100)} className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer hidden sm:flex" aria-label="Redefinir zoom"><RotateCw className="w-4 h-4" /></button>
               <div className="w-px h-5 bg-white/10 mx-0.5" />
@@ -122,7 +122,7 @@ export function FileViewer({ file, onClose }: { file: { name: string; url: strin
           <div className="absolute inset-0 flex items-center justify-center z-10">
             <div className="flex flex-col items-center gap-3">
               <Loader2 className="w-8 h-8 animate-spin text-[#EBBF74]" />
-              <p className="text-sm text-white/50" style={{ fontFamily: "Inter, sans-serif" }}>Carregando...</p>
+              <p className="text-sm text-white/50">Carregando...</p>
             </div>
           </div>
         )}
@@ -138,7 +138,7 @@ export function FileViewer({ file, onClose }: { file: { name: string; url: strin
         {pdf && mobile && (
           <div className="flex flex-col items-center gap-5 p-8 text-center">
             <FileText className="w-16 h-16 text-[#EBBF74]/60" />
-            <p className="text-sm text-white/70" style={{ fontFamily: "Inter, sans-serif" }}>
+            <p className="text-sm text-white/70">
               Visualize ou baixe o PDF no seu dispositivo.
             </p>
             <a
@@ -146,7 +146,7 @@ export function FileViewer({ file, onClose }: { file: { name: string; url: strin
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-[#052413] transition-all hover:shadow-md"
-              style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: "Inter, sans-serif" }}
+              style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
             >
               <ExternalLink className="w-4 h-4" />
               Abrir PDF
@@ -155,7 +155,6 @@ export function FileViewer({ file, onClose }: { file: { name: string; url: strin
               href={file.url}
               download
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm text-white/60 border border-white/15 hover:text-white hover:border-white/30 transition-colors"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               <Download className="w-4 h-4" />
               Baixar
@@ -186,7 +185,7 @@ export function FileViewer({ file, onClose }: { file: { name: string; url: strin
         {!pdf && !image && !office && (
           <div className="flex flex-col items-center gap-4 p-8">
             <FileText className="w-16 h-16 text-white/20" />
-            <p className="text-sm text-white/50 text-center" style={{ fontFamily: "Inter, sans-serif" }}>
+            <p className="text-sm text-white/50 text-center">
               Este tipo de arquivo nao pode ser visualizado no navegador.
             </p>
             <a
@@ -194,7 +193,7 @@ export function FileViewer({ file, onClose }: { file: { name: string; url: strin
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-[#052413] transition-all hover:shadow-md"
-              style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: "Inter, sans-serif" }}
+              style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
             >
               <Download className="w-4 h-4" />
               Baixar arquivo

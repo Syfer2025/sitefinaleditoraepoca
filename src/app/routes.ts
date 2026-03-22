@@ -24,6 +24,7 @@ export const router = createBrowserRouter([
         path: "admin",
         lazy: () => import("./components/admin/AdminLogin").then(m => ({ Component: m.AdminLogin })),
       },
+      { path: "admin/*", lazy: () => import("./components/NotFoundPage").then(m => ({ Component: m.NotFoundPage })) },
       { path: "*", lazy: () => import("./components/NotFoundPage").then(m => ({ Component: m.NotFoundPage })) },
     ],
   },

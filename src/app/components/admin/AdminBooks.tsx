@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { getBooks, createAdminBook, updateAdminBook, deleteAdminBook, uploadFile } from "../../data/api";
 import { toast } from "sonner";
 
-const F = "Inter, sans-serif";
 const GENRES = ["Romance", "Ficção", "Contos", "Poesia", "Ensaios", "Suspense", "Crônicas"];
 
 interface Book {
@@ -65,7 +64,7 @@ function ImageUploadField({
 
   return (
     <div>
-      <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>
+      <label className="text-xs font-medium text-gray-500 mb-1 block">
         {label}
       </label>
       <div className="flex gap-2 items-start">
@@ -86,7 +85,6 @@ function ImageUploadField({
               onChange={(e) => onChange(e.target.value)}
               placeholder={placeholder || "https://... ou clique em Enviar"}
               className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-              style={{ fontFamily: F }}
             />
           </div>
           <button
@@ -94,7 +92,6 @@ function ImageUploadField({
             onClick={() => fileRef.current?.click()}
             disabled={uploading}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer disabled:opacity-60"
-            style={{ fontFamily: F }}
           >
             {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
             {uploading ? "Enviando..." : "Enviar arquivo"}
@@ -139,7 +136,7 @@ function PhotosManager({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <label className="text-xs font-medium text-gray-500" style={{ fontFamily: F }}>
+        <label className="text-xs font-medium text-gray-500">
           Portfólio de diagramação ({photos.length} foto{photos.length !== 1 ? "s" : ""})
         </label>
         <button
@@ -147,7 +144,6 @@ function PhotosManager({
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer disabled:opacity-60"
-          style={{ fontFamily: F }}
         >
           {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
           {uploading ? "Enviando..." : "Adicionar fotos"}
@@ -161,7 +157,7 @@ function PhotosManager({
           onClick={() => fileRef.current?.click()}
         >
           <Images className="w-8 h-8 text-gray-200 mx-auto mb-2" />
-          <p className="text-xs text-gray-400" style={{ fontFamily: F }}>
+          <p className="text-xs text-gray-400">
             Clique para adicionar fotos da diagramação
           </p>
         </div>
@@ -238,7 +234,7 @@ function BookFormModal({
         className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-gray-900" style={{ fontFamily: F }}>
+          <h2 className="text-base font-semibold text-gray-900">
             {initial.id ? "Editar livro" : "Novo livro"}
           </h2>
           <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition-colors cursor-pointer">
@@ -258,44 +254,41 @@ function BookFormModal({
 
           {/* Title */}
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>Título *</label>
+            <label className="text-xs font-medium text-gray-500 mb-1 block">Título *</label>
             <input
               autoFocus
               value={draft.title}
               onChange={(e) => set("title", e.target.value)}
               placeholder="Título da obra"
               className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-              style={{ fontFamily: F }}
             />
           </div>
 
           {/* Author */}
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>Autor *</label>
+            <label className="text-xs font-medium text-gray-500 mb-1 block">Autor *</label>
             <input
               value={draft.author}
               onChange={(e) => set("author", e.target.value)}
               placeholder="Nome do autor"
               className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-              style={{ fontFamily: F }}
             />
           </div>
 
           {/* Genre + Year + Rating */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>Gênero</label>
+              <label className="text-xs font-medium text-gray-500 mb-1 block">Gênero</label>
               <select
                 value={draft.genre}
                 onChange={(e) => set("genre", e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 cursor-pointer"
-                style={{ fontFamily: F }}
               >
                 {GENRES.map((g) => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>Ano</label>
+              <label className="text-xs font-medium text-gray-500 mb-1 block">Ano</label>
               <input
                 type="number"
                 value={draft.year}
@@ -303,11 +296,10 @@ function BookFormModal({
                 min={1900}
                 max={2100}
                 className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                style={{ fontFamily: F }}
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>Avaliação</label>
+              <label className="text-xs font-medium text-gray-500 mb-1 block">Avaliação</label>
               <input
                 type="number"
                 value={draft.rating}
@@ -316,21 +308,19 @@ function BookFormModal({
                 min={0}
                 max={5}
                 className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                style={{ fontFamily: F }}
               />
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>Descrição</label>
+            <label className="text-xs font-medium text-gray-500 mb-1 block">Descrição</label>
             <textarea
               value={draft.description}
               onChange={(e) => set("description", e.target.value)}
               placeholder="Sinopse do livro..."
               rows={3}
               className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40 resize-none"
-              style={{ fontFamily: F }}
             />
           </div>
 
@@ -345,7 +335,6 @@ function BookFormModal({
               type="button"
               onClick={onClose}
               className="px-4 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
-              style={{ fontFamily: F }}
             >
               Cancelar
             </button>
@@ -353,7 +342,6 @@ function BookFormModal({
               type="submit"
               disabled={saving}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer disabled:opacity-60"
-              style={{ fontFamily: F }}
             >
               {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
               {saving ? "Salvando..." : "Salvar"}
@@ -429,15 +417,14 @@ export function AdminBooks() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: F }}>Catálogo de Livros</h1>
-          <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: F }}>
+          <h1 className="text-2xl font-semibold text-gray-900">Catálogo de Livros</h1>
+          <p className="text-sm text-gray-500 mt-1">
             {books.length} {books.length === 1 ? "obra cadastrada" : "obras cadastradas"} · Subpáginas criadas automaticamente
           </p>
         </div>
         <button
           onClick={() => setModal("new")}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer"
-          style={{ fontFamily: F }}
         >
           <Plus className="w-4 h-4" />
           Novo livro
@@ -454,7 +441,6 @@ export function AdminBooks() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-            style={{ fontFamily: F }}
           />
           {search && (
             <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer">
@@ -466,7 +452,6 @@ export function AdminBooks() {
           value={genreFilter}
           onChange={(e) => setGenreFilter(e.target.value)}
           className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 cursor-pointer"
-          style={{ fontFamily: F }}
         >
           <option value="Todos">Todos os gêneros</option>
           {GENRES.map((g) => <option key={g} value={g}>{g}</option>)}
@@ -481,14 +466,14 @@ export function AdminBooks() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
           <BookOpen className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-          <p className="text-sm text-gray-400" style={{ fontFamily: F }}>
+          <p className="text-sm text-gray-400">
             {search || genreFilter !== "Todos" ? "Nenhum livro encontrado com esses filtros." : "Nenhum livro cadastrado."}
           </p>
         </div>
       ) : (
         <div className="border border-gray-200 rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm" style={{ fontFamily: F }}>
+            <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 text-left">
                   <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Capa</th>

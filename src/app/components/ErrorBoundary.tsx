@@ -32,7 +32,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div
           className="min-h-screen flex items-center justify-center px-4"
-          style={{ backgroundColor: "#FFFDF8", fontFamily: "Inter, sans-serif" }}
+          style={{ backgroundColor: "#FFFDF8" }}
         >
           <div className="max-w-md w-full text-center">
             <div
@@ -42,8 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <AlertTriangle className="w-7 h-7 text-[#EBBF74]" />
             </div>
             <h1
-              className="text-2xl font-semibold text-[#052413] mb-2"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-2xl font-semibold text-[#052413] mb-2 font-serif"
             >
               Algo deu errado
             </h1>

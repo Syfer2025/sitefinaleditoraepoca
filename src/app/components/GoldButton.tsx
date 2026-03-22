@@ -39,7 +39,6 @@ export function GoldButton({
   const bgStyle: React.CSSProperties = {
     background:
       "linear-gradient(90deg, #8B6914 0%, #BF953F 12%, #D4AF5A 25%, #E8CC73 40%, #F5DFA0 50%, #E8CC73 60%, #D4AF5A 75%, #BF953F 88%, #8B6914 100%)",
-    fontFamily: "Inter, sans-serif",
   };
 
   const shimmer = (

@@ -36,22 +36,20 @@ export function NotFoundPage() {
         </div>
 
         <h1
-          className="text-[5rem] md:text-[7rem] text-[#EBBF74] mb-2 leading-none"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+          className="text-[5rem] md:text-[7rem] text-[#EBBF74] mb-2 leading-none font-serif"
         >
           404
         </h1>
 
         <h2
-          className="text-2xl md:text-3xl text-white mb-4"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+          className="text-2xl md:text-3xl text-white mb-4 font-serif"
         >
           Página não <span className="italic text-[#EBBF74]">encontrada</span>
         </h2>
 
         <p
           className="text-white/60 mb-8 max-w-md mx-auto"
-          style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
+          style={{ lineHeight: 1.7 }}
         >
           A página que você procura não existe ou foi movida.
           Que tal voltar ao início e explorar nosso catálogo?
@@ -67,7 +65,6 @@ export function NotFoundPage() {
           <button
             onClick={() => window.history.back()}
             className="border border-white/30 text-white px-8 py-3.5 rounded-full hover:bg-white/10 hover:border-white/50 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar

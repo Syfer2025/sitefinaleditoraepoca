@@ -3,7 +3,6 @@ import { Save, Loader2, RefreshCw, CheckCircle, Phone, Mail, MapPin, MessageCirc
 import { getContactInfo, updateAdminContactInfo, type ContactInfo } from "../../data/api";
 import { toast } from "sonner";
 
-const F = "Inter, sans-serif";
 
 const EMPTY: ContactInfo = {
   phone: "",
@@ -33,7 +32,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>
+      <label className="block text-xs font-medium text-[#052413] mb-1.5">
         {label}
       </label>
       <div className="relative">
@@ -45,14 +44,13 @@ function Field({
           placeholder={placeholder}
           className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 transition-all"
           style={{
-            fontFamily: F,
             backgroundColor: "#FFFDF8",
             border: "1px solid rgba(133,108,66,0.2)",
           }}
         />
       </div>
       {hint && (
-        <p className="mt-1 text-[0.68rem] text-[#856C42]/60" style={{ fontFamily: F }}>
+        <p className="mt-1 text-[0.68rem] text-[#856C42]/60">
           {hint}
         </p>
       )}
@@ -107,10 +105,10 @@ export function AdminContactInfo() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold text-[#052413]" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-xl font-semibold text-[#052413] font-serif">
           Informações de Contato
         </h1>
-        <p className="text-sm text-[#856C42] mt-0.5" style={{ fontFamily: F }}>
+        <p className="text-sm text-[#856C42] mt-0.5">
           Dados exibidos na seção de contato do site e usados no botão de WhatsApp.
         </p>
       </div>
@@ -186,7 +184,6 @@ export function AdminContactInfo() {
               .finally(() => setLoading(false));
           }}
           className="flex items-center gap-1.5 text-sm text-[#856C42] hover:text-[#165B36] transition-colors"
-          style={{ fontFamily: F }}
         >
           <RefreshCw className="w-3.5 h-3.5" /> Recarregar
         </button>
@@ -195,7 +192,7 @@ export function AdminContactInfo() {
           onClick={handleSave}
           disabled={saving || !dirty}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ fontFamily: F, backgroundColor: saved ? "#165B36" : "#165B36" }}
+          style={{ backgroundColor: saved ? "#165B36" : "#165B36" }}
         >
           {saving ? (
             <Loader2 className="w-4 h-4 animate-spin" />

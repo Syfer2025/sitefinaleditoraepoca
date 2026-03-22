@@ -17,8 +17,6 @@ import {
 import { getTrackingSettings, saveTrackingSettings, type TrackingSettings } from "../../data/trackingService";
 import { toast } from "sonner";
 
-const F = "Inter, sans-serif";
-
 const EMPTY: TrackingSettings = {
   ga4_id: "",
   google_ads_id: "",
@@ -53,7 +51,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>
+      <label className="block text-xs font-medium text-[#052413] mb-1.5">
         {label}
       </label>
       <div className="relative">
@@ -65,15 +63,14 @@ function Field({
           placeholder={placeholder}
           className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 transition-all"
           style={{
-            fontFamily: mono ? "monospace" : F,
+            ...(mono && { fontFamily: "monospace", letterSpacing: "0.03em" }),
             backgroundColor: "#FFFDF8",
             border: "1px solid rgba(133,108,66,0.2)",
-            letterSpacing: mono ? "0.03em" : undefined,
           }}
         />
       </div>
       {hint && (
-        <p className="mt-1 text-[0.68rem] text-[#856C42]/60" style={{ fontFamily: F }}>
+        <p className="mt-1 text-[0.68rem] text-[#856C42]/60">
           {hint}
         </p>
       )}
@@ -111,7 +108,7 @@ function SectionCard({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="text-sm font-semibold text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <p className="text-sm font-semibold text-white font-serif">
               {title}
             </p>
             {badge && (
@@ -123,7 +120,7 @@ function SectionCard({
               </span>
             )}
           </div>
-          <p className="text-[0.7rem] text-white/50 mt-0.5" style={{ fontFamily: F }}>
+          <p className="text-[0.7rem] text-white/50 mt-0.5">
             {description}
           </p>
         </div>
@@ -137,7 +134,7 @@ function InfoBox({ children }: { children: React.ReactNode }) {
   return (
     <div
       className="flex items-start gap-2 p-3 rounded-xl text-[0.7rem] text-[#856C42]"
-      style={{ fontFamily: F, backgroundColor: "rgba(235,191,116,0.08)", border: "1px solid rgba(235,191,116,0.2)" }}
+      style={{ backgroundColor: "rgba(235,191,116,0.08)", border: "1px solid rgba(235,191,116,0.2)" }}
     >
       <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-[#EBBF74]" />
       <span>{children}</span>
@@ -201,10 +198,10 @@ export function AdminTracking() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold text-[#052413]" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-xl font-semibold text-[#052413] font-serif">
           Integrações & Rastreamento
         </h1>
-        <p className="text-sm text-[#856C42] mt-0.5" style={{ fontFamily: F }}>
+        <p className="text-sm text-[#856C42] mt-0.5">
           Configure Google Analytics, Ads, Merchant Center e Meu Negócio. Os scripts são ativados automaticamente conforme o consentimento de cookies do usuário.
         </p>
       </div>
@@ -372,7 +369,6 @@ export function AdminTracking() {
         <button
           onClick={handleReload}
           className="flex items-center gap-1.5 text-sm text-[#856C42] hover:text-[#165B36] transition-colors"
-          style={{ fontFamily: F }}
         >
           <RefreshCw className="w-3.5 h-3.5" /> Recarregar
         </button>
@@ -381,7 +377,7 @@ export function AdminTracking() {
           onClick={handleSave}
           disabled={saving || !dirty}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ fontFamily: F, backgroundColor: "#165B36" }}
+          style={{ backgroundColor: "#165B36" }}
         >
           {saving ? (
             <Loader2 className="w-4 h-4 animate-spin" />

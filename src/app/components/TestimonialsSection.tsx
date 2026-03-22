@@ -33,16 +33,11 @@ export function TestimonialsSection() {
         <RevealOnScroll direction="up" className="text-center mb-12">
           <p
             className="text-[0.75rem] tracking-[0.3em] uppercase text-[#EBBF74] mb-3"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             Depoimentos
           </p>
           <h2
-            className="text-[2.5rem] md:text-[3rem] text-white"
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              lineHeight: 1.15,
-            }}
+            className="text-[2.5rem] md:text-[3rem] text-white font-serif leading-[1.15]"
           >
             Vozes que confiam na{" "}
             <span className="italic text-[#EBBF74]">Época</span>
@@ -88,11 +83,9 @@ export function TestimonialsSection() {
 
                 {/* Quote text */}
                 <p
-                  className="text-white/80 mb-6 flex-1"
+                  className="text-white/80 mb-6 flex-1 font-serif leading-[1.75]"
                   style={{
-                    fontFamily: "'Playfair Display', serif",
                     fontStyle: "italic",
-                    lineHeight: 1.75,
                     fontSize: "0.95rem",
                   }}
                 >
@@ -121,14 +114,12 @@ export function TestimonialsSection() {
                   </div>
                   <div>
                     <p
-                      className="text-white text-[0.9rem]"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
+                      className="text-white text-[0.9rem] font-serif"
                     >
                       {t.name}
                     </p>
                     <p
                       className="text-[0.78rem] text-[#EBBF74]/60"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       {t.role}
                     </p>

@@ -33,6 +33,18 @@ export function ContactSection() {
 
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
+
+    // Honeypot anti-spam: if the hidden field is filled, silently reject
+    const honeypot = formData.get("website") as string;
+    if (honeypot) {
+      toast.success("Mensagem enviada com sucesso!");
+      setSubmitted(true);
+      form.reset();
+      setTimeout(() => setSubmitted(false), 5000);
+      setSending(false);
+      return;
+    }
+
     const body = {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
@@ -88,22 +100,17 @@ export function ContactSection() {
             <div>
               <p
                 className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Contato
               </p>
               <h2
-                className="text-[2.5rem] md:text-[3rem] text-foreground mb-4"
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  lineHeight: 1.15,
-                }}
+                className="text-[2.5rem] md:text-[3rem] text-foreground mb-4 font-serif leading-[1.15]"
               >
                 Fale <span className="italic">conosco</span>
               </h2>
               <p
                 className="text-muted-foreground mb-8"
-                style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.8 }}
+                style={{ lineHeight: 1.8 }}
               >
                 Quer submeter um manuscrito, agendar um evento ou simplesmente
                 conversar sobre livros? Estamos aqui para você.
@@ -137,13 +144,11 @@ export function ContactSection() {
                     <div>
                       <p
                         className="text-foreground group-hover:text-primary transition-colors duration-300"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         {item.title}
                       </p>
                       <p
                         className="text-[0.875rem] text-muted-foreground"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         {item.sub}
                       </p>
@@ -171,15 +176,13 @@ export function ContactSection() {
                       <CheckCircle className="w-8 h-8 text-primary" />
                     </div>
                     <h3
-                      className="text-[1.5rem] text-foreground mb-2"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
+                      className="text-[1.5rem] text-foreground mb-2 font-serif"
                     >
                       Mensagem enviada!
                     </h3>
                     <p
                       className="text-muted-foreground max-w-xs"
                       style={{
-                        fontFamily: "Inter, sans-serif",
                         lineHeight: 1.7,
                       }}
                     >
@@ -198,11 +201,19 @@ export function ContactSection() {
                     onSubmit={handleSubmit}
                   >
                     <div className="grid sm:grid-cols-2 gap-4">
+                      {/* Honeypot field - hidden from real users, catches bots */}
+                      <input
+                        type="text"
+                        name="website"
+                        autoComplete="off"
+                        tabIndex={-1}
+                        aria-hidden="true"
+                        className="absolute -left-[9999px] opacity-0 h-0 w-0"
+                      />
                       <div>
                         <label
                           htmlFor="contact-name"
                           className="block text-[0.875rem] text-foreground mb-1.5"
-                          style={{ fontFamily: "Inter, sans-serif" }}
                         >
                           Nome <span className="text-red-500">*</span>
                         </label>
@@ -213,14 +224,12 @@ export function ContactSection() {
                           placeholder="Seu nome"
                           required
                           className="w-full px-4 py-3 rounded-lg bg-input-background border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-300"
-                          style={{ fontFamily: "Inter, sans-serif" }}
                         />
                       </div>
                       <div>
                         <label
                           htmlFor="contact-email"
                           className="block text-[0.875rem] text-foreground mb-1.5"
-                          style={{ fontFamily: "Inter, sans-serif" }}
                         >
                           Email <span className="text-red-500">*</span>
                         </label>
@@ -231,21 +240,20 @@ export function ContactSection() {
                           placeholder="seu@email.com"
                           required
                           className="w-full px-4 py-3 rounded-lg bg-input-background border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-300"
-                          style={{ fontFamily: "Inter, sans-serif" }}
                         />
                       </div>
                     </div>
                     <div>
                       <label
+                        htmlFor="contact-subject"
                         className="block text-[0.875rem] text-foreground mb-1.5"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         Assunto
                       </label>
                       <select
+                        id="contact-subject"
                         name="subject"
                         className="w-full px-4 py-3 rounded-lg bg-input-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-300"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         <option>Submissão de manuscrito</option>
                         <option>Parcerias</option>
@@ -258,7 +266,6 @@ export function ContactSection() {
                       <label
                         htmlFor="contact-message"
                         className="block text-[0.875rem] text-foreground mb-1.5"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         Mensagem <span className="text-red-500">*</span>
                       </label>
@@ -269,10 +276,9 @@ export function ContactSection() {
                         placeholder="Sua mensagem..."
                         required
                         className="w-full px-4 py-3 rounded-lg bg-input-background border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-300 resize-none"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       />
                     </div>
-                    <GoldButton type="submit" className="w-full py-3.5">
+                    <GoldButton type="submit" className="w-full py-3.5" disabled={sending}>
                       <Send className="w-4 h-4" />
                       {sending ? "Enviando..." : "Enviar mensagem"}
                     </GoldButton>

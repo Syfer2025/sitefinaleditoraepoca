@@ -3,7 +3,6 @@ import { Loader2, Save, RefreshCw, CheckCircle, XCircle, Eye, EyeOff, CreditCard
 import { getAdminPaymentConfig, updateAdminPaymentConfig, testAdminPaymentConfig } from "../../data/api";
 import { toast } from "sonner";
 
-const F = "Inter, sans-serif";
 
 interface Methods { pix: boolean; credit_card: boolean; boleto: boolean; }
 interface Config {
@@ -102,8 +101,8 @@ export function AdminPaymentConfig() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: F }}>Pagamentos</h1>
-        <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: F }}>Gerencie a integração com o Mercado Pago</p>
+        <h1 className="text-2xl font-semibold text-gray-900">Pagamentos</h1>
+        <p className="text-sm text-gray-500 mt-1">Gerencie a integração com o Mercado Pago</p>
       </div>
 
       {/* Status card */}
@@ -120,10 +119,10 @@ export function AdminPaymentConfig() {
             : <XCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           }
           <div>
-            <p className="text-sm font-semibold" style={{ fontFamily: F, color: isConfigured ? "#165B36" : "#dc2626" }}>
+            <p className="text-sm font-semibold" style={{ color: isConfigured ? "#165B36" : "#dc2626" }}>
               {isConfigured ? "Mercado Pago configurado" : "Credenciais não configuradas"}
             </p>
-            <p className="text-xs mt-0.5" style={{ fontFamily: F, color: isConfigured ? "#856C42" : "#ef4444" }}>
+            <p className="text-xs mt-0.5" style={{ color: isConfigured ? "#856C42" : "#ef4444" }}>
               {isConfigured
                 ? `Token via ${config?.tokenSource === "kv" ? "painel admin" : "variável de ambiente"}`
                 : "Configure o Access Token e a Public Key abaixo para ativar os pagamentos"
@@ -135,7 +134,7 @@ export function AdminPaymentConfig() {
           onClick={handleTest}
           disabled={testing || !isConfigured}
           className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-          style={{ fontFamily: F, background: "#165B36", color: "#EBBF74" }}
+          style={{ background: "#165B36", color: "#EBBF74" }}
         >
           {testing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
           {testing ? "Testando..." : "Testar conexão"}
@@ -147,8 +146,8 @@ export function AdminPaymentConfig() {
         <div className="rounded-xl border border-[#165B36]/20 bg-[#165B36]/5 p-4 flex items-center gap-4">
           <ShieldCheck className="w-8 h-8 text-[#165B36] shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-[#165B36]" style={{ fontFamily: F }}>Conta verificada com sucesso</p>
-            <p className="text-xs text-[#856C42] mt-0.5" style={{ fontFamily: F }}>
+            <p className="text-sm font-semibold text-[#165B36]">Conta verificada com sucesso</p>
+            <p className="text-xs text-[#856C42] mt-0.5">
               {account.nickname} · {account.email} · ID {account.id} · {account.site_id}
             </p>
           </div>
@@ -158,8 +157,8 @@ export function AdminPaymentConfig() {
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-red-700" style={{ fontFamily: F }}>Falha na conexão</p>
-            <p className="text-xs text-red-500 mt-0.5" style={{ fontFamily: F }}>{testError}</p>
+            <p className="text-sm font-semibold text-red-700">Falha na conexão</p>
+            <p className="text-xs text-red-500 mt-0.5">{testError}</p>
           </div>
         </div>
       )}
@@ -167,14 +166,14 @@ export function AdminPaymentConfig() {
       {/* Credentials */}
       <div className="rounded-2xl border border-gray-200 overflow-hidden" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
         <div className="px-5 py-3 bg-gray-50 border-b border-gray-100">
-          <p className="text-sm font-semibold text-gray-700" style={{ fontFamily: F }}>Credenciais Mercado Pago</p>
-          <p className="text-xs text-gray-400 mt-0.5" style={{ fontFamily: F }}>
+          <p className="text-sm font-semibold text-gray-700">Credenciais Mercado Pago</p>
+          <p className="text-xs text-gray-400 mt-0.5">
             Encontre em <span className="font-medium text-gray-500">mercadopago.com.br → Configurações → Credenciais</span>
           </p>
         </div>
         <div className="p-5 space-y-4">
           <div>
-            <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1.5 block" style={{ fontFamily: F }}>
+            <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1.5 block">
               Access Token <span className="normal-case tracking-normal text-gray-300">(começa com APP_USR- ou TEST-)</span>
             </label>
             <div className="relative">
@@ -197,7 +196,7 @@ export function AdminPaymentConfig() {
           </div>
 
           <div>
-            <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1.5 block" style={{ fontFamily: F }}>
+            <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1.5 block">
               Public Key <span className="normal-case tracking-normal text-gray-300">(usada no frontend para tokenizar cartão)</span>
             </label>
             <div className="relative">
@@ -224,7 +223,7 @@ export function AdminPaymentConfig() {
               onClick={handleSave}
               disabled={saving || !dirty}
               className="flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ fontFamily: F, background: dirty ? "linear-gradient(135deg, #EBBF74, #D4AF5A)" : "#d1d5db", color: dirty ? "#052413" : "#9ca3af" }}
+              style={{ background: dirty ? "linear-gradient(135deg, #EBBF74, #D4AF5A)" : "#d1d5db", color: dirty ? "#052413" : "#9ca3af" }}
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {saving ? "Salvando..." : "Salvar credenciais"}
@@ -236,8 +235,8 @@ export function AdminPaymentConfig() {
       {/* Payment methods */}
       <div className="rounded-2xl border border-gray-200 overflow-hidden" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
         <div className="px-5 py-3 bg-gray-50 border-b border-gray-100">
-          <p className="text-sm font-semibold text-gray-700" style={{ fontFamily: F }}>Métodos de Pagamento</p>
-          <p className="text-xs text-gray-400 mt-0.5" style={{ fontFamily: F }}>Ative ou desative métodos disponíveis na página de pagamento</p>
+          <p className="text-sm font-semibold text-gray-700">Métodos de Pagamento</p>
+          <p className="text-xs text-gray-400 mt-0.5">Ative ou desative métodos disponíveis na página de pagamento</p>
         </div>
         <div className="p-5 space-y-3">
           {METHOD_INFO.map(({ key, label, desc, icon: Icon, color }) => (
@@ -255,8 +254,8 @@ export function AdminPaymentConfig() {
                   <Icon className="w-4 h-4" style={{ color: methods[key] ? color : "#9ca3af" }} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium" style={{ fontFamily: F, color: methods[key] ? "#111827" : "#9ca3af" }}>{label}</p>
-                  <p className="text-xs" style={{ fontFamily: F, color: "#9ca3af" }}>{desc}</p>
+                  <p className="text-sm font-medium" style={{ color: methods[key] ? "#111827" : "#9ca3af" }}>{label}</p>
+                  <p className="text-xs" style={{ color: "#9ca3af" }}>{desc}</p>
                 </div>
               </div>
               <div
@@ -275,7 +274,7 @@ export function AdminPaymentConfig() {
               onClick={handleSave}
               disabled={saving || !dirty}
               className="flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ fontFamily: F, background: dirty ? "linear-gradient(135deg, #EBBF74, #D4AF5A)" : "#d1d5db", color: dirty ? "#052413" : "#9ca3af" }}
+              style={{ background: dirty ? "linear-gradient(135deg, #EBBF74, #D4AF5A)" : "#d1d5db", color: dirty ? "#052413" : "#9ca3af" }}
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {saving ? "Salvando..." : "Salvar métodos"}

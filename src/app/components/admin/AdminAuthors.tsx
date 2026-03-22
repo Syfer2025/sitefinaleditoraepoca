@@ -10,7 +10,6 @@ const DEFAULT_VIDEO: VideoSection = {
   text: "Há mais de três décadas transformamos manuscritos em obras publicadas com excelência editorial. Assista ao vídeo e descubra como podemos dar vida à sua história.",
 };
 
-const F = "Inter, sans-serif";
 
 interface Author {
   id: number;
@@ -55,7 +54,7 @@ function AuthorModal({
         className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-gray-900" style={{ fontFamily: F }}>
+          <h2 className="text-base font-semibold text-gray-900">
             {initial.id ? "Editar autor" : "Novo autor"}
           </h2>
           <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition-colors cursor-pointer"><X className="w-4 h-4" /></button>
@@ -71,29 +70,29 @@ function AuthorModal({
               )}
             </div>
             <div className="flex-1">
-              <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>URL da foto</label>
-              <input value={d.image} onChange={(e) => set("image", e.target.value)} placeholder="https://..." className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40" style={{ fontFamily: F }} />
+              <label className="text-xs font-medium text-gray-500 mb-1 block">URL da foto</label>
+              <input value={d.image} onChange={(e) => set("image", e.target.value)} placeholder="https://..." className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40" />
             </div>
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>Nome *</label>
-            <input autoFocus value={d.name} onChange={(e) => set("name", e.target.value)} placeholder="Nome do autor" className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40" style={{ fontFamily: F }} />
+            <label className="text-xs font-medium text-gray-500 mb-1 block">Nome *</label>
+            <input autoFocus value={d.name} onChange={(e) => set("name", e.target.value)} placeholder="Nome do autor" className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40" />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>Especialidade</label>
-            <input value={d.specialty} onChange={(e) => set("specialty", e.target.value)} placeholder="Ex: Romance Contemporâneo" className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40" style={{ fontFamily: F }} />
+            <label className="text-xs font-medium text-gray-500 mb-1 block">Especialidade</label>
+            <input value={d.specialty} onChange={(e) => set("specialty", e.target.value)} placeholder="Ex: Romance Contemporâneo" className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40" />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>Livros publicados</label>
-            <input type="number" min={0} value={d.books} onChange={(e) => set("books", e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40" style={{ fontFamily: F }} />
+            <label className="text-xs font-medium text-gray-500 mb-1 block">Livros publicados</label>
+            <input type="number" min={0} value={d.books} onChange={(e) => set("books", e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40" />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>Frase / citação</label>
-            <textarea value={d.quote} onChange={(e) => set("quote", e.target.value)} placeholder="Uma frase marcante do autor..." rows={3} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40 resize-none" style={{ fontFamily: F }} />
+            <label className="text-xs font-medium text-gray-500 mb-1 block">Frase / citação</label>
+            <textarea value={d.quote} onChange={(e) => set("quote", e.target.value)} placeholder="Uma frase marcante do autor..." rows={3} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40 resize-none" />
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer" style={{ fontFamily: F }}>Cancelar</button>
-            <button type="submit" disabled={saving} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer disabled:opacity-60" style={{ fontFamily: F }}>
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer">Cancelar</button>
+            <button type="submit" disabled={saving} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer disabled:opacity-60">
               {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
               {saving ? "Salvando..." : "Salvar"}
             </button>
@@ -176,45 +175,42 @@ export function AdminAuthors() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: F }}>Seção de Vídeo</h1>
-        <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: F }}>Configure o vídeo exibido na seção "Nossos Autores"</p>
+        <h1 className="text-2xl font-semibold text-gray-900">Seção de Vídeo</h1>
+        <p className="text-sm text-gray-500 mt-1">Configure o vídeo exibido na seção "Nossos Autores"</p>
       </div>
 
       {/* Video config */}
       <div className="rounded-2xl border border-gray-200 overflow-hidden" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
         <div className="flex items-center gap-2 px-5 py-3 bg-gray-50 border-b border-gray-100">
           <Youtube className="w-4 h-4 text-red-500" />
-          <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: F }}>Configuração do Vídeo</span>
+          <span className="text-sm font-semibold text-gray-700">Configuração do Vídeo</span>
         </div>
         <div className="p-5 space-y-4">
           <div>
-            <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block" style={{ fontFamily: F }}>URL do YouTube</label>
+            <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block">URL do YouTube</label>
             <input
               value={video.url}
               onChange={(e) => setVideo((v) => ({ ...v, url: e.target.value }))}
               placeholder="https://www.youtube.com/watch?v=..."
               className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-              style={{ fontFamily: F }}
             />
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block" style={{ fontFamily: F }}>Título</label>
+              <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block">Título</label>
               <input
                 value={video.title}
                 onChange={(e) => setVideo((v) => ({ ...v, title: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                style={{ fontFamily: "'Playfair Display', serif" }}
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40 font-serif"
               />
             </div>
             <div>
-              <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block" style={{ fontFamily: F }}>Texto lateral</label>
+              <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block">Texto lateral</label>
               <textarea
                 value={video.text}
                 onChange={(e) => setVideo((v) => ({ ...v, text: e.target.value }))}
                 rows={3}
                 className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40 resize-none"
-                style={{ fontFamily: F }}
               />
             </div>
           </div>
@@ -223,7 +219,7 @@ export function AdminAuthors() {
               onClick={handleSaveVideo}
               disabled={videoSaving}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer disabled:opacity-50"
-              style={{ fontFamily: F, background: "linear-gradient(135deg, #EBBF74, #D4AF5A)", color: "#052413" }}
+              style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)", color: "#052413" }}
             >
               {videoSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {videoSaving ? "Salvando..." : "Salvar vídeo"}
@@ -234,10 +230,10 @@ export function AdminAuthors() {
 
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900" style={{ fontFamily: F }}>Autores em Destaque</h2>
-          <p className="text-sm text-gray-500 mt-0.5" style={{ fontFamily: F }}>Mantidos para uso futuro</p>
+          <h2 className="text-lg font-semibold text-gray-900">Autores em Destaque</h2>
+          <p className="text-sm text-gray-500 mt-0.5">Mantidos para uso futuro</p>
         </div>
-        <button onClick={() => setModal("new")} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer" style={{ fontFamily: F }}>
+        <button onClick={() => setModal("new")} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer">
           <Plus className="w-4 h-4" /> Novo autor
         </button>
       </div>
@@ -245,7 +241,7 @@ export function AdminAuthors() {
       {authors.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
           <Users className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-          <p className="text-sm text-gray-400" style={{ fontFamily: F }}>Nenhum autor cadastrado.</p>
+          <p className="text-sm text-gray-400">Nenhum autor cadastrado.</p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -272,17 +268,17 @@ export function AdminAuthors() {
                     )}
                   </div>
                 </div>
-                <p className="text-base font-semibold text-gray-900 mb-0.5" style={{ fontFamily: "'Playfair Display', serif" }}>{author.name}</p>
-                <p className="text-xs text-[#165B36] mb-0.5" style={{ fontFamily: F }}>{author.specialty}</p>
-                <p className="text-xs text-gray-400 mb-3" style={{ fontFamily: F }}>{author.books} livros publicados</p>
+                <p className="text-base font-semibold text-gray-900 mb-0.5 font-serif">{author.name}</p>
+                <p className="text-xs text-[#165B36] mb-0.5">{author.specialty}</p>
+                <p className="text-xs text-gray-400 mb-3">{author.books} livros publicados</p>
                 {author.quote && (
-                  <p className="text-xs text-gray-500 italic mb-4 line-clamp-2" style={{ fontFamily: "'Playfair Display', serif" }}>"{author.quote}"</p>
+                  <p className="text-xs text-gray-500 italic mb-4 line-clamp-2 font-serif">"{author.quote}"</p>
                 )}
                 <div className="flex gap-2 mt-auto">
-                  <button onClick={() => setModal(author)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs text-[#165B36] bg-[#165B36]/5 hover:bg-[#165B36]/10 transition-colors cursor-pointer" style={{ fontFamily: F }}>
+                  <button onClick={() => setModal(author)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs text-[#165B36] bg-[#165B36]/5 hover:bg-[#165B36]/10 transition-colors cursor-pointer">
                     <Edit3 className="w-3.5 h-3.5" /> Editar
                   </button>
-                  <button onClick={() => handleDelete(author.id)} disabled={deletingId === author.id} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs text-red-400 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer disabled:opacity-50" style={{ fontFamily: F }}>
+                  <button onClick={() => handleDelete(author.id)} disabled={deletingId === author.id} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs text-red-400 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer disabled:opacity-50">
                     {deletingId === author.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                     Excluir
                   </button>

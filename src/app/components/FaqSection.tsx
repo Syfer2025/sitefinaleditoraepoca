@@ -48,7 +48,7 @@ const DEFAULT_FAQS: FaqItem[] = [
   },
 ];
 
-function FaqItem({
+function FaqAccordionItem({
   faq,
   isOpen,
   onToggle,
@@ -82,9 +82,8 @@ function FaqItem({
         className="w-full flex items-center justify-between px-6 py-5 text-left cursor-pointer"
       >
         <span
-          className="text-foreground pr-4 transition-colors duration-300"
+          className="text-foreground pr-4 transition-colors duration-300 font-serif"
           style={{
-            fontFamily: "'Playfair Display', serif",
             fontSize: "1.05rem",
             color: isOpen ? "#165B36" : "var(--foreground)",
           }}
@@ -123,7 +122,6 @@ function FaqItem({
         <p
           className="px-6 pb-5 text-muted-foreground"
           style={{
-            fontFamily: "Inter, sans-serif",
             lineHeight: 1.8,
             fontSize: "0.925rem",
           }}
@@ -159,16 +157,11 @@ export function FaqSection() {
         <RevealOnScroll direction="up" className="text-center mb-10">
           <p
             className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             Dúvidas
           </p>
           <h2
-            className="text-[2.5rem] md:text-[3rem] text-foreground"
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              lineHeight: 1.15,
-            }}
+            className="text-[2.5rem] md:text-[3rem] text-foreground font-serif leading-[1.15]"
           >
             Perguntas <span className="italic">frequentes</span>
           </h2>
@@ -177,7 +170,7 @@ export function FaqSection() {
         <div className="space-y-3">
           {faqs.map((faq, i) => (
             <RevealOnScroll key={faq.id} direction="up" delay={i * 0.07}>
-              <FaqItem
+              <FaqAccordionItem
                 faq={faq}
                 isOpen={openIndex === i}
                 onToggle={() => toggle(i)}

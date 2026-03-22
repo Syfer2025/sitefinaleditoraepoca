@@ -24,9 +24,6 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { api } from "../../data/api";
 
-const F = "Inter, sans-serif";
-const FP = "'Playfair Display', serif";
-
 interface Address {
   cep?: string;
   street?: string;
@@ -213,8 +210,8 @@ export function AdminUsers() {
     <div className="flex items-start gap-2.5 py-1.5">
       <Icon className="w-3.5 h-3.5 text-[#856C42]/50 flex-shrink-0 mt-0.5" />
       <div className="min-w-0 flex-1">
-        <span className="text-[0.6rem] text-[#856C42]/60 uppercase tracking-wider block" style={{ fontFamily: F }}>{label}</span>
-        <span className={`text-xs text-[#052413] ${mono ? "font-mono" : ""}`} style={{ fontFamily: mono ? undefined : F }}>{value || "—"}</span>
+        <span className="text-[0.6rem] text-[#856C42]/60 uppercase tracking-wider block">{label}</span>
+        <span className={`text-xs text-[#052413] ${mono ? "font-mono" : ""}`}>{value || "—"}</span>
       </div>
     </div>
   );
@@ -231,17 +228,17 @@ export function AdminUsers() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-            style={{ fontFamily: F, backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.15)" }}
+            style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.15)" }}
           />
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="text-xs text-[#856C42]/60" style={{ fontFamily: F }}>
+          <span className="text-xs text-[#856C42]/60">
             {filtered.length} usuario{filtered.length !== 1 ? "s" : ""}
           </span>
           <button
             onClick={() => setShowCreate(true)}
             className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-white text-sm transition-opacity hover:opacity-90 cursor-pointer"
-            style={{ fontFamily: F, background: "linear-gradient(135deg, #165B36, #052413)" }}
+            style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
           >
             <Plus className="w-4 h-4" />
             Novo Usuario
@@ -270,10 +267,10 @@ export function AdminUsers() {
                 {/* Avatar */}
                 <div
                   className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
+                  className="font-serif"
                   style={{
                     background: user.role === "admin" ? "linear-gradient(135deg, #EBBF74, #856C42)" : "rgba(133,108,66,0.12)",
                     color: user.role === "admin" ? "#052413" : "#856C42",
-                    fontFamily: FP,
                   }}
                 >
                   {(user.name || user.email)[0]?.toUpperCase()}
@@ -282,13 +279,12 @@ export function AdminUsers() {
                 {/* Name + email */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm text-[#052413] font-medium truncate" style={{ fontFamily: F }}>
+                    <p className="text-sm text-[#052413] font-medium truncate">
                       {user.name || "Sem nome"}
                     </p>
                     <span
                       className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[0.6rem] font-medium flex-shrink-0"
                       style={{
-                        fontFamily: F,
                         backgroundColor: user.role === "admin" ? "rgba(235,191,116,0.25)" : "rgba(22,91,54,0.08)",
                         color: user.role === "admin" ? "#052413" : "#165B36",
                       }}
@@ -297,13 +293,13 @@ export function AdminUsers() {
                       {user.role === "admin" ? "Admin" : "Usuario"}
                     </span>
                   </div>
-                  <p className="text-xs text-[#856C42] truncate" style={{ fontFamily: F }}>{user.email}</p>
+                  <p className="text-xs text-[#856C42] truncate">{user.email}</p>
                 </div>
 
                 {/* Quick info badges */}
                 <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
                   {user.phone && (
-                    <span className="text-[0.6rem] text-[#856C42]/50 flex items-center gap-0.5" style={{ fontFamily: F }}>
+                    <span className="text-[0.6rem] text-[#856C42]/50 flex items-center gap-0.5">
                       <Phone className="w-2.5 h-2.5" />
                       {formatPhone(user.phone)}
                     </span>
@@ -315,7 +311,7 @@ export function AdminUsers() {
                     </span>
                   )}
                   {user.address?.city && (
-                    <span className="text-[0.6rem] text-[#856C42]/50 flex items-center gap-0.5" style={{ fontFamily: F }}>
+                    <span className="text-[0.6rem] text-[#856C42]/50 flex items-center gap-0.5">
                       <MapPin className="w-2.5 h-2.5" />
                       {user.address.city}/{user.address.state}
                     </span>
@@ -324,7 +320,7 @@ export function AdminUsers() {
 
                 {/* Date + expand */}
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-[0.6rem] text-[#856C42]/40 hidden sm:block" style={{ fontFamily: F }}>
+                  <span className="text-[0.6rem] text-[#856C42]/40 hidden sm:block">
                     {new Date(user.createdAt).toLocaleDateString("pt-BR")}
                   </span>
                   {isExpanded ? (
@@ -380,7 +376,6 @@ export function AdminUsers() {
                         <button
                           onClick={(e) => { e.stopPropagation(); handleCopy(user.email, user.id); }}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-[#856C42] bg-[#F0E8D4]/50 hover:bg-[#F0E8D4] transition-colors cursor-pointer"
-                          style={{ fontFamily: F }}
                         >
                           {copiedId === user.id ? <Check className="w-3 h-3 text-[#0a7c3e]" /> : <Copy className="w-3 h-3" />}
                           {copiedId === user.id ? "Copiado!" : "Copiar email"}
@@ -389,7 +384,6 @@ export function AdminUsers() {
                           onClick={(e) => { e.stopPropagation(); toggleRole(user); }}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer"
                           style={{
-                            fontFamily: F,
                             backgroundColor: user.role === "admin" ? "rgba(22,91,54,0.08)" : "rgba(235,191,116,0.15)",
                             color: user.role === "admin" ? "#165B36" : "#856C42",
                           }}
@@ -401,7 +395,6 @@ export function AdminUsers() {
                         <button
                           onClick={(e) => { e.stopPropagation(); deleteUser(user); }}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer"
-                          style={{ fontFamily: F }}
                         >
                           <Trash2 className="w-3 h-3" />
                           Excluir
@@ -418,7 +411,7 @@ export function AdminUsers() {
         {filtered.length === 0 && (
           <div className="text-center py-16 rounded-xl border" style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.12)" }}>
             <Users className="w-10 h-10 text-[#856C42]/30 mx-auto mb-3" />
-            <p className="text-sm text-[#856C42]" style={{ fontFamily: F }}>
+            <p className="text-sm text-[#856C42]">
               Nenhum usuario encontrado
             </p>
           </div>
@@ -444,7 +437,7 @@ export function AdminUsers() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg text-[#052413]" style={{ fontFamily: FP }}>
+                <h3 className="text-lg text-[#052413] font-serif">
                   Novo Usuario
                 </h3>
                 <button
@@ -458,7 +451,7 @@ export function AdminUsers() {
               {createError && (
                 <div
                   className="mb-4 p-3 rounded-lg text-sm text-center"
-                  style={{ backgroundColor: "rgba(212,24,61,0.08)", color: "#d4183d", fontFamily: F }}
+                  style={{ backgroundColor: "rgba(212,24,61,0.08)", color: "#d4183d" }}
                 >
                   {createError}
                 </div>
@@ -466,7 +459,7 @@ export function AdminUsers() {
 
               <form onSubmit={createUser} className="space-y-4">
                 <div>
-                  <label className="block text-sm text-[#052413] mb-1" style={{ fontFamily: F }}>Nome</label>
+                  <label className="block text-sm text-[#052413] mb-1">Nome</label>
                   <input
                     type="text"
                     value={newName}
@@ -474,12 +467,12 @@ export function AdminUsers() {
                     placeholder="Nome completo"
                     required
                     className="w-full px-4 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                    style={{ fontFamily: F, backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
+                    style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-[#052413] mb-1" style={{ fontFamily: F }}>Email</label>
+                  <label className="block text-sm text-[#052413] mb-1">Email</label>
                   <input
                     type="email"
                     value={newEmail}
@@ -487,12 +480,12 @@ export function AdminUsers() {
                     placeholder="email@exemplo.com"
                     required
                     className="w-full px-4 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                    style={{ fontFamily: F, backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
+                    style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-[#052413] mb-1" style={{ fontFamily: F }}>Senha</label>
+                  <label className="block text-sm text-[#052413] mb-1">Senha</label>
                   <div className="relative">
                     <input
                       type={showPwd ? "text" : "password"}
@@ -502,7 +495,7 @@ export function AdminUsers() {
                       required
                       minLength={6}
                       className="w-full px-4 py-2.5 pr-12 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                      style={{ fontFamily: F, backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
+                      style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
                     />
                     <button
                       type="button"
@@ -515,12 +508,12 @@ export function AdminUsers() {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-[#052413] mb-1" style={{ fontFamily: F }}>Funcao</label>
+                  <label className="block text-sm text-[#052413] mb-1">Funcao</label>
                   <select
                     value={newRole}
                     onChange={(e) => setNewRole(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-lg border text-sm text-[#052413] focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                    style={{ fontFamily: F, backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
+                    style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
                   >
                     <option value="user">Usuario</option>
                     <option value="admin">Administrador</option>
@@ -532,7 +525,7 @@ export function AdminUsers() {
                     type="button"
                     onClick={() => setShowCreate(false)}
                     className="flex-1 py-2.5 rounded-lg text-sm text-[#856C42] border hover:bg-[#F0E8D4] transition-colors cursor-pointer"
-                    style={{ fontFamily: F, borderColor: "rgba(133,108,66,0.2)" }}
+                    style={{ borderColor: "rgba(133,108,66,0.2)" }}
                   >
                     Cancelar
                   </button>
@@ -540,7 +533,7 @@ export function AdminUsers() {
                     type="submit"
                     disabled={creating}
                     className="flex-1 py-2.5 rounded-lg text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
-                    style={{ fontFamily: F, background: "linear-gradient(135deg, #165B36, #052413)" }}
+                    style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
                   >
                     {creating ? (
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

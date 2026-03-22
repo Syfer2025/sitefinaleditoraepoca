@@ -1,5 +1,14 @@
 @custom-variant dark (&:is(.dark *));
 
+/* Font family utility classes */
+.font-serif {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-sans {
+  font-family: 'Inter', sans-serif;
+}
+
 :root {
   --font-size: 16px;
   --background: #F7F4EE;
@@ -79,6 +88,8 @@
 }
 
 @theme inline {
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -143,6 +154,7 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
     overflow-x: hidden;
     max-width: 100%;
     min-width: 0;

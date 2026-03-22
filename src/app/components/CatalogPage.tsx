@@ -88,7 +88,6 @@ export function CatalogPage() {
             to="/"
             className="flex items-center gap-2 transition-colors duration-300"
             style={{
-              fontFamily: "Inter, sans-serif",
               color: "#856C42",
             }}
             onMouseEnter={(e) => {
@@ -121,7 +120,6 @@ export function CatalogPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-[0.75rem] tracking-[0.3em] uppercase text-[#EBBF74] mb-3"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             Catálogo Completo
           </motion.p>
@@ -129,11 +127,7 @@ export function CatalogPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-[2.5rem] md:text-[3.5rem] text-white mb-3"
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              lineHeight: 1.15,
-            }}
+            className="text-[2.5rem] md:text-[3.5rem] text-white mb-3 font-serif leading-[1.15]"
           >
             Nossas <span className="italic text-[#EBBF74]">obras</span>
           </motion.h1>
@@ -142,7 +136,7 @@ export function CatalogPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-white/65 max-w-xl mx-auto"
-            style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
+            style={{ lineHeight: 1.7 }}
           >
             Explore todas as publicações da Época Editora — romances, contos,
             poesia, ensaios e muito mais.
@@ -162,7 +156,6 @@ export function CatalogPage() {
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por título ou autor..."
               className="w-full pl-11 pr-4 py-3 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-300"
-              style={{ fontFamily: "Inter, sans-serif" }}
             />
             {search && (
               <button
@@ -178,7 +171,6 @@ export function CatalogPage() {
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="px-4 py-3 rounded-xl bg-card border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-300 cursor-pointer"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -191,7 +183,6 @@ export function CatalogPage() {
               aria-label="Mostrar filtros de gênero"
               aria-expanded={showFilters}
               className="sm:hidden flex items-center gap-2 px-4 py-3 rounded-xl bg-card border border-border text-foreground transition-all duration-300 cursor-pointer"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               <SlidersHorizontal className="w-4 h-4" />
               Filtros
@@ -211,7 +202,6 @@ export function CatalogPage() {
               aria-pressed={activeGenre === genre}
               className="px-4 py-2 rounded-full transition-all duration-300 cursor-pointer text-[0.875rem]"
               style={{
-                fontFamily: "Inter, sans-serif",
                 backgroundColor:
                   activeGenre === genre ? "#165B36" : "var(--card)",
                 color:
@@ -233,7 +223,6 @@ export function CatalogPage() {
         {/* Results count */}
         <p
           className="text-[0.85rem] text-muted-foreground mb-6"
-          style={{ fontFamily: "Inter, sans-serif" }}
         >
           {filteredBooks.length}{" "}
           {filteredBooks.length === 1 ? "obra encontrada" : "obras encontradas"}
@@ -254,7 +243,7 @@ export function CatalogPage() {
         </p>
 
         {/* Books grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-live="polite">
           <AnimatePresence mode="popLayout">
             {filteredBooks.length === 0 ? (
               <motion.div
@@ -268,13 +257,11 @@ export function CatalogPage() {
                 <BookX className="w-12 h-12 text-muted-foreground/40 mb-4" />
                 <p
                   className="text-muted-foreground text-[1.1rem] mb-2"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   Nenhum livro encontrado.
                 </p>
                 <p
                   className="text-[0.875rem] text-muted-foreground/60"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   Tente ajustar os filtros ou buscar outro termo.
                 </p>
@@ -313,14 +300,12 @@ export function CatalogPage() {
                     <div className="absolute top-4 left-4 flex gap-2">
                       <span
                         className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-[0.75rem]"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         {book.genre}
                       </span>
                       <span
                         className="px-3 py-1 rounded-full text-[0.75rem]"
                         style={{
-                          fontFamily: "Inter, sans-serif",
                           backgroundColor: "rgba(255,255,255,0.85)",
                           color: "#052413",
                         }}
@@ -334,27 +319,23 @@ export function CatalogPage() {
                       <Star className="w-4 h-4 fill-[#EBBF74] text-[#EBBF74]" />
                       <span
                         className="text-[0.875rem] text-muted-foreground"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         {book.rating}
                       </span>
                     </div>
                     <h3
-                      className="text-[1.375rem] text-foreground mb-1"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
+                      className="text-[1.375rem] text-foreground mb-1 font-serif"
                     >
                       {book.title}
                     </h3>
                     <p
                       className="text-[0.875rem] text-muted-foreground mb-3"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       por {book.author}
                     </p>
                     <p
                       className="text-[0.8rem] text-muted-foreground/80 mb-4"
                       style={{
-                        fontFamily: "Inter, sans-serif",
                         lineHeight: 1.6,
                         display: "-webkit-box",
                         WebkitLineClamp: 3,

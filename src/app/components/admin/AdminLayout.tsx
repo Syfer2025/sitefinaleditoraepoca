@@ -95,7 +95,7 @@ export function AdminLayout() {
             className="w-10 h-10 border-3 rounded-full animate-spin"
             style={{ borderColor: "rgba(22,91,54,0.2)", borderTopColor: "#165B36" }}
           />
-          <p className="text-sm text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-sm text-[#856C42]">
             Carregando painel...
           </p>
         </div>
@@ -142,12 +142,11 @@ export function AdminLayout() {
             </div>
             <div>
               <p
-                className="text-sm font-semibold text-white"
-                style={{ fontFamily: "'Playfair Display', serif" }}
+                className="text-sm font-semibold text-white font-serif"
               >
                 Época Editora
               </p>
-              <p className="text-[0.65rem] text-white/40" style={{ fontFamily: "Inter, sans-serif" }}>
+              <p className="text-[0.65rem] text-white/40">
                 Painel Admin
               </p>
             </div>
@@ -176,7 +175,6 @@ export function AdminLayout() {
                     : "text-white/60 hover:text-white hover:bg-white/5"
                 }`}
                 style={{
-                  fontFamily: "Inter, sans-serif",
                   ...(active
                     ? {
                         background: "linear-gradient(135deg, #EBBF74, #D4AF5A)",
@@ -204,13 +202,11 @@ export function AdminLayout() {
             <div className="flex-1 min-w-0">
               <p
                 className="text-xs text-white/80 truncate"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 {userEmail}
               </p>
               <p
                 className="text-[0.6rem] text-[#EBBF74]"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Administrador
               </p>
@@ -219,7 +215,6 @@ export function AdminLayout() {
           <button
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs text-white/50 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             <LogOut className="w-3.5 h-3.5" />
             Sair
@@ -246,8 +241,7 @@ export function AdminLayout() {
             <Menu className="w-5 h-5" />
           </button>
           <h2
-            className="text-lg text-[#052413]"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-lg text-[#052413] font-serif"
           >
             {navItems.find((i) => i.path === location.pathname)?.label || "Painel"}
           </h2>
@@ -255,7 +249,6 @@ export function AdminLayout() {
             <a
               href="/"
               className="text-xs text-[#856C42] hover:text-[#165B36] transition-colors flex items-center gap-1"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               Ver site →
             </a>
@@ -271,7 +264,6 @@ export function AdminLayout() {
         position="bottom-right"
         toastOptions={{
           style: {
-            fontFamily: "Inter, sans-serif",
             borderRadius: "12px",
             border: "1px solid rgba(133, 108, 66, 0.15)",
             background: "#FFFDF8",

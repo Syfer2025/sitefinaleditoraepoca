@@ -109,7 +109,6 @@ export function AdminMessages() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
             style={{
-              fontFamily: "Inter, sans-serif",
               backgroundColor: "#FFFDF8",
               borderColor: "rgba(133,108,66,0.15)",
             }}
@@ -128,7 +127,6 @@ export function AdminMessages() {
                 filter === f.key ? "text-white" : "text-[#856C42] hover:bg-[#F0E8D4]"
               }`}
               style={{
-                fontFamily: "Inter, sans-serif",
                 ...(filter === f.key
                   ? { background: "linear-gradient(135deg, #165B36, #052413)" }
                   : { backgroundColor: "#FFFDF8", border: "1px solid rgba(133,108,66,0.15)" }),
@@ -151,7 +149,7 @@ export function AdminMessages() {
         {filtered.length === 0 ? (
           <div className="text-center py-16">
             <MessageSquare className="w-10 h-10 text-[#856C42]/30 mx-auto mb-3" />
-            <p className="text-sm text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+            <p className="text-sm text-[#856C42]">
               Nenhuma mensagem encontrada
             </p>
           </div>
@@ -187,7 +185,6 @@ export function AdminMessages() {
                     <div className="flex items-center gap-2">
                       <p
                         className={`text-sm truncate ${msg.read ? "text-[#856C42]" : "text-[#052413] font-semibold"}`}
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         {msg.name}
                       </p>
@@ -200,13 +197,11 @@ export function AdminMessages() {
                     </div>
                     <p
                       className="text-xs text-[#856C42] font-medium mt-0.5"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       {msg.subject}
                     </p>
                     <p
                       className="text-xs text-[#856C42]/60 truncate mt-0.5"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       {msg.message}
                     </p>
@@ -214,7 +209,6 @@ export function AdminMessages() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span
                       className="text-[0.6rem] text-[#856C42]/50"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       {new Date(msg.createdAt).toLocaleDateString("pt-BR")}
                     </span>
@@ -263,17 +257,16 @@ export function AdminMessages() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3
-                    className="text-lg text-[#052413]"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
+                    className="text-lg text-[#052413] font-serif"
                   >
                     {selected.subject}
                   </h3>
                   <div className="flex items-center gap-4 mt-1">
-                    <span className="flex items-center gap-1 text-xs text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+                    <span className="flex items-center gap-1 text-xs text-[#856C42]">
                       <Mail className="w-3 h-3" />
                       {selected.email}
                     </span>
-                    <span className="flex items-center gap-1 text-xs text-[#856C42]/60" style={{ fontFamily: "Inter, sans-serif" }}>
+                    <span className="flex items-center gap-1 text-xs text-[#856C42]/60">
                       <Calendar className="w-3 h-3" />
                       {new Date(selected.createdAt).toLocaleString("pt-BR")}
                     </span>
@@ -297,11 +290,11 @@ export function AdminMessages() {
                 >
                   {selected.name[0]?.toUpperCase()}
                 </div>
-                <p className="text-sm font-medium text-[#052413]" style={{ fontFamily: "Inter, sans-serif" }}>
+                <p className="text-sm font-medium text-[#052413]">
                   {selected.name}
                 </p>
                 {selected.read && (
-                  <span className="flex items-center gap-1 text-[0.6rem] text-[#165B36]/60 ml-auto" style={{ fontFamily: "Inter, sans-serif" }}>
+                  <span className="flex items-center gap-1 text-[0.6rem] text-[#165B36]/60 ml-auto">
                     <CheckCheck className="w-3 h-3" /> Lida
                   </span>
                 )}
@@ -311,7 +304,6 @@ export function AdminMessages() {
                 className="p-4 rounded-lg text-sm text-[#052413] whitespace-pre-wrap leading-relaxed"
                 style={{
                   backgroundColor: "#F0E8D4",
-                  fontFamily: "Inter, sans-serif",
                 }}
               >
                 {selected.message}
@@ -322,7 +314,6 @@ export function AdminMessages() {
                   onClick={() => deleteMessage(selected.id)}
                   className="px-4 py-2 rounded-lg text-xs text-[#d4183d] border hover:bg-[#d4183d]/5 transition-colors cursor-pointer"
                   style={{
-                    fontFamily: "Inter, sans-serif",
                     borderColor: "rgba(212,24,61,0.2)",
                   }}
                 >
@@ -334,7 +325,6 @@ export function AdminMessages() {
                     onClick={() => markAsRead(selected.id)}
                     className="px-4 py-2 rounded-lg text-xs text-[#165B36] border hover:bg-[#165B36]/5 transition-colors cursor-pointer"
                     style={{
-                      fontFamily: "Inter, sans-serif",
                       borderColor: "rgba(22,91,54,0.2)",
                     }}
                   >
@@ -346,7 +336,6 @@ export function AdminMessages() {
                   href={`mailto:${selected.email}?subject=Re: ${selected.subject}`}
                   className="px-4 py-2 rounded-lg text-xs text-white transition-opacity hover:opacity-90"
                   style={{
-                    fontFamily: "Inter, sans-serif",
                     background: "linear-gradient(135deg, #165B36, #052413)",
                   }}
                 >

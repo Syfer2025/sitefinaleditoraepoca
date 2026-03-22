@@ -88,8 +88,6 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-const F = "Inter, sans-serif";
-const PF = "'Playfair Display', serif";
 
 // ============================================
 // Login/Signup inline form
@@ -126,7 +124,7 @@ function InlineAuth({ onSuccess }: { onSuccess: () => void }) {
   };
 
   const ic = "w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#052413] focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 transition-colors";
-  const is = { fontFamily: F, backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
+  const is = { backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md mx-auto">
@@ -134,11 +132,11 @@ function InlineAuth({ onSuccess }: { onSuccess: () => void }) {
         <div className="px-6 pt-6 pb-4">
           <div className="flex items-center gap-2 mb-1">
             <LogIn className="w-5 h-5 text-[#165B36]" />
-            <h3 className="text-lg text-[#052413]" style={{ fontFamily: PF }}>
+            <h3 className="text-lg text-[#052413] font-serif">
               {mode === "login" ? "Entrar na sua conta" : "Criar sua conta"}
             </h3>
           </div>
-          <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>
+          <p className="text-xs text-[#856C42]">
             {mode === "login"
               ? "Faça login para enviar sua solicitação"
               : "Crie uma conta gratuita para continuar"}
@@ -148,16 +146,16 @@ function InlineAuth({ onSuccess }: { onSuccess: () => void }) {
         <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-3">
           {mode === "signup" && (
             <div>
-              <label className="block text-xs font-medium text-[#052413] mb-1" style={{ fontFamily: F }}>Nome completo</label>
+              <label className="block text-xs font-medium text-[#052413] mb-1">Nome completo</label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Seu nome" className={ic} style={is} />
             </div>
           )}
           <div>
-            <label className="block text-xs font-medium text-[#052413] mb-1" style={{ fontFamily: F }}>E-mail</label>
+            <label className="block text-xs font-medium text-[#052413] mb-1">E-mail</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seu@email.com" className={ic} style={is} autoFocus />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#052413] mb-1" style={{ fontFamily: F }}>Senha</label>
+            <label className="block text-xs font-medium text-[#052413] mb-1">Senha</label>
             <div className="relative">
               <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Sua senha" className={ic + " pr-10"} style={is} />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#856C42]/50 hover:text-[#856C42] cursor-pointer"><span className="sr-only">Mostrar senha</span>{showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button>
@@ -167,7 +165,7 @@ function InlineAuth({ onSuccess }: { onSuccess: () => void }) {
           {error && (
             <div className="flex items-center gap-2 text-xs text-red-600 p-2 rounded-lg bg-red-50">
               <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-              <span style={{ fontFamily: F }}>{error}</span>
+              <span>{error}</span>
             </div>
           )}
 
@@ -176,7 +174,7 @@ function InlineAuth({ onSuccess }: { onSuccess: () => void }) {
             {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}
           </GoldButton>
 
-          <p className="text-center text-xs text-[#856C42]" style={{ fontFamily: F }}>
+          <p className="text-center text-xs text-[#856C42]">
             {mode === "login" ? "Não tem conta? " : "Já tem conta? "}
             <button type="button" onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); }} className="text-[#165B36] font-medium hover:underline cursor-pointer">
               {mode === "login" ? "Criar conta" : "Fazer login"}
@@ -285,7 +283,7 @@ export function NewRequestPage() {
   };
 
   const ic = "w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#052413] focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 transition-colors";
-  const is = { fontFamily: F, backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
+  const is = { backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
 
   // Success state
   if (submitted) {
@@ -295,15 +293,15 @@ export function NewRequestPage() {
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring", stiffness: 200 }} className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: "linear-gradient(135deg, #165B36, #0a7c3e)" }}>
             <CheckCircle className="w-8 h-8 text-white" />
           </motion.div>
-          <h2 className="text-2xl text-[#052413] mb-2" style={{ fontFamily: PF }}>Solicitação <span className="italic text-[#165B36]">enviada!</span></h2>
-          <p className="text-sm text-[#856C42] mb-6 leading-relaxed" style={{ fontFamily: F }}>
+          <h2 className="text-2xl text-[#052413] mb-2 font-serif">Solicitação <span className="italic text-[#165B36]">enviada!</span></h2>
+          <p className="text-sm text-[#856C42] mb-6 leading-relaxed">
             Sua solicitação foi recebida com sucesso. Nossa equipe irá analisá-la e em breve você receberá um orçamento na sua área do cliente.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <GoldButton onClick={() => navigate("/minha-conta")} className="px-6 py-2.5 text-sm font-semibold justify-center">
               <BookOpen className="w-4 h-4" /> Ir para minha conta
             </GoldButton>
-            <button onClick={() => navigate("/")} className="px-6 py-2.5 rounded-xl text-sm text-[#856C42] hover:bg-[#F0E8D4] transition-colors cursor-pointer" style={{ fontFamily: F }}>
+            <button onClick={() => navigate("/")} className="px-6 py-2.5 rounded-xl text-sm text-[#856C42] hover:bg-[#F0E8D4] transition-colors cursor-pointer">
               <span className="flex items-center gap-1.5 justify-center"><ArrowLeft className="w-4 h-4" /> Voltar ao site</span>
             </button>
           </div>
@@ -328,10 +326,10 @@ export function NewRequestPage() {
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-[#052413] hover:text-[#165B36] transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm" style={{ fontFamily: F }}>Voltar ao site</span>
+            <span className="text-sm">Voltar ao site</span>
           </Link>
           {user && (
-            <div className="flex items-center gap-2 text-xs text-[#856C42]" style={{ fontFamily: F }}>
+            <div className="flex items-center gap-2 text-xs text-[#856C42]">
               <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[0.6rem] font-bold" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>
                 {user.name?.charAt(0).toUpperCase() || "U"}
               </div>
@@ -346,12 +344,12 @@ export function NewRequestPage() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4" style={{ backgroundColor: "rgba(22,91,54,0.06)", border: "1px solid rgba(22,91,54,0.1)" }}>
             <Sparkles className="w-3.5 h-3.5 text-[#165B36]" />
-            <span className="text-xs font-medium text-[#165B36]" style={{ fontFamily: F }}>Formulário de nova solicitação</span>
+            <span className="text-xs font-medium text-[#165B36]">Formulário de nova solicitação</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl text-[#052413] mb-2" style={{ fontFamily: PF }}>
+          <h1 className="text-3xl sm:text-4xl text-[#052413] mb-2 font-serif">
             Solicite sua <span className="italic text-[#165B36]">diagramação</span>
           </h1>
-          <p className="text-sm text-[#856C42] max-w-md mx-auto leading-relaxed" style={{ fontFamily: F }}>
+          <p className="text-sm text-[#856C42] max-w-md mx-auto leading-relaxed">
             Preencha os dados do seu projeto editorial. Nossa equipe irá preparar um orçamento personalizado para você.
           </p>
         </motion.div>
@@ -368,7 +366,7 @@ export function NewRequestPage() {
                       const Icon = ws.icon;
                       return (
                         <div key={ws.label} className="flex items-center flex-1">
-                          <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[0.65rem] font-medium ${i === 0 ? "text-white" : "text-[#856C42]/40"}`} style={{ fontFamily: F, ...(i === 0 ? { background: "linear-gradient(135deg, #165B36, #052413)" } : {}) }}>
+                          <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[0.65rem] font-medium ${i === 0 ? "text-white" : "text-[#856C42]/40"}`} style={{ ...(i === 0 ? { background: "linear-gradient(135deg, #165B36, #052413)" } : {}) }}>
                             <Icon className="w-3 h-3" />
                             <span className="hidden sm:inline">{ws.label}</span>
                           </div>
@@ -392,8 +390,8 @@ export function NewRequestPage() {
               <div className="absolute inset-0 flex items-center justify-center rounded-2xl" style={{ background: "linear-gradient(180deg, rgba(255,253,248,0.3) 0%, rgba(255,253,248,0.8) 60%, rgba(255,253,248,0.95) 100%)" }}>
                 <div className="text-center px-4">
                   <LogIn className="w-8 h-8 text-[#165B36] mx-auto mb-2" />
-                  <p className="text-sm font-medium text-[#052413] mb-1" style={{ fontFamily: F }}>Faça login para preencher</p>
-                  <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>Você precisa estar logado para enviar sua solicitação</p>
+                  <p className="text-sm font-medium text-[#052413] mb-1">Faça login para preencher</p>
+                  <p className="text-xs text-[#856C42]">Você precisa estar logado para enviar sua solicitação</p>
                 </div>
               </div>
             </div>
@@ -418,7 +416,7 @@ export function NewRequestPage() {
                           type="button"
                           onClick={() => { if (i < step) { setError(""); setStep(i); } }}
                           className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[0.65rem] font-medium transition-all whitespace-nowrap ${isCurrent ? "text-white" : isDone ? "text-[#165B36] cursor-pointer hover:bg-[#165B36]/5" : "text-[#856C42]/40"}`}
-                          style={{ fontFamily: F, ...(isCurrent ? { background: "linear-gradient(135deg, #165B36, #052413)" } : {}) }}
+                          style={{ ...(isCurrent ? { background: "linear-gradient(135deg, #165B36, #052413)" } : {}) }}
                           disabled={i > step}
                         >
                           {isDone ? <CheckCircle className="w-3 h-3" /> : <Icon className="w-3 h-3" />}
@@ -439,19 +437,19 @@ export function NewRequestPage() {
                   {/* Step 0: Obra */}
                   {step === 0 && (
                     <motion.div key="step0" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.2 }} className="space-y-3">
-                      <p className="text-xs text-[#856C42] mb-1" style={{ fontFamily: F }}>Informacoes basicas sobre a obra</p>
+                      <p className="text-xs text-[#856C42] mb-1">Informacoes basicas sobre a obra</p>
                       <div className="grid sm:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>Titulo da obra *</label>
+                          <label className="block text-xs font-medium text-[#052413] mb-1.5">Titulo da obra *</label>
                           <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex.: O Guardiao das Palavras" className={ic} style={is} autoFocus />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>Autor</label>
+                          <label className="block text-xs font-medium text-[#052413] mb-1.5">Autor</label>
                           <input type="text" value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Deixe em branco para usar seu nome" className={ic} style={is} />
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>Descricao do projeto</label>
+                        <label className="block text-xs font-medium text-[#052413] mb-1.5">Descricao do projeto</label>
                         <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descreva brevemente a obra, genero, publico-alvo..." rows={3} className={ic + " resize-none"} style={is} />
                       </div>
                     </motion.div>
@@ -460,49 +458,49 @@ export function NewRequestPage() {
                   {/* Step 1: Servicos */}
                   {step === 1 && (
                     <motion.div key="step1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.2 }}>
-                      <p className="text-xs text-[#856C42] mb-3" style={{ fontFamily: F }}>Selecione os serviços que você precisa</p>
+                      <p className="text-xs text-[#856C42] mb-3">Selecione os serviços que você precisa</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {SERVICE_OPTIONS.map((svc) => {
                           const isSelected = services.includes(svc.key);
                           return (
                             <button key={svc.key} type="button" onClick={() => toggleService(svc.key)} className={`relative p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer ${isSelected ? "shadow-sm" : "hover:border-[#856C42]/30"}`} style={{ borderColor: isSelected ? "#165B36" : "rgba(133,108,66,0.15)", backgroundColor: isSelected ? "rgba(22,91,54,0.04)" : "#FFFDF8" }}>
                               <div className="flex items-start justify-between gap-1">
-                                <p className={`text-xs font-medium leading-tight ${isSelected ? "text-[#165B36]" : "text-[#052413]"}`} style={{ fontFamily: F }}>{svc.label}</p>
+                                <p className={`text-xs font-medium leading-tight ${isSelected ? "text-[#165B36]" : "text-[#052413]"}`}>{svc.label}</p>
                                 {isSelected && <Check className="w-3.5 h-3.5 text-[#165B36] flex-shrink-0" />}
                               </div>
-                              <p className="text-[0.6rem] text-[#856C42]/70 mt-0.5 leading-tight" style={{ fontFamily: F }}>{svc.desc}</p>
+                              <p className="text-[0.6rem] text-[#856C42]/70 mt-0.5 leading-tight">{svc.desc}</p>
                             </button>
                           );
                         })}
                       </div>
-                      <p className="text-[0.6rem] text-[#856C42]/50 mt-3" style={{ fontFamily: F }}>"Pacote completo" inclui todos os serviços. Selecionar outro desmarca o pacote completo.</p>
+                      <p className="text-[0.6rem] text-[#856C42]/50 mt-3">"Pacote completo" inclui todos os serviços. Selecionar outro desmarca o pacote completo.</p>
                     </motion.div>
                   )}
 
                   {/* Step 2: Formato */}
                   {step === 2 && (
                     <motion.div key="step2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.2 }} className="space-y-3">
-                      <p className="text-xs text-[#856C42] mb-1" style={{ fontFamily: F }}>Escolha o formato e especificacoes do livro</p>
+                      <p className="text-xs text-[#856C42] mb-1">Escolha o formato e especificacoes do livro</p>
                       <div className="grid sm:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>Formato do livro</label>
+                          <label className="block text-xs font-medium text-[#052413] mb-1.5">Formato do livro</label>
                           <select value={format} onChange={(e) => setFormat(e.target.value)} className={ic + " cursor-pointer"} style={is}>
                             {FORMAT_OPTIONS.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
                           </select>
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>Paginas estimadas</label>
+                          <label className="block text-xs font-medium text-[#052413] mb-1.5">Paginas estimadas</label>
                           <input type="number" value={pageCount} onChange={(e) => setPageCount(e.target.value)} placeholder="Ex.: 200" min={1} className={ic} style={is} />
                         </div>
                       </div>
                       {format === "personalizado" && (
                         <div>
-                          <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>Formato personalizado</label>
+                          <label className="block text-xs font-medium text-[#052413] mb-1.5">Formato personalizado</label>
                           <input type="text" value={customFormat} onChange={(e) => setCustomFormat(e.target.value)} placeholder="Ex.: 13x20 cm, quadrado 25x25 cm..." className={ic} style={is} />
                         </div>
                       )}
                       <div>
-                        <label className="block text-xs font-medium text-[#052413] mb-1.5" style={{ fontFamily: F }}>Observações adicionais</label>
+                        <label className="block text-xs font-medium text-[#052413] mb-1.5">Observações adicionais</label>
                         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Referências de estilo, preferências tipográficas, prazos..." rows={2} className={ic + " resize-none"} style={is} />
                       </div>
                     </motion.div>
@@ -511,7 +509,7 @@ export function NewRequestPage() {
                   {/* Step 3: Arquivos */}
                   {step === 3 && (
                     <motion.div key="step3" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.2 }}>
-                      <p className="text-xs text-[#856C42] mb-3" style={{ fontFamily: F }}>Envie o manuscrito e materiais de apoio (opcional)</p>
+                      <p className="text-xs text-[#856C42] mb-3">Envie o manuscrito e materiais de apoio (opcional)</p>
                       <div
                         className={`relative rounded-xl border-2 border-dashed p-6 text-center transition-colors duration-200 cursor-pointer ${dragOver ? "border-[#165B36] bg-[#165B36]/[0.03]" : "border-[#856C42]/20 hover:border-[#856C42]/40"}`}
                         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -521,8 +519,8 @@ export function NewRequestPage() {
                       >
                         <input ref={fileInputRef} type="file" multiple accept={ACCEPTED_FILE_TYPES} onChange={(e) => { if (e.target.files) addFiles(e.target.files); e.target.value = ""; }} className="hidden" />
                         <Upload className="w-7 h-7 text-[#856C42]/30 mx-auto mb-2" />
-                        <p className="text-xs text-[#052413]" style={{ fontFamily: F }}>Arraste arquivos aqui ou <span className="text-[#165B36] font-medium">clique para selecionar</span></p>
-                        <p className="text-[0.6rem] text-[#856C42]/50 mt-1" style={{ fontFamily: F }}>Word, PDF, TXT, RTF, ODT, InDesign, imagens, ZIP — max. 50 MB/arquivo</p>
+                        <p className="text-xs text-[#052413]">Arraste arquivos aqui ou <span className="text-[#165B36] font-medium">clique para selecionar</span></p>
+                        <p className="text-[0.6rem] text-[#856C42]/50 mt-1">Word, PDF, TXT, RTF, ODT, InDesign, imagens, ZIP — max. 50 MB/arquivo</p>
                       </div>
 
                       {files.length > 0 && (
@@ -531,8 +529,8 @@ export function NewRequestPage() {
                             <div key={`${file.name}-${idx}`} className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: "#F0E8D4" }}>
                               <FileText className="w-4 h-4 text-[#165B36] flex-shrink-0" />
                               <div className="min-w-0 flex-1">
-                                <p className="text-xs text-[#052413] truncate" style={{ fontFamily: F }}>{file.name}</p>
-                                <p className="text-[0.6rem] text-[#856C42]/60" style={{ fontFamily: F }}>{formatFileSize(file.size)}</p>
+                                <p className="text-xs text-[#052413] truncate">{file.name}</p>
+                                <p className="text-[0.6rem] text-[#856C42]/60">{formatFileSize(file.size)}</p>
                               </div>
                               <button type="button" onClick={(e) => { e.stopPropagation(); removeFile(idx); }} className="p-1 rounded text-[#856C42]/40 hover:text-[#d4183d] hover:bg-[#d4183d]/5 transition-colors cursor-pointer">
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -549,14 +547,14 @@ export function NewRequestPage() {
                 {error && (
                   <div className="flex items-center gap-2 text-sm text-[#d4183d] p-3 rounded-lg mt-3" style={{ backgroundColor: "rgba(212,24,61,0.05)" }}>
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    <span style={{ fontFamily: F }}>{error}</span>
+                    <span>{error}</span>
                   </div>
                 )}
               </div>
 
               {/* Footer */}
               <div className="px-6 pb-6 pt-3 flex items-center justify-between gap-3 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
-                <button type="button" onClick={step === 0 ? () => navigate(-1) : handleBack} className="px-4 py-2.5 rounded-xl text-sm text-[#856C42] hover:bg-[#F0E8D4] transition-colors cursor-pointer" style={{ fontFamily: F }}>
+                <button type="button" onClick={step === 0 ? () => navigate(-1) : handleBack} className="px-4 py-2.5 rounded-xl text-sm text-[#856C42] hover:bg-[#F0E8D4] transition-colors cursor-pointer">
                   {step === 0 ? "Voltar" : "Anterior"}
                 </button>
                 <div className="flex items-center gap-2">
@@ -566,7 +564,7 @@ export function NewRequestPage() {
                     ))}
                   </div>
                   {step < totalSteps - 1 ? (
-                    <button type="button" onClick={handleNext} disabled={!canAdvance()} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed" style={{ background: "linear-gradient(135deg, #165B36, #052413)", fontFamily: F }}>
+                    <button type="button" onClick={handleNext} disabled={!canAdvance()} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>
                       Proximo <ChevronRight className="w-4 h-4" />
                     </button>
                   ) : (
@@ -579,7 +577,7 @@ export function NewRequestPage() {
             </div>
 
             {/* Extra info */}
-            <p className="text-center text-[0.65rem] text-[#856C42]/60 mt-4" style={{ fontFamily: F }}>
+            <p className="text-center text-[0.65rem] text-[#856C42]/60 mt-4">
               Ao enviar, você concorda com nossos termos de serviço. Responderemos em até 2 dias úteis.
             </p>
           </motion.div>

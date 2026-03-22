@@ -30,8 +30,7 @@ export function CookieBanner() {
     setVisible(false);
   };
 
-  const F = "Inter, sans-serif";
-
+  
   return (
     <AnimatePresence>
       {visible && (
@@ -54,7 +53,7 @@ export function CookieBanner() {
               <div className="flex items-start gap-3 flex-1 min-w-0">
                 <Shield className="w-5 h-5 text-[#EBBF74] flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm text-white/90 leading-relaxed" style={{ fontFamily: F }}>
+                  <p className="text-sm text-white/90 leading-relaxed">
                     Utilizamos cookies essenciais para o funcionamento do site e cookies analíticos para melhorar sua experiência.
                     Ao continuar navegando, você concorda com nossa{" "}
                     <Link to="/privacidade" className="text-[#EBBF74] hover:underline">
@@ -70,7 +69,6 @@ export function CookieBanner() {
                     type="button"
                     onClick={() => setManaging((v) => !v)}
                     className="mt-2 flex items-center gap-1 text-xs text-[#EBBF74]/70 hover:text-[#EBBF74] transition-colors cursor-pointer"
-                    style={{ fontFamily: F }}
                   >
                     {managing ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                     Gerenciar preferências
@@ -81,7 +79,6 @@ export function CookieBanner() {
                 <button
                   onClick={() => save("essential")}
                   className="flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border border-white/10"
-                  style={{ fontFamily: F }}
                 >
                   Rejeitar tudo
                 </button>
@@ -89,7 +86,6 @@ export function CookieBanner() {
                   onClick={() => save("all")}
                   className="flex-1 md:flex-none px-5 py-2 rounded-lg text-xs font-semibold text-[#052413] transition-opacity hover:opacity-90 cursor-pointer"
                   style={{
-                    fontFamily: F,
                     background: "linear-gradient(135deg, #EBBF74, #D4AF5A)",
                   }}
                 >
@@ -118,16 +114,16 @@ export function CookieBanner() {
                     {/* Essential */}
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs font-semibold text-white/90" style={{ fontFamily: F }}>
+                        <p className="text-xs font-semibold text-white/90">
                           Cookies essenciais
                         </p>
-                        <p className="text-[0.65rem] text-white/40 mt-0.5" style={{ fontFamily: F }}>
+                        <p className="text-[0.65rem] text-white/40 mt-0.5">
                           Necessários para autenticação, sessão e segurança. Não podem ser desativados.
                         </p>
                       </div>
                       <div
                         className="px-2.5 py-1 rounded-full text-[0.6rem] font-semibold text-[#052413]"
-                        style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)", fontFamily: F }}
+                        style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)" }}
                       >
                         Sempre ativo
                       </div>
@@ -135,10 +131,10 @@ export function CookieBanner() {
                     {/* Analytics */}
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs font-semibold text-white/90" style={{ fontFamily: F }}>
+                        <p className="text-xs font-semibold text-white/90">
                           Cookies analíticos
                         </p>
-                        <p className="text-[0.65rem] text-white/40 mt-0.5" style={{ fontFamily: F }}>
+                        <p className="text-[0.65rem] text-white/40 mt-0.5">
                           Nos ajudam a entender como você usa o site para melhorar a experiência.
                         </p>
                       </div>
@@ -159,7 +155,6 @@ export function CookieBanner() {
                       onClick={() => save("custom", analyticsEnabled)}
                       className="w-full py-2 rounded-lg text-xs font-semibold text-[#052413] transition-opacity hover:opacity-90 cursor-pointer mt-1"
                       style={{
-                        fontFamily: F,
                         background: "linear-gradient(135deg, #EBBF74, #D4AF5A)",
                       }}
                     >

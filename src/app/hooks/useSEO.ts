@@ -34,7 +34,8 @@ function setLink(rel: string, href: string) {
 
 export function useSEO({ title, description, canonical, ogImage, noindex = false }: SEOOptions) {
   useEffect(() => {
-    document.title = `${title} — ${SITE_NAME}`;
+    // Avoid duplicating SITE_NAME if title already contains it
+    document.title = title.includes(SITE_NAME) ? title : `${title} — ${SITE_NAME}`;
 
     const canonicalUrl = canonical ?? `${SITE_URL}${window.location.pathname}`;
 

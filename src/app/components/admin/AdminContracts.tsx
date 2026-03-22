@@ -8,8 +8,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { getContractTemplate, saveContractTemplate, getContractTemplateHistory } from "../../data/api";
 
-const F = "Inter, sans-serif";
-const PF = "'Playfair Display', serif";
 
 // ============================================
 // Default contract template
@@ -220,13 +218,13 @@ export function AdminContracts() {
   const collapseAll = () => setExpandedClauses(new Set());
 
   const ic = "w-full px-3 py-2 rounded-lg border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 transition-colors";
-  const is = { fontFamily: F, backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
+  const is = { backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-6 h-6 text-[#165B36] animate-spin" />
-        <span className="ml-2 text-sm text-gray-500" style={{ fontFamily: F }}>Carregando template...</span>
+        <span className="ml-2 text-sm text-gray-500">Carregando template...</span>
       </div>
     );
   }
@@ -236,12 +234,12 @@ export function AdminContracts() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: F }}>Contratos</h1>
-          <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: F }}>
+          <h1 className="text-2xl font-semibold text-gray-900">Contratos</h1>
+          <p className="text-sm text-gray-500 mt-1">
             Visualize e edite o template do contrato de prestacao de servicos
           </p>
           {template.updatedAt && (
-            <p className="text-[0.65rem] text-gray-400 mt-1 flex items-center gap-1" style={{ fontFamily: F }}>
+            <p className="text-[0.65rem] text-gray-400 mt-1 flex items-center gap-1">
               <Clock className="w-3 h-3" />
               Ultima atualizacao: {new Date(template.updatedAt).toLocaleString("pt-BR")}
               {template.updatedBy && <> por {template.updatedBy}</>}
@@ -254,29 +252,27 @@ export function AdminContracts() {
             <button
               onClick={() => setMode("view")}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${mode === "view" ? "bg-[#165B36] text-white" : "text-gray-500 hover:text-gray-700 bg-white"}`}
-              style={{ fontFamily: F }}
             >
               <Eye className="w-3.5 h-3.5" /> Visualizar
             </button>
             <button
               onClick={() => { setMode("edit"); expandAll(); }}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${mode === "edit" ? "bg-[#165B36] text-white" : "text-gray-500 hover:text-gray-700 bg-white"}`}
-              style={{ fontFamily: F }}
             >
               <Edit3 className="w-3.5 h-3.5" /> Editar
             </button>
           </div>
           {mode === "edit" && (
             <>
-              <button onClick={handleReset} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer" style={{ fontFamily: F }} title="Restaurar template padrao">
+              <button onClick={handleReset} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer" title="Restaurar template padrao">
                 <RotateCcw className="w-3.5 h-3.5" /> Padrao
               </button>
               {hasChanges && (
-                <button onClick={handleDiscard} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 hover:bg-red-50 transition-colors cursor-pointer" style={{ fontFamily: F }}>
+                <button onClick={handleDiscard} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 hover:bg-red-50 transition-colors cursor-pointer">
                   Descartar
                 </button>
               )}
-              <button onClick={handleSave} disabled={saving || !hasChanges} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed" style={{ fontFamily: F, background: "linear-gradient(135deg, #165B36, #052413)" }}>
+              <button onClick={handleSave} disabled={saving || !hasChanges} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                 Salvar
               </button>
@@ -288,7 +284,7 @@ export function AdminContracts() {
       {error && (
         <div className="flex items-center gap-2 text-sm text-red-600 p-3 rounded-lg bg-red-50">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span style={{ fontFamily: F }}>{error}</span>
+          <span>{error}</span>
         </div>
       )}
 
@@ -296,7 +292,7 @@ export function AdminContracts() {
       <button
         onClick={() => setShowPreview(true)}
         className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-[#052413] transition-colors hover:opacity-90 cursor-pointer"
-        style={{ fontFamily: F, background: "linear-gradient(135deg, rgba(235,191,116,0.15), rgba(235,191,116,0.08))", border: "1px solid rgba(133,108,66,0.15)" }}
+        style={{ background: "linear-gradient(135deg, rgba(235,191,116,0.15), rgba(235,191,116,0.08))", border: "1px solid rgba(133,108,66,0.15)" }}
       >
         <FileText className="w-4 h-4 text-[#856C42]" />
         Pre-visualizar contrato completo (com dados de exemplo)
@@ -324,8 +320,8 @@ export function AdminContracts() {
             >
               <div className="px-6 py-4 border-b flex items-center justify-between flex-shrink-0" style={{ borderColor: "rgba(133,108,66,0.1)" }}>
                 <div>
-                  <h3 className="text-lg text-[#052413]" style={{ fontFamily: PF }}>Pre-visualizacao do <span className="italic text-[#165B36]">contrato</span></h3>
-                  <p className="text-[0.65rem] text-[#856C42]" style={{ fontFamily: F }}>Como o cliente vera na pagina de pagamento (com dados ficticios)</p>
+                  <h3 className="text-lg text-[#052413] font-serif">Pre-visualizacao do <span className="italic text-[#165B36]">contrato</span></h3>
+                  <p className="text-[0.65rem] text-[#856C42]">Como o cliente vera na pagina de pagamento (com dados ficticios)</p>
                 </div>
                 <button onClick={() => setShowPreview(false)} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
                   <X className="w-5 h-5" />
@@ -342,7 +338,7 @@ export function AdminContracts() {
       {/* Info banner */}
       <div className="flex items-start gap-3 p-4 rounded-xl" style={{ backgroundColor: "rgba(22,91,54,0.04)", border: "1px solid rgba(22,91,54,0.1)" }}>
         <Info className="w-5 h-5 text-[#165B36] flex-shrink-0 mt-0.5" />
-        <div className="text-xs text-gray-600 space-y-1" style={{ fontFamily: F }}>
+        <div className="text-xs text-gray-600 space-y-1">
           <p><strong className="text-[#165B36]">Clausulas estaticas</strong> — texto fixo que voce pode editar livremente.</p>
           <p><strong className="text-[#856C42]">Clausulas dinamicas</strong> — contem campos automaticos (nome do cliente, preco, servicos, etc.) preenchidos por projeto.</p>
           <p>As clausulas 13+ sao personalizadas por projeto e editadas na aba Contrato de cada projeto.</p>
@@ -353,41 +349,41 @@ export function AdminContracts() {
       <div className="rounded-xl border overflow-hidden" style={{ borderColor: "rgba(133,108,66,0.15)", backgroundColor: "#FFFDF8" }}>
         <div className="px-5 py-3 border-b flex items-center gap-2" style={{ borderColor: "rgba(133,108,66,0.1)", backgroundColor: "rgba(133,108,66,0.03)" }}>
           <ScrollText className="w-4 h-4 text-[#856C42]" />
-          <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: F }}>Informacoes gerais</span>
+          <span className="text-sm font-semibold text-gray-700">Informacoes gerais</span>
         </div>
         <div className="p-5 space-y-4">
           {mode === "edit" ? (
             <>
               <div className="grid sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5" style={{ fontFamily: F }}>Versao do contrato</label>
+                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Versao do contrato</label>
                   <input type="text" value={template.version} onChange={(e) => updateField("version", e.target.value)} className={ic} style={is} />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5" style={{ fontFamily: F }}>Nome da editora</label>
+                  <label className="block text-xs font-medium text-gray-600 mb-1.5">Nome da editora</label>
                   <input type="text" value={template.companyName} onChange={(e) => updateField("companyName", e.target.value)} className={ic} style={is} />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5" style={{ fontFamily: F }}>Descricao da editora <span className="text-gray-400 font-normal">(aparece na Clausula 1)</span></label>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">Descricao da editora <span className="text-gray-400 font-normal">(aparece na Clausula 1)</span></label>
                 <input type="text" value={template.companyDescription} onChange={(e) => updateField("companyDescription", e.target.value)} className={ic} style={is} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5" style={{ fontFamily: F }}>Preambulo</label>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">Preambulo</label>
                 <textarea value={template.preamble} onChange={(e) => updateField("preamble", e.target.value)} rows={3} className={ic + " resize-none"} style={is} />
               </div>
             </>
           ) : (
             <div className="space-y-2">
-              <div className="flex items-center gap-4 text-sm" style={{ fontFamily: F }}>
+              <div className="flex items-center gap-4 text-sm">
                 <span className="text-gray-500">Versao:</span>
                 <span className="font-medium text-gray-900">{template.version}</span>
                 <span className="text-gray-300">|</span>
                 <span className="text-gray-500">Editora:</span>
                 <span className="font-medium text-gray-900">{template.companyName}</span>
               </div>
-              <p className="text-xs text-gray-500" style={{ fontFamily: F }}>{template.companyDescription}</p>
-              <p className="text-xs text-gray-600 italic leading-relaxed pt-2 border-t" style={{ fontFamily: F, borderColor: "rgba(133,108,66,0.08)" }}>
+              <p className="text-xs text-gray-500">{template.companyDescription}</p>
+              <p className="text-xs text-gray-600 italic leading-relaxed pt-2 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
                 "{template.preamble}"
               </p>
             </div>
@@ -397,13 +393,13 @@ export function AdminContracts() {
 
       {/* Expand/collapse controls */}
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-700" style={{ fontFamily: F }}>
+        <h2 className="text-sm font-semibold text-gray-700">
           Clausulas ({template.clauses.length})
         </h2>
         <div className="flex gap-2">
-          <button onClick={expandAll} className="text-[0.65rem] text-[#165B36] hover:underline cursor-pointer" style={{ fontFamily: F }}>Expandir todas</button>
+          <button onClick={expandAll} className="text-[0.65rem] text-[#165B36] hover:underline cursor-pointer">Expandir todas</button>
           <span className="text-gray-300">|</span>
-          <button onClick={collapseAll} className="text-[0.65rem] text-[#165B36] hover:underline cursor-pointer" style={{ fontFamily: F }}>Recolher todas</button>
+          <button onClick={collapseAll} className="text-[0.65rem] text-[#165B36] hover:underline cursor-pointer">Recolher todas</button>
         </div>
       </div>
 
@@ -424,7 +420,7 @@ export function AdminContracts() {
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-gray-800 truncate" style={{ fontFamily: F }}>
+                    <span className="text-sm font-semibold text-gray-800 truncate">
                       {clause.title}
                     </span>
                     {isDynamic && (
@@ -451,7 +447,7 @@ export function AdminContracts() {
                       {isDynamic && clause.dynamicNote && (
                         <div className="flex items-start gap-2 mt-3 p-2.5 rounded-lg" style={{ backgroundColor: "rgba(133,108,66,0.05)" }}>
                           <Info className="w-3.5 h-3.5 text-[#856C42] flex-shrink-0 mt-0.5" />
-                          <p className="text-[0.65rem] text-[#856C42] leading-relaxed" style={{ fontFamily: F }}>
+                          <p className="text-[0.65rem] text-[#856C42] leading-relaxed">
                             {clause.dynamicNote}
                           </p>
                         </div>
@@ -460,11 +456,11 @@ export function AdminContracts() {
                       {mode === "edit" ? (
                         <div className="mt-3 space-y-2">
                           <div>
-                            <label className="block text-[0.65rem] font-medium text-gray-500 mb-1" style={{ fontFamily: F }}>Titulo</label>
+                            <label className="block text-[0.65rem] font-medium text-gray-500 mb-1">Titulo</label>
                             <input type="text" value={clause.title} onChange={(e) => updateClause(clause.number, "title", e.target.value)} className={ic + " text-xs"} style={{ ...is, fontSize: "0.8rem" }} />
                           </div>
                           <div>
-                            <label className="block text-[0.65rem] font-medium text-gray-500 mb-1" style={{ fontFamily: F }}>
+                            <label className="block text-[0.65rem] font-medium text-gray-500 mb-1">
                               Conteudo {isDynamic && <span className="text-[#856C42]">(campos entre {"{{"}...{"}}"} sao automaticos)</span>}
                             </label>
                             <textarea
@@ -478,7 +474,7 @@ export function AdminContracts() {
                         </div>
                       ) : (
                         <div className="mt-3">
-                          <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap" style={{ fontFamily: F }}>
+                          <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">
                             {renderPreviewContent(clause.content, isDynamic)}
                           </div>
                         </div>
@@ -509,7 +505,7 @@ export function AdminContracts() {
           className="w-full flex items-center gap-3 px-5 py-3 text-left cursor-pointer hover:bg-gray-50/50 transition-colors"
         >
           <Clock className="w-4 h-4 text-[#856C42]" />
-          <span className="text-sm font-semibold text-gray-700 flex-1" style={{ fontFamily: F }}>
+          <span className="text-sm font-semibold text-gray-700 flex-1">
             Historico de versoes (auditoria)
           </span>
           {historyOpen ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
@@ -527,10 +523,10 @@ export function AdminContracts() {
                 {loadingHistory ? (
                   <div className="flex items-center gap-2 py-4 justify-center">
                     <Loader2 className="w-4 h-4 text-[#165B36] animate-spin" />
-                    <span className="text-xs text-gray-500" style={{ fontFamily: F }}>Carregando historico...</span>
+                    <span className="text-xs text-gray-500">Carregando historico...</span>
                   </div>
                 ) : history.length === 0 ? (
-                  <p className="text-xs text-gray-400 py-4 text-center" style={{ fontFamily: F }}>
+                  <p className="text-xs text-gray-400 py-4 text-center">
                     Nenhuma versao anterior registrada. O historico sera criado automaticamente a cada salvamento.
                   </p>
                 ) : (
@@ -545,14 +541,14 @@ export function AdminContracts() {
                           v{entry.version || "?"}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-gray-800 truncate" style={{ fontFamily: F }}>
+                          <p className="text-xs font-medium text-gray-800 truncate">
                             Versao {entry.version || "desconhecida"}
                           </p>
-                          <p className="text-[0.6rem] text-gray-400" style={{ fontFamily: F }}>
+                          <p className="text-[0.6rem] text-gray-400">
                             Substituida em {entry.replacedAt ? new Date(entry.replacedAt).toLocaleString("pt-BR") : "?"} por {entry.replacedBy || "desconhecido"}
                           </p>
                         </div>
-                        <span className="text-[0.55rem] text-gray-400 font-mono" style={{ fontFamily: F }}>
+                        <span className="text-[0.55rem] text-gray-400 font-mono">
                           {entry.template?.clauses?.length || 0} clausulas
                         </span>
                       </div>
@@ -575,13 +571,13 @@ export function AdminContracts() {
         >
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-[#EBBF74]" />
-            <span className="text-xs text-white/80" style={{ fontFamily: F }}>Voce tem alteracoes nao salvas</span>
+            <span className="text-xs text-white/80">Voce tem alteracoes nao salvas</span>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handleDiscard} className="px-3 py-1.5 rounded-lg text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" style={{ fontFamily: F }}>
+            <button onClick={handleDiscard} className="px-3 py-1.5 rounded-lg text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
               Descartar
             </button>
-            <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium text-[#052413] transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ fontFamily: F, background: "linear-gradient(135deg, #EBBF74, #D4AF5A)" }}>
+            <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium text-[#052413] transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)" }}>
               {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
               Salvar template
             </button>
@@ -647,7 +643,7 @@ function ContractPreview({ template }: { template: ContractTemplate }) {
   };
 
   return (
-    <div className="text-[0.7rem] leading-relaxed text-[#052413]/80" style={{ fontFamily: F }}>
+    <div className="text-[0.7rem] leading-relaxed text-[#052413]/80">
       <p className="font-bold text-xs text-[#052413] mb-3 text-center">CONTRATO DE PRESTACAO DE SERVICOS EDITORIAIS</p>
       <p className="font-bold text-xs text-[#052413] mb-1 text-center">{template.companyName.toUpperCase()}</p>
       <p className="text-center mb-4 text-[#856C42]/60">Versao {template.version}</p>
@@ -709,7 +705,7 @@ function ContractPreview({ template }: { template: ContractTemplate }) {
 
       {/* Sample custom clause */}
       <div className="mt-2 pt-2 border-t border-dashed" style={{ borderColor: "rgba(133,108,66,0.15)" }}>
-        <p className="text-[0.6rem] text-[#856C42]/50 italic mb-2" style={{ fontFamily: F }}>Exemplo de clausula personalizada por projeto (13+):</p>
+        <p className="text-[0.6rem] text-[#856C42]/50 italic mb-2">Exemplo de clausula personalizada por projeto (13+):</p>
         <p className="font-semibold text-[#052413] mb-1 mt-2">CLÁUSULA 13 — DA ENTREGA DIGITAL</p>
         <p className="mb-3">A EDITORA entregara os arquivos finais em formato PDF de alta resolucao para impressao e PDF otimizado para leitura digital.</p>
       </div>

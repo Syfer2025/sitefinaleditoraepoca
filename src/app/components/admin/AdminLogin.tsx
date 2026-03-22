@@ -97,14 +97,12 @@ export function AdminLogin() {
               <BookOpen className="w-8 h-8 text-[#EBBF74]" />
             </div>
             <h1
-              className="text-2xl text-[#052413]"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-2xl text-[#052413] font-serif"
             >
               Painel Administrativo
             </h1>
             <p
               className="text-sm text-[#856C42] mt-1"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               Época Editora de Livros
             </p>
@@ -119,7 +117,6 @@ export function AdminLogin() {
               style={{
                 backgroundColor: "rgba(212, 24, 61, 0.08)",
                 color: "#d4183d",
-                fontFamily: "Inter, sans-serif",
               }}
             >
               {error}
@@ -131,7 +128,6 @@ export function AdminLogin() {
             <div>
               <label
                 className="block text-sm text-[#052413] mb-1.5"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Email
               </label>
@@ -143,7 +139,6 @@ export function AdminLogin() {
                 required
                 className="w-full px-4 py-3 rounded-lg border text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 transition-all duration-300"
                 style={{
-                  fontFamily: "Inter, sans-serif",
                   backgroundColor: "#F0E8D4",
                   borderColor: "rgba(133, 108, 66, 0.2)",
                   focusRingColor: "rgba(22, 91, 54, 0.3)",
@@ -154,7 +149,6 @@ export function AdminLogin() {
             <div>
               <label
                 className="block text-sm text-[#052413] mb-1.5"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Senha
               </label>
@@ -167,7 +161,6 @@ export function AdminLogin() {
                   required
                   className="w-full px-4 py-3 pr-12 rounded-lg border text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 transition-all duration-300"
                   style={{
-                    fontFamily: "Inter, sans-serif",
                     backgroundColor: "#F0E8D4",
                     borderColor: "rgba(133, 108, 66, 0.2)",
                   }}
@@ -188,7 +181,6 @@ export function AdminLogin() {
               className="w-full py-3.5 rounded-full text-white font-medium flex items-center justify-center gap-2 transition-all duration-300 hover:opacity-90 disabled:opacity-60 cursor-pointer"
               style={{
                 background: "linear-gradient(135deg, #165B36, #052413)",
-                fontFamily: "Inter, sans-serif",
               }}
             >
               {loading ? (
@@ -207,7 +199,6 @@ export function AdminLogin() {
             <a
               href="/"
               className="text-sm text-[#856C42] hover:text-[#165B36] transition-colors"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               ← Voltar ao site
             </a>

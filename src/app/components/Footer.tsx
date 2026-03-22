@@ -65,7 +65,7 @@ export function Footer() {
               </div>
               <p
                 className="text-[0.875rem]"
-                style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
+                style={{ lineHeight: 1.7 }}
               >
                 Publicando histórias que transformam vidas desde 1987.
               </p>
@@ -75,13 +75,11 @@ export function Footer() {
             <div>
               <h4
                 className="text-white mb-4 text-[0.875rem] tracking-[0.15em] uppercase"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Editora
               </h4>
               <ul
                 className="space-y-2.5"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 {[
                   { label: "Sobre nós", href: "/#sobre" },
@@ -106,13 +104,11 @@ export function Footer() {
             <div>
               <h4
                 className="text-white mb-4 text-[0.875rem] tracking-[0.15em] uppercase"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Publicações
               </h4>
               <ul
                 className="space-y-2.5"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 {[
                   { label: "Catálogo", href: "/catalogo" },
@@ -137,22 +133,21 @@ export function Footer() {
             <div className="sm:col-span-2 lg:col-span-1">
               <h4
                 className="text-white mb-4 text-[0.875rem] tracking-[0.15em] uppercase"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Newsletter
               </h4>
               <p
                 className="text-[0.875rem] mb-4"
-                style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.6 }}
+                style={{ lineHeight: 1.6 }}
               >
                 Receba novidades e lançamentos diretamente no seu email.
               </p>
               {subscribed ? (
                 <div className="space-y-1">
-                  <p className="text-[0.875rem] text-[#EBBF74]" style={{ fontFamily: "Inter, sans-serif" }}>
+                  <p className="text-[0.875rem] text-[#EBBF74]">
                     ✓ Quase lá! Confirme em sua caixa de entrada.
                   </p>
-                  <p className="text-[0.75rem] text-white/40" style={{ fontFamily: "Inter, sans-serif" }}>
+                  <p className="text-[0.75rem] text-white/40">
                     Enviamos um e-mail de confirmação. Verifique sua caixa de entrada (e o spam).
                   </p>
                 </div>
@@ -167,7 +162,6 @@ export function Footer() {
                       onKeyDown={(e) => e.key === "Enter" && handleNewsletter()}
                       disabled={loading}
                       className="flex-1 min-w-0 px-4 py-2.5 rounded-lg bg-white/10 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#EBBF74]/40 focus:border-[#EBBF74]/30 text-[0.875rem] transition-all duration-300 disabled:opacity-50"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     />
                     <GoldButton
                       className="px-4 py-2.5 text-[0.875rem] shrink-0 disabled:opacity-50"
@@ -184,7 +178,7 @@ export function Footer() {
                       onChange={(e) => setConsentNewsletter(e.target.checked)}
                       className="w-3.5 h-3.5 rounded accent-[#EBBF74] mt-0.5 flex-shrink-0"
                     />
-                    <span className="text-[0.7rem] text-white/40 leading-relaxed" style={{ fontFamily: "Inter, sans-serif" }}>
+                    <span className="text-[0.7rem] text-white/40 leading-relaxed">
                       Concordo em receber comunicações da Época Editora por e-mail e posso cancelar a qualquer momento.
                     </span>
                   </label>
@@ -198,11 +192,10 @@ export function Footer() {
             <div className="text-center md:text-left space-y-1">
               <p
                 className="text-[0.8rem]"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 &copy; {new Date().getFullYear()} Época Editora de Livros. Todos os direitos reservados.
               </p>
-              <p className="text-[0.7rem] text-white/30" style={{ fontFamily: "Inter, sans-serif" }}>
+              <p className="text-[0.7rem] text-white/30">
                 Encarregado de dados (DPO):{" "}
                 <a href="mailto:privacidade@epocaeditora.com.br" className="hover:text-[#EBBF74] transition-colors">
                   privacidade@epocaeditora.com.br
@@ -211,7 +204,6 @@ export function Footer() {
             </div>
             <div
               className="flex items-center gap-6"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               {[
                 { label: "Privacidade", href: "/privacidade" },

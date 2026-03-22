@@ -214,7 +214,6 @@ function AdminContractDownloadBtn({ projectId, pdfName }: { projectId: string; p
       onClick={handleDownload}
       disabled={loading}
       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.65rem] font-medium text-[#856C42] bg-[#856C42]/5 hover:bg-[#856C42]/10 transition-colors cursor-pointer disabled:opacity-50"
-      style={{ fontFamily: F }}
     >
       {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
       {pdfName ? `Baixar ${pdfName}` : "Baixar PDF"}
@@ -239,7 +238,6 @@ const MODAL_TABS: { key: ModalTab; label: string; icon: any }[] = [
 // Installment Plan Admin Component
 // ============================================
 function InstallmentPlanAdmin({ project, onUpdated }: { project: Project; onUpdated: () => void }) {
-  const F = "Inter, sans-serif";
   const plan = project.budget?.installmentPlan;
   const [showForm, setShowForm] = useState(false);
   const [numInst, setNumInst] = useState("3");
@@ -369,19 +367,19 @@ function InstallmentPlanAdmin({ project, onUpdated }: { project: Project; onUpda
         <div className="px-4 py-2.5 flex items-center justify-between" style={{ backgroundColor: allPaid ? "rgba(10,124,62,0.04)" : "rgba(235,191,116,0.08)" }}>
           <div className="flex items-center gap-2">
             <Calendar className="w-3.5 h-3.5" style={{ color: allPaid ? "#0a7c3e" : "#856C42" }} />
-            <span className="text-sm font-semibold text-gray-800" style={{ fontFamily: F }}>Parcelamento PIX — {plan.totalInstallments}x</span>
+            <span className="text-sm font-semibold text-gray-800">Parcelamento PIX — {plan.totalInstallments}x</span>
             {plan.requireContract ? (
-              <span className="text-[0.5rem] px-1.5 py-0.5 rounded-full bg-[#165B36]/10 text-[#165B36] font-semibold" style={{ fontFamily: F }}>c/ contrato</span>
+              <span className="text-[0.5rem] px-1.5 py-0.5 rounded-full bg-[#165B36]/10 text-[#165B36] font-semibold">c/ contrato</span>
             ) : (
-              <span className="text-[0.5rem] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 font-semibold" style={{ fontFamily: F }}>s/ contrato</span>
+              <span className="text-[0.5rem] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 font-semibold">s/ contrato</span>
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold" style={{ fontFamily: F, color: allPaid ? "#0a7c3e" : "#856C42" }}>
+            <span className="text-xs font-semibold" style={{ color: allPaid ? "#0a7c3e" : "#856C42" }}>
               {paidCount}/{plan.totalInstallments} pagas
             </span>
             {!allPaid && (
-              <button onClick={handleDelete} disabled={deleting} className="text-[0.55rem] text-red-400 hover:text-red-600 transition-colors cursor-pointer" style={{ fontFamily: F }}>
+              <button onClick={handleDelete} disabled={deleting} className="text-[0.55rem] text-red-400 hover:text-red-600 transition-colors cursor-pointer">
                 {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : "Excluir"}
               </button>
             )}
@@ -399,29 +397,29 @@ function InstallmentPlanAdmin({ project, onUpdated }: { project: Project; onUpda
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800 tracking-tight" style={{ fontFamily: "Inter, sans-serif" }}>R$ {inst.amount.toFixed(2).replace(".", ",")}</span>
+                    <span className="text-sm font-bold text-gray-800 tracking-tight">R$ {inst.amount.toFixed(2).replace(".", ",")}</span>
                     {isPaid && <CheckCircle className="w-3 h-3 text-green-600" />}
                     {isOverdue && <AlertCircle className="w-3 h-3 text-red-500" />}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[0.65rem] text-gray-500" style={{ fontFamily: F }}>Venc.: {formatDateBR(inst.dueDate)}</span>
-                    {isPaid && inst.paidAt && <span className="text-[0.65rem] text-green-600" style={{ fontFamily: F }}>Pago em {formatDateBR(inst.paidAt.split("T")[0])}</span>}
-                    {isOverdue && <span className="text-[0.65rem] text-red-500 font-medium" style={{ fontFamily: F }}>Vencida</span>}
+                    <span className="text-[0.65rem] text-gray-500">Venc.: {formatDateBR(inst.dueDate)}</span>
+                    {isPaid && inst.paidAt && <span className="text-[0.65rem] text-green-600">Pago em {formatDateBR(inst.paidAt.split("T")[0])}</span>}
+                    {isOverdue && <span className="text-[0.65rem] text-red-500 font-medium">Vencida</span>}
                   </div>
                 </div>
                 {!isPaid && (
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     {!hasPix && (
-                      <button onClick={() => handleGeneratePix(inst.number)} disabled={generatingPix === inst.number} className="px-2 py-1 rounded text-[0.55rem] font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer disabled:opacity-50" style={{ fontFamily: F }}>
+                      <button onClick={() => handleGeneratePix(inst.number)} disabled={generatingPix === inst.number} className="px-2 py-1 rounded text-[0.55rem] font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer disabled:opacity-50">
                         {generatingPix === inst.number ? <Loader2 className="w-3 h-3 animate-spin" /> : "Gerar PIX"}
                       </button>
                     )}
                     {hasPix && (
-                      <button onClick={() => { navigator.clipboard.writeText(inst.pixCode); toast.success("Código PIX copiado!"); }} className="px-2 py-1 rounded text-[0.55rem] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer" style={{ fontFamily: F }}>
+                      <button onClick={() => { navigator.clipboard.writeText(inst.pixCode); toast.success("Código PIX copiado!"); }} className="px-2 py-1 rounded text-[0.55rem] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer">
                         <Copy className="w-3 h-3 inline mr-0.5" />PIX
                       </button>
                     )}
-                    <button onClick={() => handleConfirm(inst.number)} disabled={confirmingInst === inst.number} className="px-2 py-1 rounded text-[0.55rem] font-medium text-white bg-green-600 hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50" style={{ fontFamily: F }}>
+                    <button onClick={() => handleConfirm(inst.number)} disabled={confirmingInst === inst.number} className="px-2 py-1 rounded text-[0.55rem] font-medium text-white bg-green-600 hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50">
                       {confirmingInst === inst.number ? <Loader2 className="w-3 h-3 animate-spin" /> : <><CheckCircle className="w-3 h-3 inline mr-0.5" />Confirmar</>}
                     </button>
                   </div>
@@ -430,7 +428,7 @@ function InstallmentPlanAdmin({ project, onUpdated }: { project: Project; onUpda
             );
           })}
           {pendingWithoutPix > 0 && (
-            <button onClick={handleGenerateAll} className="w-full mt-1 py-2 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 cursor-pointer" style={{ fontFamily: F, background: "linear-gradient(135deg, #EBBF74, #856C42)" }}>
+            <button onClick={handleGenerateAll} className="w-full mt-1 py-2 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 cursor-pointer" style={{ background: "linear-gradient(135deg, #EBBF74, #856C42)" }}>
               <Banknote className="w-3.5 h-3.5 inline mr-1" />Gerar PIX para todas as pendentes ({pendingWithoutPix})
             </button>
           )}
@@ -447,19 +445,19 @@ function InstallmentPlanAdmin({ project, onUpdated }: { project: Project; onUpda
             <Banknote className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-[#052413]" style={{ fontFamily: F }}>Parcelamento PIX</p>
-            <p className="text-[0.6rem] text-[#856C42]/70" style={{ fontFamily: F }}>Parcelas individuais via PIX para o cliente</p>
+            <p className="text-sm font-bold text-[#052413]">Parcelamento PIX</p>
+            <p className="text-[0.6rem] text-[#856C42]/70">Parcelas individuais via PIX para o cliente</p>
           </div>
         </div>
       </div>
       {showForm ? (
         <div className="p-4 space-y-3">
           <div className="flex items-center gap-3">
-            <label className="text-xs text-gray-600 whitespace-nowrap font-medium" style={{ fontFamily: F }}>Numero de parcelas:</label>
-            <select value={numInst} onChange={(e) => setNumInst(e.target.value)} className="px-3 py-1.5 rounded-lg border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 cursor-pointer" style={{ fontFamily: F, borderColor: "rgba(133,108,66,0.2)" }}>
+            <label className="text-xs text-gray-600 whitespace-nowrap font-medium">Numero de parcelas:</label>
+            <select value={numInst} onChange={(e) => setNumInst(e.target.value)} className="px-3 py-1.5 rounded-lg border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 cursor-pointer" style={{ borderColor: "rgba(133,108,66,0.2)" }}>
               {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => <option key={n} value={n}>{n}x</option>)}
             </select>
-            <span className="text-xs text-[#856C42] font-medium" style={{ fontFamily: F }}>Total: R$ {installmentBaseAmount.toFixed(2).replace(".", ",")}{hasDeposit ? ` (restante apos entrada de ${dpPercent}%)` : ""}</span>
+            <span className="text-xs text-[#856C42] font-medium">Total: R$ {installmentBaseAmount.toFixed(2).replace(".", ",")}{hasDeposit ? ` (restante apos entrada de ${dpPercent}%)` : ""}</span>
           </div>
           <div className="space-y-2 max-h-60 overflow-y-auto">
             {installments.map((inst, idx) => (
@@ -478,7 +476,7 @@ function InstallmentPlanAdmin({ project, onUpdated }: { project: Project; onUpda
           {hasDeposit && (
             <div className="flex items-start gap-2 px-3 py-2 rounded-lg" style={{ background: "rgba(235,191,116,0.08)", border: "1px solid rgba(235,191,116,0.15)" }}>
               <AlertCircle className="w-3.5 h-3.5 text-[#856C42] flex-shrink-0 mt-0.5" />
-              <p className="text-[0.6rem] text-[#856C42]/70 leading-relaxed" style={{ fontFamily: F }}>
+              <p className="text-[0.6rem] text-[#856C42]/70 leading-relaxed">
                 A <strong>entrada de {dpPercent}%</strong> ({formatCurrency(chargeAmt)}) e para o inicio dos trabalhos. A <strong>1ª parcela</strong> vence 30 dias apos o pagamento da entrada, e as demais seguem em intervalos de 30 dias. Ajuste as datas acima se necessario.
               </p>
             </div>
@@ -490,10 +488,10 @@ function InstallmentPlanAdmin({ project, onUpdated }: { project: Project; onUpda
               <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#165B36]"></div>
             </label>
             <div className="flex-1 min-w-0">
-              <span className="text-xs font-semibold text-gray-800 block" style={{ fontFamily: F }}>
+              <span className="text-xs font-semibold text-gray-800 block">
                 {requireContract ? "Com contrato" : "Sem contrato"}
               </span>
-              <span className="text-[0.6rem] text-gray-500 block" style={{ fontFamily: F }}>
+              <span className="text-[0.6rem] text-gray-500 block">
                 {requireContract
                   ? "O cliente precisara aceitar o contrato antes de visualizar os PIX"
                   : "O cliente acessa os PIX diretamente, sem aceite de contrato"}
@@ -503,10 +501,10 @@ function InstallmentPlanAdmin({ project, onUpdated }: { project: Project; onUpda
           </div>
 
           <div className="flex gap-2 pt-2">
-            <button onClick={handleCreate} disabled={creating} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ fontFamily: F, background: "linear-gradient(135deg, #165B36, #052413)" }}>
+            <button onClick={handleCreate} disabled={creating} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>
               {creating ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : <><Banknote className="w-4 h-4 inline mr-1.5" />Criar plano de {numInst}x parcelas {requireContract ? "(com contrato)" : "(sem contrato)"}</>}
             </button>
-            <button onClick={() => setShowForm(false)} className="px-5 py-2.5 rounded-lg text-sm text-[#856C42] hover:bg-[#F0E8D4] transition-colors cursor-pointer border" style={{ fontFamily: F, borderColor: "rgba(133,108,66,0.15)" }}>Cancelar</button>
+            <button onClick={() => setShowForm(false)} className="px-5 py-2.5 rounded-lg text-sm text-[#856C42] hover:bg-[#F0E8D4] transition-colors cursor-pointer border" style={{ borderColor: "rgba(133,108,66,0.15)" }}>Cancelar</button>
           </div>
         </div>
       ) : (
@@ -514,12 +512,12 @@ function InstallmentPlanAdmin({ project, onUpdated }: { project: Project; onUpda
           <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: "rgba(235,191,116,0.15)" }}>
             <Calendar className="w-6 h-6 text-[#856C42]" />
           </div>
-          <p className="text-sm font-medium text-[#052413] mb-1" style={{ fontFamily: F }}>Nenhum plano de parcelamento ativo</p>
-          <p className="text-xs text-[#856C42]/60 mb-4 max-w-xs mx-auto" style={{ fontFamily: F }}>Crie um plano para gerar cobranças PIX individuais para cada parcela e enviar ao cliente</p>
+          <p className="text-sm font-medium text-[#052413] mb-1">Nenhum plano de parcelamento ativo</p>
+          <p className="text-xs text-[#856C42]/60 mb-4 max-w-xs mx-auto">Crie um plano para gerar cobranças PIX individuais para cada parcela e enviar ao cliente</p>
           <button
             onClick={() => setShowForm(true)}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
-            style={{ fontFamily: F, background: "linear-gradient(135deg, #EBBF74, #856C42)" }}
+            style={{ background: "linear-gradient(135deg, #EBBF74, #856C42)" }}
           >
             <Plus className="w-4 h-4" />
             Criar plano de parcelamento
@@ -1109,9 +1107,8 @@ function EditProjectModal({
     }
   };
 
-  const F = "Inter, sans-serif";
   const ic = "w-full px-3 py-2.5 rounded-lg border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20";
-  const is = { fontFamily: F, backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
+  const is = { backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.2)" };
 
   const reviewCount = project.reviewFiles?.length || 0;
   const uploadCount = project.uploadedFiles?.length || 0;
@@ -1127,13 +1124,13 @@ function EditProjectModal({
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3">
-                <h2 className="text-lg font-semibold text-gray-900 truncate" style={{ fontFamily: F }}>{project.title}</h2>
+                <h2 className="text-lg font-semibold text-gray-900 truncate">{project.title}</h2>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.65rem] font-semibold whitespace-nowrap flex-shrink-0" style={{ color: statusColor, backgroundColor: `${statusColor}14` }}>
                   <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColor }} />
                   {getStatusLabel(project.status)}
                 </span>
               </div>
-              <div className="flex items-center gap-3 mt-1 text-xs text-gray-500" style={{ fontFamily: F }}>
+              <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
                 <span className="flex items-center gap-1"><User className="w-3 h-3" /> {project.userName}</span>
                 <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {project.userEmail}</span>
                 <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {formatDate(project.createdAt)}</span>
@@ -1149,7 +1146,7 @@ function EditProjectModal({
               const invoiceCount = project.invoices?.length || 0;
               const badge = tab.key === "arquivos" && filesCount > 0 ? filesCount : tab.key === "contrato" && project.budget?.contractAcceptance ? "✓" : tab.key === "nf" && invoiceCount > 0 ? invoiceCount : null;
               return (
-                <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-t-lg border-b-2 transition-all cursor-pointer ${isActive ? "text-[#165B36] border-[#165B36] bg-[#165B36]/5" : "text-gray-400 border-transparent hover:text-gray-600 hover:bg-gray-50"}`} style={{ fontFamily: F }}>
+                <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-t-lg border-b-2 transition-all cursor-pointer ${isActive ? "text-[#165B36] border-[#165B36] bg-[#165B36]/5" : "text-gray-400 border-transparent hover:text-gray-600 hover:bg-gray-50"}`}>
                   <Icon className="w-3.5 h-3.5" />
                   {tab.label}
                   {badge !== null && <span className={`ml-0.5 px-1.5 py-0 text-[0.6rem] rounded-full ${isActive ? "bg-[#165B36] text-white" : "bg-gray-200 text-gray-500"}`}>{badge}</span>}
@@ -1167,8 +1164,8 @@ function EditProjectModal({
               {activeTab === "projeto" && (
                 <div className="space-y-5">
                   <div className="rounded-xl border border-gray-100 overflow-hidden">
-                    <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100"><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Detalhes do pedido</p></div>
-                    <div className="p-4 grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm" style={{ fontFamily: F }}>
+                    <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100"><p className="text-xs font-semibold text-gray-600">Detalhes do pedido</p></div>
+                    <div className="p-4 grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm">
                       <div><p className="text-[0.65rem] text-gray-400 uppercase tracking-wider mb-0.5">Autor</p><p className="text-gray-800 font-medium">{project.author}</p></div>
                       {project.format && <div><p className="text-[0.65rem] text-gray-400 uppercase tracking-wider mb-0.5">Formato</p><p className="text-gray-800 font-medium">{project.format}</p></div>}
                       {project.pageCount && <div><p className="text-[0.65rem] text-gray-400 uppercase tracking-wider mb-0.5">Páginas</p><p className="text-gray-800 font-medium">{project.pageCount}</p></div>}
@@ -1178,16 +1175,16 @@ function EditProjectModal({
                     </div>
                   </div>
                   <div className="rounded-xl border border-gray-100 overflow-hidden">
-                    <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100"><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Atualizar status</p></div>
+                    <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100"><p className="text-xs font-semibold text-gray-600">Atualizar status</p></div>
                     <div className="p-4">
                       <div className="grid grid-cols-4 gap-1.5">
                         {STATUS_FLOW.map((s) => (
-                          <button key={s.key} onClick={() => setStatus(s.key)} className={`px-2 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer border ${status === s.key ? "text-white border-transparent shadow-sm" : "text-gray-600 border-gray-200 hover:border-gray-300"}`} style={{ fontFamily: F, ...(status === s.key ? { backgroundColor: s.color } : {}) }}>{s.label}</button>
+                          <button key={s.key} onClick={() => setStatus(s.key)} className={`px-2 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer border ${status === s.key ? "text-white border-transparent shadow-sm" : "text-gray-600 border-gray-200 hover:border-gray-300"}`} style={{ ...(status === s.key ? { backgroundColor: s.color } : {}) }}>{s.label}</button>
                         ))}
                       </div>
                       {status !== project.status && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-3">
-                          <label className="block text-xs text-gray-500 mb-1" style={{ fontFamily: F }}>Observação (visível para o cliente)</label>
+                          <label className="block text-xs text-gray-500 mb-1">Observação (visível para o cliente)</label>
                           <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex.: Produção iniciada, previsão 5 dias úteis" className={ic} style={is} />
                         </motion.div>
                       )}
@@ -1195,7 +1192,7 @@ function EditProjectModal({
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-3">
                           <div className="p-2.5 rounded-lg border flex items-start gap-2" style={{ backgroundColor: "rgba(220,38,38,0.04)", borderColor: "rgba(220,38,38,0.2)" }}>
                             <AlertCircle className="w-3.5 h-3.5 text-red-500 flex-shrink-0 mt-0.5" />
-                            <p className="text-[0.65rem] text-red-700 leading-relaxed" style={{ fontFamily: F }}>
+                            <p className="text-[0.65rem] text-red-700 leading-relaxed">
                               <strong>Bloqueado:</strong> O saldo restante de R$ {remainderAmount.toFixed(2).replace(".", ",")} ainda não foi pago. Vá até a aba <strong>Financeiro</strong> para gerar a cobrança e confirmar o pagamento antes de concluir.
                             </p>
                           </div>
@@ -1205,7 +1202,7 @@ function EditProjectModal({
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-3">
                           <div className="p-2.5 rounded-lg border flex items-start gap-2" style={{ backgroundColor: "rgba(220,38,38,0.04)", borderColor: "rgba(220,38,38,0.2)" }}>
                             <AlertCircle className="w-3.5 h-3.5 text-red-500 flex-shrink-0 mt-0.5" />
-                            <p className="text-[0.65rem] text-red-700 leading-relaxed" style={{ fontFamily: F }}>
+                            <p className="text-[0.65rem] text-red-700 leading-relaxed">
                               <strong>Bloqueado:</strong> Há parcelas PIX pendentes ({project.budget.installmentPlan.installments.filter((i: any) => i.status !== "paid").length} de {project.budget.installmentPlan.totalInstallments}). Confirme todas as parcelas na aba <strong>Financeiro</strong> antes de concluir.
                             </p>
                           </div>
@@ -1218,11 +1215,11 @@ function EditProjectModal({
                     <div className="rounded-xl border border-amber-200/60 overflow-hidden">
                       <div className="px-4 py-2.5 bg-amber-50/50 border-b border-amber-200/40 flex items-center gap-2">
                         <Mail className="w-3.5 h-3.5 text-amber-600" />
-                        <p className="text-xs font-semibold text-amber-800" style={{ fontFamily: F }}>Observações do cliente na aprovação</p>
+                        <p className="text-xs font-semibold text-amber-800">Observações do cliente na aprovação</p>
                       </div>
                       <div className="p-4 space-y-2">
                         {project.reviewObservations.map((obs: any, idx: number) => (
-                          <div key={idx} className="p-2.5 rounded-lg bg-amber-50/30 text-xs text-gray-700" style={{ fontFamily: F }}>
+                          <div key={idx} className="p-2.5 rounded-lg bg-amber-50/30 text-xs text-gray-700">
                             <p className="whitespace-pre-wrap">{obs.text}</p>
                             <p className="text-[0.55rem] text-gray-400 mt-1">{new Date(obs.date).toLocaleString("pt-BR")}</p>
                           </div>
@@ -1233,8 +1230,8 @@ function EditProjectModal({
                   <div className="rounded-xl border border-gray-100 overflow-hidden">
                     <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center gap-2">
                       <StickyNote className="w-3.5 h-3.5 text-gray-400" />
-                      <p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Notas internas</p>
-                      <span className="text-[0.55rem] text-gray-400 ml-auto" style={{ fontFamily: F }}>não visíveis para o cliente</span>
+                      <p className="text-xs font-semibold text-gray-600">Notas internas</p>
+                      <span className="text-[0.55rem] text-gray-400 ml-auto">não visíveis para o cliente</span>
                     </div>
                     <div className="p-4"><textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} placeholder="Anotações internas sobre o projeto..." rows={3} className={ic + " resize-none"} style={is} /></div>
                   </div>
@@ -1250,16 +1247,16 @@ function EditProjectModal({
                         <div className="px-4 py-3 flex items-center justify-between" style={{ backgroundColor: isFullyPaid ? "rgba(10,124,62,0.04)" : isRemainderPending ? "rgba(235,191,116,0.1)" : (project.budget.status === "paid" || project.budget.status === "fully_paid") ? "rgba(10,124,62,0.04)" : "rgba(235,191,116,0.08)" }}>
                           <div className="flex items-center gap-2">
                             <DollarSign className="w-4 h-4" style={{ color: isFullyPaid ? "#0a7c3e" : isRemainderPending ? "#b45309" : (project.budget.status === "paid" || project.budget.status === "fully_paid") ? "#0a7c3e" : "#856C42" }} />
-                            <span className="text-sm font-semibold text-gray-900" style={{ fontFamily: F }}>R$ {project.budget.price.toFixed(2).replace(".", ",")}</span>
+                            <span className="text-sm font-semibold text-gray-900">R$ {project.budget.price.toFixed(2).replace(".", ",")}</span>
                           </div>
                           {isFullyPaid ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-green-700 bg-green-100" style={{ fontFamily: F }}><CheckCircle className="w-3 h-3" /> Totalmente pago</span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-green-700 bg-green-100"><CheckCircle className="w-3 h-3" /> Totalmente pago</span>
                           ) : isRemainderPending ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-amber-700 bg-amber-100" style={{ fontFamily: F }}><AlertCircle className="w-3 h-3" /> Entrada paga — restante pendente</span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-amber-700 bg-amber-100"><AlertCircle className="w-3 h-3" /> Entrada paga — restante pendente</span>
                           ) : (project.budget.status === "paid" || project.budget.status === "fully_paid") ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-green-700 bg-green-100" style={{ fontFamily: F }}><CheckCircle className="w-3 h-3" /> Pago</span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-green-700 bg-green-100"><CheckCircle className="w-3 h-3" /> Pago</span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-amber-700 bg-amber-100" style={{ fontFamily: F }}><Clock className="w-3 h-3" /> Pendente</span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-amber-700 bg-amber-100"><Clock className="w-3 h-3" /> Pendente</span>
                           )}
                         </div>
                         <div className="p-4 space-y-3">
@@ -1268,45 +1265,45 @@ function EditProjectModal({
                               <div className="flex items-center justify-between p-2.5 rounded-lg" style={{ backgroundColor: isEntryPaid ? "rgba(10,124,62,0.05)" : "rgba(22,91,54,0.05)" }}>
                                 <div className="flex items-center gap-1.5">
                                   {isEntryPaid && <CheckCircle className="w-3 h-3 text-[#0a7c3e]" />}
-                                  <span className="text-xs text-[#165B36] font-medium" style={{ fontFamily: F }}>Entrada ({project.budget.depositPercent}%)</span>
+                                  <span className="text-xs text-[#165B36] font-medium">Entrada ({project.budget.depositPercent}%)</span>
                                 </div>
-                                <span className="text-sm font-semibold text-[#165B36]" style={{ fontFamily: F }}>R$ {project.budget.chargeAmount.toFixed(2).replace(".", ",")}</span>
+                                <span className="text-sm font-semibold text-[#165B36]">R$ {project.budget.chargeAmount.toFixed(2).replace(".", ",")}</span>
                               </div>
                               <div className="flex items-center justify-between p-2.5 rounded-lg" style={{ backgroundColor: isRemainderPaid ? "rgba(10,124,62,0.05)" : "rgba(235,191,116,0.08)", borderWidth: isRemainderPending ? 1 : 0, borderColor: "rgba(235,191,116,0.25)" }}>
                                 <div className="flex items-center gap-1.5">
                                   {isRemainderPaid ? <CheckCircle className="w-3 h-3 text-[#0a7c3e]" /> : isRemainderPending ? <Clock className="w-3 h-3 text-amber-600" /> : null}
-                                  <span className={`text-xs font-medium ${isRemainderPaid ? "text-[#0a7c3e]" : "text-amber-700"}`} style={{ fontFamily: F }}>Restante ({100 - (project.budget.depositPercent || 0)}%)</span>
+                                  <span className={`text-xs font-medium ${isRemainderPaid ? "text-[#0a7c3e]" : "text-amber-700"}`}>Restante ({100 - (project.budget.depositPercent || 0)}%)</span>
                                 </div>
-                                <span className={`text-sm font-semibold ${isRemainderPaid ? "text-[#0a7c3e]" : "text-amber-700"}`} style={{ fontFamily: F }}>R$ {remainderAmount.toFixed(2).replace(".", ",")}</span>
+                                <span className={`text-sm font-semibold ${isRemainderPaid ? "text-[#0a7c3e]" : "text-amber-700"}`}>R$ {remainderAmount.toFixed(2).replace(".", ",")}</span>
                               </div>
                             </>
                           )}
-                          <p className="text-xs text-gray-600" style={{ fontFamily: F }}>{project.budget.description}</p>
+                          <p className="text-xs text-gray-600">{project.budget.description}</p>
                           {/* ALERTA: Restante pendente */}
                           {isRemainderPending && (
                             <div className="p-3 rounded-lg border" style={{ backgroundColor: "rgba(235,191,116,0.08)", borderColor: "rgba(235,191,116,0.3)" }}>
                               <div className="flex items-start gap-2">
                                 <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-xs font-semibold text-amber-800 mb-1" style={{ fontFamily: F }}>Pagamento do restante pendente</p>
-                                  <p className="text-[0.65rem] text-amber-700 leading-relaxed mb-2" style={{ fontFamily: F }}>
+                                  <p className="text-xs font-semibold text-amber-800 mb-1">Pagamento do restante pendente</p>
+                                  <p className="text-[0.65rem] text-amber-700 leading-relaxed mb-2">
                                     Somente a entrada de R$ {(project.budget.chargeAmount || 0).toFixed(2).replace(".", ",")} foi paga.{" "}
                                     O saldo de <strong>R$ {remainderAmount.toFixed(2).replace(".", ",")}</strong> precisa ser cobrado antes de finalizar o projeto.
                                   </p>
                                   <div className="flex flex-wrap gap-1.5">
                                     {!project.budget.remainderPaymentUrl ? (
-                                      <button onClick={handleGenerateRemainder} disabled={generatingRemainder} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ fontFamily: F, background: "linear-gradient(135deg, #EBBF74, #856C42)" }}>
+                                      <button onClick={handleGenerateRemainder} disabled={generatingRemainder} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ background: "linear-gradient(135deg, #EBBF74, #856C42)" }}>
                                         {generatingRemainder ? <Loader2 className="w-3 h-3 animate-spin" /> : <Banknote className="w-3 h-3" />} Gerar cobrança do restante
                                       </button>
                                     ) : (
                                       <>
-                                        <a href={project.budget.remainderPaymentUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors" style={{ fontFamily: F }}><ExternalLink className="w-3 h-3" /> Link do restante</a>
-                                        <button onClick={handleConfirmRemainder} disabled={confirmingRemainder} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-white bg-green-600 hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50" style={{ fontFamily: F }}>{confirmingRemainder ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle className="w-3 h-3" />} Confirmar restante</button>
+                                        <a href={project.budget.remainderPaymentUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"><ExternalLink className="w-3 h-3" /> Link do restante</a>
+                                        <button onClick={handleConfirmRemainder} disabled={confirmingRemainder} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-white bg-green-600 hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50">{confirmingRemainder ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle className="w-3 h-3" />} Confirmar restante</button>
                                       </>
                                     )}
                                   </div>
                                   {project.budget.remainderGeneratedAt && (
-                                    <p className="text-[0.55rem] text-amber-600/60 mt-1.5" style={{ fontFamily: F }}>Cobrança gerada em {formatDate(project.budget.remainderGeneratedAt)}</p>
+                                    <p className="text-[0.55rem] text-amber-600/60 mt-1.5">Cobrança gerada em {formatDate(project.budget.remainderGeneratedAt)}</p>
                                   )}
                                 </div>
                               </div>
@@ -1314,24 +1311,24 @@ function EditProjectModal({
                           )}
                           {isRemainderPaid && project.budget.remainderPaidAt && (
                             <div className="p-2.5 rounded-lg" style={{ backgroundColor: "rgba(10,124,62,0.04)", borderWidth: 1, borderColor: "rgba(10,124,62,0.15)" }}>
-                              <div className="flex items-center gap-2 text-xs text-[#0a7c3e]" style={{ fontFamily: F }}>
+                              <div className="flex items-center gap-2 text-xs text-[#0a7c3e]">
                                 <CheckCircle className="w-3.5 h-3.5" />
                                 <span className="font-medium">Restante pago em {formatDate(project.budget.remainderPaidAt)}</span>
                               </div>
                             </div>
                           )}
                           <div className="flex flex-wrap gap-1.5 pt-1">
-                            {project.budget.paymentUrl && <a href={project.budget.paymentUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors" style={{ fontFamily: F }}><ExternalLink className="w-3 h-3" /> Link Mercado Pago{hasPartialDeposit ? " (entrada)" : ""}</a>}
-                            {project.budget.status !== "paid" && project.budget.status !== "fully_paid" && <button onClick={handleConfirmPayment} disabled={confirmingPayment} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-white bg-green-600 hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50" style={{ fontFamily: F }}>{confirmingPayment ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle className="w-3 h-3" />} Confirmar pagamento{hasPartialDeposit ? " (entrada)" : ""}</button>}
-                            {project.budget.status !== "paid" && project.budget.status !== "fully_paid" && <button onClick={handleDeleteBudget} disabled={deletingBudget} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-600 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer disabled:opacity-50" style={{ fontFamily: F }}>{deletingBudget ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />} Excluir</button>}
+                            {project.budget.paymentUrl && <a href={project.budget.paymentUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"><ExternalLink className="w-3 h-3" /> Link Mercado Pago{hasPartialDeposit ? " (entrada)" : ""}</a>}
+                            {project.budget.status !== "paid" && project.budget.status !== "fully_paid" && <button onClick={handleConfirmPayment} disabled={confirmingPayment} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-white bg-green-600 hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50">{confirmingPayment ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle className="w-3 h-3" />} Confirmar pagamento{hasPartialDeposit ? " (entrada)" : ""}</button>}
+                            {project.budget.status !== "paid" && project.budget.status !== "fully_paid" && <button onClick={handleDeleteBudget} disabled={deletingBudget} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-600 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer disabled:opacity-50">{deletingBudget ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />} Excluir</button>}
                           </div>
                         </div>
                       </div>
                       <div className="rounded-xl border border-gray-100 overflow-hidden">
-                        <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100"><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Link de pagamento</p></div>
+                        <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100"><p className="text-xs font-semibold text-gray-600">Link de pagamento</p></div>
                         <div className="p-4 flex items-center gap-3">
-                          <button onClick={handleCopyPaymentLink} disabled={copiedLink} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0" style={{ fontFamily: F, backgroundColor: copiedLink ? "#165B36" : "#052413", color: "white" }}>{copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}{copiedLink ? "Copiado!" : "Copiar link"}</button>
-                          <p className="text-[0.6rem] text-gray-400 break-all min-w-0" style={{ fontFamily: F }}>{paymentPageUrl}</p>
+                          <button onClick={handleCopyPaymentLink} disabled={copiedLink} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0" style={{ backgroundColor: copiedLink ? "#165B36" : "#052413", color: "white" }}>{copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}{copiedLink ? "Copiado!" : "Copiar link"}</button>
+                          <p className="text-[0.6rem] text-gray-400 break-all min-w-0">{paymentPageUrl}</p>
                         </div>
                       </div>
                       {/* INSTALLMENT PLAN SECTION */}
@@ -1340,31 +1337,31 @@ function EditProjectModal({
                   ) : (
                     <>
                     <div className="rounded-xl border border-gray-100 overflow-hidden">
-                      <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center gap-2"><CreditCard className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Criar orçamento</p></div>
+                      <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center gap-2"><CreditCard className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600">Criar orçamento</p></div>
                       <div className="p-4 space-y-3">
-                        <div><label className="block text-xs text-gray-500 mb-1" style={{ fontFamily: F }}>Descrição do serviço</label><input type="text" value={budgetDesc} onChange={(e) => setBudgetDesc(e.target.value)} placeholder={`Serviço editorial para "${project.title}"`} className={ic} style={is} /></div>
+                        <div><label className="block text-xs text-gray-500 mb-1">Descrição do serviço</label><input type="text" value={budgetDesc} onChange={(e) => setBudgetDesc(e.target.value)} placeholder={`Serviço editorial para "${project.title}"`} className={ic} style={is} /></div>
                         <div className="flex gap-2">
                           <div className="relative flex-1"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">R$</span><input type="number" value={budgetPrice} onChange={(e) => setBudgetPrice(e.target.value)} placeholder="0,00" min="0" step="0.01" className={ic + " pl-10"} style={is} /></div>
-                          <button onClick={handleCreateBudget} disabled={creatingBudget || !budgetPrice} className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed whitespace-nowrap" style={{ fontFamily: F, background: "linear-gradient(135deg, #EBBF74, #856C42)" }}>{creatingBudget ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />} Gerar orçamento</button>
+                          <button onClick={handleCreateBudget} disabled={creatingBudget || !budgetPrice} className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed whitespace-nowrap" style={{ background: "linear-gradient(135deg, #EBBF74, #856C42)" }}>{creatingBudget ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />} Gerar orçamento</button>
                         </div>
                         <div className="flex items-center gap-2 pt-1">
                           <label className="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked={depositEnabled} onChange={(e) => setDepositEnabled(e.target.checked)} className="sr-only peer" /><div className="w-8 h-4.5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[#165B36] transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:after:translate-x-full" /></label>
-                          <span className="text-xs text-gray-600" style={{ fontFamily: F }}>Aceitar entrada parcial</span>
+                          <span className="text-xs text-gray-600">Aceitar entrada parcial</span>
                         </div>
                         {depositEnabled && (
-                          <div className="flex items-center gap-2 pl-1"><span className="text-xs text-gray-500" style={{ fontFamily: F }}>Entrada de</span><select value={depositPercent} onChange={(e) => setDepositPercent(e.target.value)} className="px-2 py-1.5 rounded-lg border text-xs text-gray-900 focus:outline-none cursor-pointer" style={{ ...is, width: "auto" }}>{[20, 30, 40, 50, 60, 70, 80].map((p) => <option key={p} value={p}>{p}%</option>)}</select><span className="text-xs text-gray-500" style={{ fontFamily: F }}>{budgetPrice ? `= R$ ${(parseFloat(budgetPrice) * parseInt(depositPercent) / 100).toFixed(2).replace(".", ",")} agora` : "do valor total"}</span></div>
+                          <div className="flex items-center gap-2 pl-1"><span className="text-xs text-gray-500">Entrada de</span><select value={depositPercent} onChange={(e) => setDepositPercent(e.target.value)} className="px-2 py-1.5 rounded-lg border text-xs text-gray-900 focus:outline-none cursor-pointer" style={{ ...is, width: "auto" }}>{[20, 30, 40, 50, 60, 70, 80].map((p) => <option key={p} value={p}>{p}%</option>)}</select><span className="text-xs text-gray-500">{budgetPrice ? `= R$ ${(parseFloat(budgetPrice) * parseInt(depositPercent) / 100).toFixed(2).replace(".", ",")} agora` : "do valor total"}</span></div>
                         )}
-                        {depositEnabled && budgetPrice && <p className="text-[0.65rem] text-[#165B36] pl-1" style={{ fontFamily: F }}>Restante de R$ {(parseFloat(budgetPrice) * (1 - parseInt(depositPercent) / 100)).toFixed(2).replace(".", ",")} na entrega</p>}
+                        {depositEnabled && budgetPrice && <p className="text-[0.65rem] text-[#165B36] pl-1">Restante de R$ {(parseFloat(budgetPrice) * (1 - parseInt(depositPercent) / 100)).toFixed(2).replace(".", ",")} na entrega</p>}
                         <div className="pt-2 border-t border-gray-100 space-y-3">
                           <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1.5" style={{ fontFamily: F }}>Prazo estimado de entrega <span className="text-gray-400 font-normal">(opcional)</span></label>
+                            <label className="block text-xs font-medium text-gray-600 mb-1.5">Prazo estimado de entrega <span className="text-gray-400 font-normal">(opcional)</span></label>
                             <input type="text" value={estimatedDeadline} onChange={(e) => setEstimatedDeadline(e.target.value)} placeholder="Ex.: 15 dias úteis, 30 dias corridos, 45 dias úteis..." className={ic} style={is} />
-                            <p className="text-[0.55rem] text-gray-400 mt-1" style={{ fontFamily: F }}>Aparece automaticamente na Cláusula 6 (Prazo) do contrato.</p>
+                            <p className="text-[0.55rem] text-gray-400 mt-1">Aparece automaticamente na Cláusula 6 (Prazo) do contrato.</p>
                           </div>
                           <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1.5" style={{ fontFamily: F }}>Cláusulas personalizadas <span className="text-gray-400 font-normal">(opcional)</span></label>
+                            <label className="block text-xs font-medium text-gray-600 mb-1.5">Cláusulas personalizadas <span className="text-gray-400 font-normal">(opcional)</span></label>
                             <textarea value={customClauses} onChange={(e) => setCustomClauses(e.target.value)} placeholder="Ex.: Material será entregue em formato PDF e InDesign..." rows={3} className={ic + " resize-none"} style={is} />
-                            <p className="text-[0.55rem] text-gray-400 mt-1" style={{ fontFamily: F }}>Serão exibidas como cláusula adicional no contrato do cliente.</p>
+                            <p className="text-[0.55rem] text-gray-400 mt-1">Serão exibidas como cláusula adicional no contrato do cliente.</p>
                           </div>
                         </div>
                       </div>
@@ -1376,16 +1373,16 @@ function EditProjectModal({
                           <Banknote className="w-4 h-4 text-[#856C42]/50" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-[#856C42]/60" style={{ fontFamily: F }}>Parcelamento PIX</p>
-                          <p className="text-[0.6rem] text-[#856C42]/40" style={{ fontFamily: F }}>Parcelas individuais via PIX para o cliente</p>
+                          <p className="text-sm font-bold text-[#856C42]/60">Parcelamento PIX</p>
+                          <p className="text-[0.6rem] text-[#856C42]/40">Parcelas individuais via PIX para o cliente</p>
                         </div>
                       </div>
                       <div className="p-5 text-center">
                         <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: "rgba(133,108,66,0.06)" }}>
                           <AlertCircle className="w-6 h-6 text-[#856C42]/30" />
                         </div>
-                        <p className="text-sm font-medium text-[#856C42]/60 mb-1" style={{ fontFamily: F }}>Crie um orcamento primeiro</p>
-                        <p className="text-xs text-[#856C42]/40 max-w-xs mx-auto" style={{ fontFamily: F }}>O parcelamento PIX sera habilitado apos voce definir o valor total no orcamento acima</p>
+                        <p className="text-sm font-medium text-[#856C42]/60 mb-1">Crie um orcamento primeiro</p>
+                        <p className="text-xs text-[#856C42]/40 max-w-xs mx-auto">O parcelamento PIX sera habilitado apos voce definir o valor total no orcamento acima</p>
                       </div>
                     </div>
                     </>
@@ -1397,13 +1394,13 @@ function EditProjectModal({
               {activeTab === "contrato" && (
                 <div className="space-y-5">
                   {!project.budget ? (
-                    <div className="text-center py-10"><ScrollText className="w-10 h-10 text-gray-200 mx-auto mb-3" /><p className="text-sm text-gray-400" style={{ fontFamily: F }}>Crie um orçamento na aba <strong>Financeiro</strong> para habilitar o contrato.</p></div>
+                    <div className="text-center py-10"><ScrollText className="w-10 h-10 text-gray-200 mx-auto mb-3" /><p className="text-sm text-gray-400">Crie um orçamento na aba <strong>Financeiro</strong> para habilitar o contrato.</p></div>
                   ) : (
                     <>
                       {/* Info banner */}
                       <div className="rounded-xl p-3 mb-5 flex gap-2.5" style={{ backgroundColor: "rgba(22,91,54,0.04)", border: "1px solid rgba(22,91,54,0.1)" }}>
                         <AlertCircle className="w-4 h-4 text-[#165B36] flex-shrink-0 mt-0.5" />
-                        <div className="text-[0.65rem] text-gray-600 leading-relaxed" style={{ fontFamily: F }}>
+                        <div className="text-[0.65rem] text-gray-600 leading-relaxed">
                           <p className="font-medium text-[#165B36] mb-1">Como funciona o contrato</p>
                           <p>O <strong>contrato principal</strong> é gerado automaticamente na página de pagamento com os dados do cliente (nome, CPF, e-mail), serviços, formato, valor, condições de pagamento (Pix/cartão/boleto, entrada e restante) — tudo preenchido em tempo real.</p>
                           <p className="mt-1">Use o <strong>editor de cláusulas abaixo</strong> para adicionar disposições específicas para este projeto. Elas aparecem como Cláusula 13, 14, 15... no contrato do cliente.</p>
@@ -1416,7 +1413,7 @@ function EditProjectModal({
                         onClick={handleShowContractPreview}
                         disabled={loadingTemplate}
                         className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-[#052413] transition-colors hover:opacity-90 cursor-pointer disabled:opacity-50"
-                        style={{ fontFamily: F, background: "linear-gradient(135deg, rgba(235,191,116,0.15), rgba(235,191,116,0.08))", border: "1px solid rgba(133,108,66,0.15)" }}
+                        style={{ background: "linear-gradient(135deg, rgba(235,191,116,0.15), rgba(235,191,116,0.08))", border: "1px solid rgba(133,108,66,0.15)" }}
                       >
                         {loadingTemplate ? <Loader2 className="w-4 h-4 text-[#856C42] animate-spin" /> : <Eye className="w-4 h-4 text-[#856C42]" />}
                         Visualizar contrato como o cliente vê
@@ -1444,8 +1441,8 @@ function EditProjectModal({
                             >
                               <div className="px-6 py-4 border-b flex items-center justify-between flex-shrink-0" style={{ borderColor: "rgba(133,108,66,0.1)" }}>
                                 <div>
-                                  <h3 className="text-lg text-[#052413]" style={{ fontFamily: "'Playfair Display', serif" }}>Contrato de <span className="italic text-[#165B36]">{project.title}</span></h3>
-                                  <p className="text-[0.65rem] text-[#856C42]" style={{ fontFamily: F }}>
+                                  <h3 className="text-lg text-[#052413] font-serif">Contrato de <span className="italic text-[#165B36]">{project.title}</span></h3>
+                                  <p className="text-[0.65rem] text-[#856C42]">
                                     {previewEditMode ? (
                                       <span className="inline-flex items-center gap-1 text-amber-600"><Pencil className="w-2.5 h-2.5" /> Editando prazo e cláusulas — as alterações aparecem em tempo real</span>
                                     ) : (
@@ -1495,12 +1492,12 @@ function EditProjectModal({
                               {/* Sticky save bar when editing */}
                               {previewEditMode && (
                                 <div className="px-6 py-3 border-t flex items-center justify-between flex-shrink-0" style={{ borderColor: "rgba(133,108,66,0.1)", backgroundColor: "rgba(235,191,116,0.08)" }}>
-                                  <p className="text-[0.65rem] text-[#856C42]" style={{ fontFamily: F }}>
+                                  <p className="text-[0.65rem] text-[#856C42]">
                                     Alterações no <strong>prazo</strong> e nas <strong>cláusulas personalizadas</strong> serão salvas e refletidas na página de pagamento do cliente.
                                   </p>
                                   <div className="flex items-center gap-2">
-                                    <button onClick={() => setPreviewEditMode(false)} className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer" style={{ fontFamily: F }}>Cancelar</button>
-                                    <button onClick={handlePreviewSave} disabled={savingPreview} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ fontFamily: F, background: "linear-gradient(135deg, #165B36, #052413)" }}>
+                                    <button onClick={() => setPreviewEditMode(false)} className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">Cancelar</button>
+                                    <button onClick={handlePreviewSave} disabled={savingPreview} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>
                                       {savingPreview ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Salvar
                                     </button>
                                   </div>
@@ -1513,29 +1510,29 @@ function EditProjectModal({
 
                       <div className="rounded-xl border border-gray-100 overflow-hidden">
                         <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center justify-between">
-                          <div className="flex items-center gap-2"><FileText className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>PDF complementar</p></div>
-                          <button onClick={() => contractPdfRef.current?.click()} disabled={uploadingContractPdf} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ fontFamily: F, background: "linear-gradient(135deg, #856C42, #EBBF74)" }}>{uploadingContractPdf ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}{project.budget.contractPdfName ? "Substituir" : "Enviar PDF"}</button>
+                          <div className="flex items-center gap-2"><FileText className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600">PDF complementar</p></div>
+                          <button onClick={() => contractPdfRef.current?.click()} disabled={uploadingContractPdf} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ background: "linear-gradient(135deg, #856C42, #EBBF74)" }}>{uploadingContractPdf ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}{project.budget.contractPdfName ? "Substituir" : "Enviar PDF"}</button>
                           <input ref={contractPdfRef} type="file" accept=".pdf" onChange={handleContractPdfUpload} className="hidden" />
                         </div>
                         <div className="p-4">
                           {project.budget.contractPdfName ? (
                             <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: "rgba(235,191,116,0.06)", border: "1px solid rgba(133,108,66,0.1)" }}>
                               <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "linear-gradient(135deg, rgba(133,108,66,0.1), rgba(235,191,116,0.15))" }}><FileText className="w-4 h-4 text-[#856C42]" /></div>
-                              <div className="min-w-0 flex-1"><p className="text-sm text-gray-900 truncate font-medium" style={{ fontFamily: F }}>{project.budget.contractPdfName}</p><p className="text-[0.65rem] text-gray-400" style={{ fontFamily: F }}>{project.budget.contractPdfSize ? formatFileSize(project.budget.contractPdfSize) : ""}{project.budget.contractPdfUploadedAt ? ` · ${formatDateTime(project.budget.contractPdfUploadedAt)}` : ""}</p></div>
+                              <div className="min-w-0 flex-1"><p className="text-sm text-gray-900 truncate font-medium">{project.budget.contractPdfName}</p><p className="text-[0.65rem] text-gray-400">{project.budget.contractPdfSize ? formatFileSize(project.budget.contractPdfSize) : ""}{project.budget.contractPdfUploadedAt ? ` · ${formatDateTime(project.budget.contractPdfUploadedAt)}` : ""}</p></div>
                               <button onClick={handleDeleteContractPdf} disabled={deletingContractPdf} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50" title="Excluir">{deletingContractPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}</button>
                             </div>
                           ) : (
-                            <div className="text-center py-6 rounded-lg border-2 border-dashed border-gray-200"><Upload className="w-6 h-6 text-gray-300 mx-auto mb-2" /><p className="text-xs text-gray-400" style={{ fontFamily: F }}>Nenhum PDF enviado. Envie o contrato personalizado deste projeto.</p></div>
+                            <div className="text-center py-6 rounded-lg border-2 border-dashed border-gray-200"><Upload className="w-6 h-6 text-gray-300 mx-auto mb-2" /><p className="text-xs text-gray-400">Nenhum PDF enviado. Envie o contrato personalizado deste projeto.</p></div>
                           )}
                         </div>
                       </div>
                       {/* Estimated deadline */}
                       <div className="rounded-xl border border-gray-100 overflow-hidden">
-                        <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Prazo estimado de entrega</p><span className="text-[0.55rem] text-gray-400" style={{ fontFamily: F }}>aparece na Cláusula 6</span></div>
+                        <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600">Prazo estimado de entrega</p><span className="text-[0.55rem] text-gray-400">aparece na Cláusula 6</span></div>
                         <div className="p-4">
                           <input type="text" value={editDeadline} onChange={(e) => setEditDeadline(e.target.value)} placeholder="Ex.: 15 dias úteis, 30 dias corridos..." className={ic} style={is} />
                           {project.budget.estimatedDeadline && editDeadline === project.budget.estimatedDeadline && (
-                            <p className="text-[0.55rem] text-[#165B36] mt-1.5" style={{ fontFamily: F }}>Prazo atual salvo: <strong>{project.budget.estimatedDeadline}</strong></p>
+                            <p className="text-[0.55rem] text-[#165B36] mt-1.5">Prazo atual salvo: <strong>{project.budget.estimatedDeadline}</strong></p>
                           )}
                         </div>
                       </div>
@@ -1543,22 +1540,22 @@ function EditProjectModal({
                       {/* Link to contract template editor */}
                       <div className="flex items-center gap-2 p-3 rounded-xl" style={{ backgroundColor: "rgba(22,91,54,0.04)", border: "1px solid rgba(22,91,54,0.08)" }}>
                         <Info className="w-3.5 h-3.5 text-[#165B36] flex-shrink-0" />
-                        <p className="text-[0.65rem] text-gray-500 flex-1" style={{ fontFamily: F }}>As cláusulas base (1-12) podem ser editadas na seção <a href="/admin/contratos" className="text-[#165B36] font-medium hover:underline">Contratos</a>. Aqui você gerencia as cláusulas extras deste projeto.</p>
+                        <p className="text-[0.65rem] text-gray-500 flex-1">As cláusulas base (1-12) podem ser editadas na seção <a href="/admin/contratos" className="text-[#165B36] font-medium hover:underline">Contratos</a>. Aqui você gerencia as cláusulas extras deste projeto.</p>
                       </div>
 
                       {/* Clause editor */}
                       <div className="rounded-xl border border-gray-100 overflow-hidden">
                         <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center justify-between">
-                          <div className="flex items-center gap-2"><Edit3 className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Cláusulas personalizadas</p><span className="text-[0.55rem] text-gray-400" style={{ fontFamily: F }}>aparecem como 13, 14, 15... no contrato</span></div>
-                          <button onClick={handleAddClause} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-[#165B36] bg-[#165B36]/5 hover:bg-[#165B36]/10 transition-colors cursor-pointer" style={{ fontFamily: F }}><Plus className="w-3 h-3" /> Adicionar</button>
+                          <div className="flex items-center gap-2"><Edit3 className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600">Cláusulas personalizadas</p><span className="text-[0.55rem] text-gray-400">aparecem como 13, 14, 15... no contrato</span></div>
+                          <button onClick={handleAddClause} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-[#165B36] bg-[#165B36]/5 hover:bg-[#165B36]/10 transition-colors cursor-pointer"><Plus className="w-3 h-3" /> Adicionar</button>
                         </div>
                         <div className="p-4 space-y-3">
                           {editClauses.length === 0 ? (
-                            <p className="text-xs text-gray-400 text-center py-4" style={{ fontFamily: F }}>Nenhuma cláusula personalizada. Clique em "Adicionar" para criar.</p>
+                            <p className="text-xs text-gray-400 text-center py-4">Nenhuma cláusula personalizada. Clique em "Adicionar" para criar.</p>
                           ) : editClauses.map((clause, idx) => (
                             <div key={idx} className="rounded-lg border p-3 space-y-2" style={{ borderColor: "rgba(133,108,66,0.15)", backgroundColor: "rgba(235,191,116,0.03)" }}>
                               <div className="flex items-center gap-2">
-                                <span className="text-[0.6rem] font-semibold text-[#856C42] whitespace-nowrap" style={{ fontFamily: F }}>Cláusula {13 + idx}</span>
+                                <span className="text-[0.6rem] font-semibold text-[#856C42] whitespace-nowrap">Cláusula {13 + idx}</span>
                                 <input type="text" value={clause.title} onChange={(e) => handleClauseChange(idx, "title", e.target.value)} placeholder="Título da cláusula (ex.: Do prazo de entrega)" className="flex-1 px-2 py-1 rounded border text-xs text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#165B36]/20" style={{ ...is, fontSize: "0.75rem" }} />
                                 <button onClick={() => handleRemoveClause(idx)} className="p-1 rounded text-gray-400 hover:text-red-500 cursor-pointer" title="Remover"><Trash2 className="w-3.5 h-3.5" /></button>
                               </div>
@@ -1569,17 +1566,17 @@ function EditProjectModal({
                       </div>
 
                       {/* Save button for deadline + clauses */}
-                      <button onClick={handleSaveClauses} disabled={savingClauses} className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ fontFamily: F, background: "linear-gradient(135deg, #165B36, #052413)" }}>
+                      <button onClick={handleSaveClauses} disabled={savingClauses} className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>
                         {savingClauses ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Salvar prazo e cláusulas
                       </button>
                       <div className="rounded-xl border overflow-hidden" style={{ borderColor: project.budget.contractAcceptance ? "rgba(10,124,62,0.2)" : "rgba(217,119,6,0.15)" }}>
                         <div className="px-4 py-2.5 border-b flex items-center gap-2" style={{ backgroundColor: project.budget.contractAcceptance ? "rgba(10,124,62,0.04)" : "rgba(217,119,6,0.04)", borderColor: "inherit" }}>
                           {project.budget.contractAcceptance ? <Shield className="w-3.5 h-3.5 text-green-600" /> : <Clock className="w-3.5 h-3.5 text-amber-500" />}
-                          <p className="text-xs font-semibold" style={{ fontFamily: F, color: project.budget.contractAcceptance ? "#0a7c3e" : "#92400e" }}>{project.budget.contractAcceptance ? "Aceite eletrônico registrado" : "Aguardando aceite do cliente"}</p>
+                          <p className="text-xs font-semibold" style={{ color: project.budget.contractAcceptance ? "#0a7c3e" : "#92400e" }}>{project.budget.contractAcceptance ? "Aceite eletrônico registrado" : "Aguardando aceite do cliente"}</p>
                         </div>
                         {project.budget.contractAcceptance ? (
                           <div className="p-4">
-                            <div className="grid grid-cols-2 gap-x-6 gap-y-2.5" style={{ fontFamily: F }}>
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                               <div><p className="text-[0.6rem] text-gray-400 uppercase tracking-wider mb-0.5">Nome</p><p className="text-sm text-gray-800 font-medium">{project.budget.contractAcceptance.acceptorName}</p></div>
                               <div><p className="text-[0.6rem] text-gray-400 uppercase tracking-wider mb-0.5">E-mail</p><p className="text-sm text-gray-800">{project.budget.contractAcceptance.acceptorEmail}</p></div>
                               {project.budget.contractAcceptance.acceptorCpf && <div><p className="text-[0.6rem] text-gray-400 uppercase tracking-wider mb-0.5">{project.budget.contractAcceptance.acceptorCpf.replace(/\D/g, "").length === 14 ? "CNPJ" : "CPF"}</p><p className="text-sm text-gray-800 font-mono">{project.budget.contractAcceptance.acceptorCpf}</p></div>}
@@ -1587,16 +1584,16 @@ function EditProjectModal({
                               <div><p className="text-[0.6rem] text-gray-400 uppercase tracking-wider mb-0.5">Versão do contrato</p><p className="text-sm text-gray-800 font-mono">{project.budget.contractAcceptance.contractVersion}</p></div>
                             </div>
                             <div className="mt-3 pt-3 border-t border-gray-100 space-y-1">
-                              <p className="text-[0.55rem] text-gray-400" style={{ fontFamily: F }}><span className="font-medium">IP:</span> {project.budget.contractAcceptance.ip}</p>
-                              <p className="text-[0.55rem] text-gray-400 break-all" style={{ fontFamily: F }}><span className="font-medium">User-Agent:</span> {project.budget.contractAcceptance.userAgent}</p>
+                              <p className="text-[0.55rem] text-gray-400"><span className="font-medium">IP:</span> {project.budget.contractAcceptance.ip}</p>
+                              <p className="text-[0.55rem] text-gray-400 break-all"><span className="font-medium">User-Agent:</span> {project.budget.contractAcceptance.userAgent}</p>
                               {project.budget.contractAcceptance.contractHash && (
-                                <p className="text-[0.55rem] text-gray-400 font-mono break-all" style={{ fontFamily: F }}><span className="font-medium" style={{ fontFamily: F }}>SHA-256:</span> {project.budget.contractAcceptance.contractHash}</p>
+                                <p className="text-[0.55rem] text-gray-400 font-mono break-all"><span className="font-medium">SHA-256:</span> {project.budget.contractAcceptance.contractHash}</p>
                               )}
                               {project.budget.contractAcceptance.geolocation && (
-                                <p className="text-[0.55rem] text-gray-400" style={{ fontFamily: F }}><span className="font-medium">Geolocalizacao:</span> {project.budget.contractAcceptance.geolocation}</p>
+                                <p className="text-[0.55rem] text-gray-400"><span className="font-medium">Geolocalizacao:</span> {project.budget.contractAcceptance.geolocation}</p>
                               )}
                               {project.budget.contractAcceptance.screenResolution && (
-                                <p className="text-[0.55rem] text-gray-400" style={{ fontFamily: F }}><span className="font-medium">Resolucao:</span> {project.budget.contractAcceptance.screenResolution}</p>
+                                <p className="text-[0.55rem] text-gray-400"><span className="font-medium">Resolucao:</span> {project.budget.contractAcceptance.screenResolution}</p>
                               )}
                             </div>
                             {/* Download actions */}
@@ -1606,7 +1603,6 @@ function EditProjectModal({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.65rem] font-medium text-[#165B36] bg-[#165B36]/5 hover:bg-[#165B36]/10 transition-colors"
-                                style={{ fontFamily: F }}
                               >
                                 <ExternalLink className="w-3 h-3" /> Ver contrato assinado
                               </a>
@@ -1616,7 +1612,7 @@ function EditProjectModal({
                             </div>
                           </div>
                         ) : (
-                          <div className="p-4"><p className="text-xs text-gray-500" style={{ fontFamily: F }}>O cliente ainda não aceitou o contrato na página de pagamento.</p></div>
+                          <div className="p-4"><p className="text-xs text-gray-500">O cliente ainda não aceitou o contrato na página de pagamento.</p></div>
                         )}
                       </div>
                     </>
@@ -1629,8 +1625,8 @@ function EditProjectModal({
                 <div className="space-y-5">
                   <div className="rounded-xl border border-gray-100 overflow-hidden">
                     <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center justify-between">
-                      <div className="flex items-center gap-2"><Eye className="w-3.5 h-3.5 text-[#165B36]" /><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Arquivos de revisão{reviewCount > 0 && <span className="ml-1.5 text-[0.6rem] font-normal text-gray-400">({reviewCount})</span>}</p></div>
-                      <button onClick={() => reviewFileRef.current?.click()} disabled={uploadingReview} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ fontFamily: F, background: "linear-gradient(135deg, #165B36, #052413)" }}>{uploadingReview ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} Enviar</button>
+                      <div className="flex items-center gap-2"><Eye className="w-3.5 h-3.5 text-[#165B36]" /><p className="text-xs font-semibold text-gray-600">Arquivos de revisão{reviewCount > 0 && <span className="ml-1.5 text-[0.6rem] font-normal text-gray-400">({reviewCount})</span>}</p></div>
+                      <button onClick={() => reviewFileRef.current?.click()} disabled={uploadingReview} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>{uploadingReview ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} Enviar</button>
                       <input ref={reviewFileRef} type="file" onChange={handleReviewUpload} className="hidden" />
                     </div>
                     <div className="p-4">
@@ -1638,30 +1634,30 @@ function EditProjectModal({
                         <div className="space-y-1.5">{project.reviewFiles.map((f, idx) => (
                           <div key={idx} className="flex items-center gap-2 p-2.5 rounded-lg bg-[#165B36]/[0.03] border border-[#165B36]/10">
                             <FileText className="w-3.5 h-3.5 text-[#165B36] flex-shrink-0" />
-                            <div className="min-w-0 flex-1"><p className="text-xs text-gray-900 truncate font-medium" style={{ fontFamily: F }}>{f.name}</p><p className="text-[0.6rem] text-gray-400" style={{ fontFamily: F }}>{formatFileSize(f.size)} · {formatDateTime(f.uploadedAt)}</p></div>
+                            <div className="min-w-0 flex-1"><p className="text-xs text-gray-900 truncate font-medium">{f.name}</p><p className="text-[0.6rem] text-gray-400">{formatFileSize(f.size)} · {formatDateTime(f.uploadedAt)}</p></div>
                             <button onClick={() => handleDeleteFile("review", idx)} disabled={deletingFileKey === `review-${idx}`} className="p-1 rounded text-gray-400 hover:text-red-500 cursor-pointer disabled:opacity-50">{deletingFileKey === `review-${idx}` ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}</button>
                           </div>
                         ))}</div>
-                      ) : <p className="text-xs text-gray-400 py-2 text-center" style={{ fontFamily: F }}>Nenhum arquivo de revisão enviado.</p>}
+                      ) : <p className="text-xs text-gray-400 py-2 text-center">Nenhum arquivo de revisão enviado.</p>}
                     </div>
                   </div>
                   <div className="rounded-xl border border-gray-100 overflow-hidden">
-                    <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center gap-2"><Upload className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Arquivos do cliente{uploadCount > 0 && <span className="ml-1.5 text-[0.6rem] font-normal text-gray-400">({uploadCount})</span>}</p></div>
+                    <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center gap-2"><Upload className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600">Arquivos do cliente{uploadCount > 0 && <span className="ml-1.5 text-[0.6rem] font-normal text-gray-400">({uploadCount})</span>}</p></div>
                     <div className="p-4">
                       {project.uploadedFiles && project.uploadedFiles.length > 0 ? (
                         <div className="space-y-1.5">{project.uploadedFiles.map((f, idx) => (
                           <div key={idx} className="flex items-center gap-2 p-2.5 rounded-lg" style={{ backgroundColor: "rgba(235,191,116,0.05)", border: "1px solid rgba(133,108,66,0.08)" }}>
                             <FileText className="w-3.5 h-3.5 text-[#856C42] flex-shrink-0" />
-                            <div className="min-w-0 flex-1"><p className="text-xs text-gray-900 truncate font-medium" style={{ fontFamily: F }}>{f.name}</p><p className="text-[0.6rem] text-gray-400" style={{ fontFamily: F }}>{formatFileSize(f.size)} · {formatDateTime(f.uploadedAt)}</p></div>
+                            <div className="min-w-0 flex-1"><p className="text-xs text-gray-900 truncate font-medium">{f.name}</p><p className="text-[0.6rem] text-gray-400">{formatFileSize(f.size)} · {formatDateTime(f.uploadedAt)}</p></div>
                             <button onClick={() => handleDeleteFile("uploaded", idx)} disabled={deletingFileKey === `uploaded-${idx}`} className="p-1 rounded text-gray-400 hover:text-red-500 cursor-pointer disabled:opacity-50">{deletingFileKey === `uploaded-${idx}` ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}</button>
                           </div>
                         ))}</div>
-                      ) : <p className="text-xs text-gray-400 py-2 text-center" style={{ fontFamily: F }}>Nenhum arquivo enviado pelo cliente.</p>}
+                      ) : <p className="text-xs text-gray-400 py-2 text-center">Nenhum arquivo enviado pelo cliente.</p>}
                     </div>
                   </div>
                   <div className="rounded-xl border border-gray-100 overflow-hidden">
-                    <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center gap-2"><LinkIcon className="w-3.5 h-3.5 text-gray-400" /><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Link do arquivo finalizado</p></div>
-                    <div className="p-4"><input type="url" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)} placeholder="https://drive.google.com/..." className={ic} style={is} /><p className="text-[0.55rem] text-gray-400 mt-1.5" style={{ fontFamily: F }}>Visível para o cliente quando o status for "Concluído"</p></div>
+                    <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center gap-2"><LinkIcon className="w-3.5 h-3.5 text-gray-400" /><p className="text-xs font-semibold text-gray-600">Link do arquivo finalizado</p></div>
+                    <div className="p-4"><input type="url" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)} placeholder="https://drive.google.com/..." className={ic} style={is} /><p className="text-[0.55rem] text-gray-400 mt-1.5">Visível para o cliente quando o status for "Concluído"</p></div>
                   </div>
                 </div>
               )}
@@ -1671,13 +1667,13 @@ function EditProjectModal({
                 <div className="space-y-5">
                   <div className="rounded-xl border border-gray-100 overflow-hidden">
                     <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100 flex items-center justify-between">
-                      <div className="flex items-center gap-2"><Receipt className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600" style={{ fontFamily: F }}>Notas Fiscais{(project.invoices?.length || 0) > 0 && <span className="ml-1.5 text-[0.6rem] font-normal text-gray-400">({project.invoices!.length})</span>}</p></div>
-                      <button onClick={() => invoiceFileRef.current?.click()} disabled={uploadingInvoice} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ fontFamily: F, background: "linear-gradient(135deg, #856C42, #EBBF74)" }}>{uploadingInvoice ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} Enviar NF</button>
+                      <div className="flex items-center gap-2"><Receipt className="w-3.5 h-3.5 text-[#856C42]" /><p className="text-xs font-semibold text-gray-600">Notas Fiscais{(project.invoices?.length || 0) > 0 && <span className="ml-1.5 text-[0.6rem] font-normal text-gray-400">({project.invoices!.length})</span>}</p></div>
+                      <button onClick={() => invoiceFileRef.current?.click()} disabled={uploadingInvoice} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer" style={{ background: "linear-gradient(135deg, #856C42, #EBBF74)" }}>{uploadingInvoice ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} Enviar NF</button>
                       <input ref={invoiceFileRef} type="file" accept=".pdf,.xml,.png,.jpg,.jpeg" onChange={handleInvoiceUpload} className="hidden" />
                     </div>
                     <div className="p-4 space-y-3">
                       <div>
-                        <label className="block text-[0.6rem] font-medium text-gray-500 mb-1" style={{ fontFamily: F }}>Descricao (opcional, aparece para o cliente)</label>
+                        <label className="block text-[0.6rem] font-medium text-gray-500 mb-1">Descricao (opcional, aparece para o cliente)</label>
                         <input type="text" value={invoiceDesc} onChange={(e) => setInvoiceDesc(e.target.value)} placeholder="Ex.: NF-e ref. servico de diagramacao" className={ic} style={{ ...is, fontSize: "0.8rem" }} />
                       </div>
                       {project.invoices && project.invoices.length > 0 ? (
@@ -1686,9 +1682,9 @@ function EditProjectModal({
                             <div key={idx} className="flex items-center gap-2 p-2.5 rounded-lg" style={{ backgroundColor: "rgba(133,108,66,0.04)", border: "1px solid rgba(133,108,66,0.1)" }}>
                               <Receipt className="w-3.5 h-3.5 text-[#856C42] flex-shrink-0" />
                               <div className="min-w-0 flex-1">
-                                <p className="text-xs text-gray-900 truncate font-medium" style={{ fontFamily: F }}>{inv.name}</p>
-                                {inv.description && <p className="text-[0.6rem] text-[#856C42] truncate" style={{ fontFamily: F }}>{inv.description}</p>}
-                                <p className="text-[0.55rem] text-gray-400" style={{ fontFamily: F }}>{formatFileSize(inv.size)} · {formatDateTime(inv.uploadedAt)} · {inv.uploadedBy}</p>
+                                <p className="text-xs text-gray-900 truncate font-medium">{inv.name}</p>
+                                {inv.description && <p className="text-[0.6rem] text-[#856C42] truncate">{inv.description}</p>}
+                                <p className="text-[0.55rem] text-gray-400">{formatFileSize(inv.size)} · {formatDateTime(inv.uploadedAt)} · {inv.uploadedBy}</p>
                               </div>
                               <button onClick={() => handleDeleteInvoice(idx)} disabled={deletingInvoiceIdx === idx} className="p-1 rounded text-gray-400 hover:text-red-500 cursor-pointer disabled:opacity-50">
                                 {deletingInvoiceIdx === idx ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
@@ -1699,15 +1695,15 @@ function EditProjectModal({
                       ) : (
                         <div className="text-center py-6 rounded-lg border-2 border-dashed border-gray-200">
                           <Receipt className="w-6 h-6 text-gray-300 mx-auto mb-2" />
-                          <p className="text-xs text-gray-400" style={{ fontFamily: F }}>Nenhuma nota fiscal enviada.</p>
-                          <p className="text-[0.55rem] text-gray-400 mt-1" style={{ fontFamily: F }}>Envie PDFs, XMLs ou imagens de notas fiscais.</p>
+                          <p className="text-xs text-gray-400">Nenhuma nota fiscal enviada.</p>
+                          <p className="text-[0.55rem] text-gray-400 mt-1">Envie PDFs, XMLs ou imagens de notas fiscais.</p>
                         </div>
                       )}
                     </div>
                   </div>
                   <div className="flex items-start gap-2 p-3 rounded-xl" style={{ backgroundColor: "rgba(133,108,66,0.04)", border: "1px solid rgba(133,108,66,0.08)" }}>
                     <Info className="w-3.5 h-3.5 text-[#856C42] flex-shrink-0 mt-0.5" />
-                    <div className="text-[0.6rem] text-gray-500 space-y-0.5" style={{ fontFamily: F }}>
+                    <div className="text-[0.6rem] text-gray-500 space-y-0.5">
                       <p>As notas fiscais ficam disponiveis para download na area do cliente (<strong>Minha Conta</strong>).</p>
                       <p>Formatos aceitos: PDF, XML, PNG, JPG. Limite: 50 MB por arquivo.</p>
                       <p>Cliente: <strong>{project.userEmail}</strong> · Projeto: <strong>{project.title}</strong></p>
@@ -1721,10 +1717,10 @@ function EditProjectModal({
 
         {/* Footer */}
         <div className="flex-shrink-0 px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex items-center gap-3">
-          {error && <div className="flex items-center gap-1.5 text-xs text-red-600 flex-1 min-w-0" style={{ fontFamily: F }}><AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /><span className="truncate">{error}</span></div>}
+          {error && <div className="flex items-center gap-1.5 text-xs text-red-600 flex-1 min-w-0"><AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /><span className="truncate">{error}</span></div>}
           <div className={`flex gap-3 ${error ? "" : "flex-1 justify-end"}`}>
-            <button onClick={onClose} className="px-5 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer" style={{ fontFamily: F }}>Cancelar</button>
-            <button onClick={handleSave} disabled={saving} className="px-5 py-2.5 rounded-lg text-sm text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer flex items-center gap-2" style={{ fontFamily: F, background: "linear-gradient(135deg, #165B36, #052413)" }}>{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salvar alterações</button>
+            <button onClick={onClose} className="px-5 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancelar</button>
+            <button onClick={handleSave} disabled={saving} className="px-5 py-2.5 rounded-lg text-sm text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer flex items-center gap-2" style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}>{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salvar alterações</button>
           </div>
         </div>
       </motion.div>
@@ -1761,7 +1757,6 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
   editClauses?: { title: string; content: string }[];
   onClausesChange?: (v: { title: string; content: string }[]) => void;
 }) {
-  const F = "Inter, sans-serif";
   const companyName = template?.companyName || "Epoca Editora de Livros";
   const companyDesc = template?.companyDescription || "pessoa juridica de direito privado, com sede em territorio brasileiro";
   const version = template?.version || "1.0";
@@ -1812,13 +1807,13 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
   }
 
   return (
-    <div className="text-[0.7rem] leading-relaxed text-[#052413]/80" style={{ fontFamily: F }}>
+    <div className="text-[0.7rem] leading-relaxed text-[#052413]/80">
       {/* Branded header */}
       <div className="text-center mb-5 pb-4 border-b" style={{ borderColor: "rgba(133,108,66,0.15)" }}>
         <div className="flex items-center justify-center gap-3 mb-2">
           <img src={logoImg} alt={companyName} className="h-10 object-contain" style={{ filter: "drop-shadow(0 1px 2px rgba(5,36,19,0.1))" }} />
         </div>
-        <p className="font-bold text-xs text-[#052413] tracking-wide" style={{ fontFamily: "'Playfair Display', serif" }}>CONTRATO DE PRESTACAO DE SERVICOS EDITORIAIS</p>
+        <p className="font-bold text-xs text-[#052413] tracking-wide font-serif">CONTRATO DE PRESTACAO DE SERVICOS EDITORIAIS</p>
         <div className="flex items-center justify-center gap-2 mt-1.5">
           <div className="h-px w-8" style={{ backgroundColor: "rgba(235,191,116,0.5)" }} />
           <p className="text-[0.55rem] text-[#856C42]/80 uppercase tracking-widest">Versao {version}</p>
@@ -1918,7 +1913,7 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
                   onChange={(e) => onDeadlineChange?.(e.target.value)}
                   placeholder="Ex.: 15 dias úteis, 30 dias corridos..."
                   className="w-full px-3 py-2 rounded-lg text-[0.7rem] text-[#052413] border focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                  style={{ fontFamily: F, borderColor: "rgba(133,108,66,0.25)", backgroundColor: "rgba(235,191,116,0.06)" }}
+                  style={{ borderColor: "rgba(133,108,66,0.25)", backgroundColor: "rgba(235,191,116,0.06)" }}
                 />
                 <Pencil className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-amber-500 pointer-events-none mt-3" />
               </div>
@@ -1967,14 +1962,14 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
                 {editMode ? (
                   <div className="mt-4 rounded-lg p-3 space-y-2" style={{ backgroundColor: "rgba(235,191,116,0.06)", border: "1px solid rgba(133,108,66,0.15)" }}>
                     <div className="flex items-center gap-2">
-                      <span className="text-[0.6rem] font-bold text-[#856C42] whitespace-nowrap" style={{ fontFamily: F }}>Cláusula {13 + idx}</span>
+                      <span className="text-[0.6rem] font-bold text-[#856C42] whitespace-nowrap">Cláusula {13 + idx}</span>
                       <input
                         type="text"
                         value={clause.title}
                         onChange={(e) => handleClauseEdit(idx, "title", e.target.value)}
                         placeholder="Título (ex.: Do prazo de entrega)"
                         className="flex-1 px-2 py-1 rounded border text-[0.65rem] text-[#052413] focus:outline-none focus:ring-1 focus:ring-[#165B36]/20"
-                        style={{ fontFamily: F, borderColor: "rgba(133,108,66,0.2)", backgroundColor: "#fff" }}
+                        style={{ borderColor: "rgba(133,108,66,0.2)", backgroundColor: "#fff" }}
                       />
                       <button onClick={() => handleRemoveClause(idx)} className="p-1 rounded text-gray-400 hover:text-red-500 cursor-pointer" title="Remover cláusula"><Trash2 className="w-3 h-3" /></button>
                     </div>
@@ -1984,7 +1979,7 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
                       placeholder="Conteúdo da cláusula..."
                       rows={3}
                       className="w-full px-2 py-1.5 rounded border text-[0.65rem] text-[#052413] resize-none focus:outline-none focus:ring-1 focus:ring-[#165B36]/20"
-                      style={{ fontFamily: F, borderColor: "rgba(133,108,66,0.2)", backgroundColor: "#fff" }}
+                      style={{ borderColor: "rgba(133,108,66,0.2)", backgroundColor: "#fff" }}
                     />
                   </div>
                 ) : (
@@ -1999,7 +1994,7 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
               <button
                 onClick={handleAddClause}
                 className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.65rem] font-medium text-[#856C42] hover:bg-[#EBBF74]/10 transition-colors cursor-pointer"
-                style={{ fontFamily: F, border: "1px dashed rgba(133,108,66,0.3)" }}
+                style={{ border: "1px dashed rgba(133,108,66,0.3)" }}
               >
                 <Plus className="w-3 h-3" /> Adicionar cláusula
               </button>
@@ -2014,7 +2009,7 @@ function ProjectContractPreview({ project, template, editMode, editDeadline, onD
           <div className="p-3 rounded-xl" style={{ backgroundColor: "rgba(10,124,62,0.04)", border: "1px solid rgba(10,124,62,0.15)" }}>
             <div className="flex items-center gap-2 mb-2">
               <CheckCircle className="w-4 h-4 text-green-600" />
-              <span className="text-xs font-semibold text-green-700" style={{ fontFamily: F }}>Contrato aceito eletronicamente</span>
+              <span className="text-xs font-semibold text-green-700">Contrato aceito eletronicamente</span>
             </div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[0.6rem]">
               <p><span className="text-gray-400">Nome:</span> <span className="text-gray-700 font-medium">{acceptance.acceptorName}</span></p>
@@ -2101,10 +2096,10 @@ export function AdminProjects() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: "Inter, sans-serif" }}>
+          <h1 className="text-2xl font-semibold text-gray-900">
             Projetos
           </h1>
-          <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-sm text-gray-500 mt-1">
             Gerencie as solicitações dos clientes
           </p>
         </div>
@@ -2119,7 +2114,6 @@ export function AdminProjects() {
             }
           }}
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-[#165B36] bg-[#165B36]/5 hover:bg-[#165B36]/10 transition-colors cursor-pointer whitespace-nowrap"
-          style={{ fontFamily: "Inter, sans-serif" }}
           title="Copiar link do formulário de nova solicitação"
         >
           <Copy className="w-3.5 h-3.5" />
@@ -2141,10 +2135,10 @@ export function AdminProjects() {
               ringColor: s.color,
             }}
           >
-            <p className="text-lg font-semibold" style={{ color: s.color, fontFamily: "Inter, sans-serif" }}>
+            <p className="text-lg font-semibold" style={{ color: s.color }}>
               {statusCounts[s.key] || 0}
             </p>
-            <p className="text-[0.55rem] text-gray-500 leading-tight" style={{ fontFamily: "Inter, sans-serif" }}>
+            <p className="text-[0.55rem] text-gray-500 leading-tight">
               {s.label}
             </p>
           </button>
@@ -2160,13 +2154,11 @@ export function AdminProjects() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por título, cliente ou email..."
           className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-          style={{ fontFamily: "Inter, sans-serif" }}
         />
         {filterStatus !== "all" && (
           <button
             onClick={() => setFilterStatus("all")}
             className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 cursor-pointer flex items-center gap-1"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             {getStatusLabel(filterStatus)}
             <X className="w-3 h-3" />
@@ -2182,7 +2174,7 @@ export function AdminProjects() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-12">
           <FileText className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-gray-500 text-sm">
             {search || filterStatus !== "all"
               ? "Nenhum projeto encontrado com esses filtros"
               : "Nenhum projeto ainda"}
@@ -2191,7 +2183,7 @@ export function AdminProjects() {
       ) : (
         <div className="border border-gray-200 rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm" style={{ fontFamily: "Inter, sans-serif" }}>
+            <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 text-left">
                   <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Projeto</th>

@@ -141,13 +141,11 @@ function getServiceLabel(key: string): string {
 // ============================================
 const inputClasses = "w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#EBBF74]/40 focus:border-[#EBBF74]";
 const inputStyle = {
-  fontFamily: "Inter, sans-serif",
   backgroundColor: "#FFFDF8",
   borderColor: "rgba(133,108,66,0.2)",
   color: "#052413",
 };
 const labelClasses = "block text-xs font-medium text-[#052413] mb-1.5";
-const labelStyle = { fontFamily: "Inter, sans-serif" };
 
 const SERVICE_MAP: Record<string, { label: string; desc: string }> = {
   completo: { label: "Pacote completo", desc: "Todos os servicos editoriais inclusos" },
@@ -184,7 +182,6 @@ function MethodTab({
           ? "border-[#EBBF74] bg-gradient-to-br from-[#EBBF74]/10 to-[#856C42]/5 text-[#052413]"
           : "border-transparent bg-[#F0E8D4]/40 text-[#856C42] hover:bg-[#F0E8D4]/70"
       }`}
-      style={{ fontFamily: "Inter, sans-serif" }}
     >
       <Icon className={`w-4.5 h-4.5 ${isActive ? "text-[#856C42]" : "text-[#856C42]/60"}`} />
       {label}
@@ -398,19 +395,19 @@ function CreditCardForm({
       {sdkError && (
         <div className="flex items-center gap-2 text-xs text-amber-700 p-3 rounded-lg bg-amber-50 border border-amber-200">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span style={{ fontFamily: "Inter, sans-serif" }}>{sdkError}</span>
+          <span>{sdkError}</span>
         </div>
       )}
 
       {!publicKey && (
         <div className="flex items-center gap-2 text-xs text-amber-700 p-3 rounded-lg bg-amber-50 border border-amber-200">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span style={{ fontFamily: "Inter, sans-serif" }}>Chave pública do Mercado Pago não configurada. Pagamento com cartão indisponível no momento.</span>
+          <span>Chave pública do Mercado Pago não configurada. Pagamento com cartão indisponível no momento.</span>
         </div>
       )}
 
       <div>
-        <label className={labelClasses} style={labelStyle}>Número do cartão</label>
+        <label className={labelClasses}>Número do cartão</label>
         <div className="relative">
           <input
             type="text"
@@ -431,7 +428,7 @@ function CreditCardForm({
       </div>
 
       <div>
-        <label className={labelClasses} style={labelStyle}>Nome impresso no cartão</label>
+        <label className={labelClasses}>Nome impresso no cartão</label>
         <input
           type="text"
           value={cardName}
@@ -444,7 +441,7 @@ function CreditCardForm({
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={labelClasses} style={labelStyle}>Validade</label>
+          <label className={labelClasses}>Validade</label>
           <input
             type="text"
             value={expiry}
@@ -456,7 +453,7 @@ function CreditCardForm({
           />
         </div>
         <div>
-          <label className={labelClasses} style={labelStyle}>CVV</label>
+          <label className={labelClasses}>CVV</label>
           <input
             type="text"
             value={cvv}
@@ -470,7 +467,7 @@ function CreditCardForm({
       </div>
 
       <div>
-        <label className={labelClasses} style={labelStyle}>E-mail</label>
+        <label className={labelClasses}>E-mail</label>
         <input
           type="email"
           value={email}
@@ -482,7 +479,7 @@ function CreditCardForm({
       </div>
 
       <div>
-        <label className={labelClasses} style={labelStyle}>CPF ou CNPJ do titular</label>
+        <label className={labelClasses}>CPF ou CNPJ do titular</label>
         <input
           type="text"
           value={cpf}
@@ -497,7 +494,7 @@ function CreditCardForm({
       {/* Installment picker — use SDK options if available, else fallback */}
       {(installmentOptions.length > 0 || maxInstallments > 1) && (
         <div>
-          <label className={labelClasses} style={labelStyle}>Parcelas</label>
+          <label className={labelClasses}>Parcelas</label>
           <select
             value={installments}
             onChange={(e) => setInstallments(parseInt(e.target.value))}
@@ -522,7 +519,7 @@ function CreditCardForm({
       {error && (
         <div className="flex items-center gap-2 text-sm text-red-600 p-3 rounded-lg bg-red-50">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span style={{ fontFamily: "Inter, sans-serif" }}>{error}</span>
+          <span>{error}</span>
         </div>
       )}
 
@@ -545,7 +542,7 @@ function CreditCardForm({
         )}
       </GoldButton>
 
-      <div className="flex items-center justify-center gap-2 text-[0.65rem] text-[#856C42]/50" style={{ fontFamily: "Inter, sans-serif" }}>
+      <div className="flex items-center justify-center gap-2 text-[0.65rem] text-[#856C42]/50">
         <Shield className="w-3 h-3" />
         Pagamento seguro processado pelo Mercado Pago
       </div>
@@ -614,7 +611,7 @@ function PixForm({
   if (result && result.status === "pending" && qrCode) {
     return (
       <div className="text-center space-y-5">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F0E8D4]/60 text-[#856C42] text-sm font-medium" style={{ fontFamily: "Inter, sans-serif" }}>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F0E8D4]/60 text-[#856C42] text-sm font-medium">
           <QrCode className="w-4 h-4" />
           Pix gerado com sucesso
         </div>
@@ -632,7 +629,7 @@ function PixForm({
         )}
 
         <div>
-          <p className="text-xs text-[#856C42] mb-2" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-xs text-[#856C42] mb-2">
             Ou copie o código Pix:
           </p>
           <div className="flex gap-2">
@@ -649,7 +646,6 @@ function PixForm({
               style={{
                 background: copied ? "linear-gradient(135deg, #165B36, #052413)" : "linear-gradient(135deg, #EBBF74, #856C42)",
                 color: copied ? "white" : "#052413",
-                fontFamily: "Inter, sans-serif",
               }}
             >
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -658,7 +654,7 @@ function PixForm({
         </div>
 
         <div className="p-4 rounded-xl bg-[#165B36]/5 border border-[#165B36]/10">
-          <p className="text-sm text-[#052413]" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-sm text-[#052413]">
             Abra o app do seu banco, escolha <strong>Pix Copia e Cola</strong> e cole o código acima.
             O pagamento será confirmado automaticamente.
           </p>
@@ -666,7 +662,7 @@ function PixForm({
 
         <div className="flex items-center justify-center gap-2.5 p-3.5 rounded-xl" style={{ backgroundColor: "rgba(235,191,116,0.1)", borderWidth: 1, borderColor: "rgba(235,191,116,0.25)" }}>
           <div className="w-4 h-4 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(235,191,116,0.3)", borderTopColor: "#EBBF74" }} />
-          <p className="text-xs font-medium text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-xs font-medium text-[#856C42]">
             Aguardando confirmação do pagamento...
           </p>
         </div>
@@ -679,18 +675,18 @@ function PixForm({
       <div className="p-4 rounded-xl bg-[#165B36]/5 border border-[#165B36]/10 mb-2">
         <div className="flex items-center gap-2 mb-1.5">
           <QrCode className="w-4 h-4 text-[#165B36]" />
-          <p className="text-sm font-medium text-[#052413]" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-sm font-medium text-[#052413]">
             Pagamento instantâneo
           </p>
         </div>
-        <p className="text-xs text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+        <p className="text-xs text-[#856C42]">
           Após preencher seus dados, vamos gerar um QR Code e um código Pix Copia e Cola para pagamento imediato.
         </p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={labelClasses} style={labelStyle}>Nome</label>
+          <label className={labelClasses}>Nome</label>
           <input
             type="text"
             value={firstName}
@@ -701,7 +697,7 @@ function PixForm({
           />
         </div>
         <div>
-          <label className={labelClasses} style={labelStyle}>Sobrenome</label>
+          <label className={labelClasses}>Sobrenome</label>
           <input
             type="text"
             value={lastName}
@@ -714,7 +710,7 @@ function PixForm({
       </div>
 
       <div>
-        <label className={labelClasses} style={labelStyle}>E-mail</label>
+        <label className={labelClasses}>E-mail</label>
         <input
           type="email"
           value={email}
@@ -726,7 +722,7 @@ function PixForm({
       </div>
 
       <div>
-        <label className={labelClasses} style={labelStyle}>CPF ou CNPJ</label>
+        <label className={labelClasses}>CPF ou CNPJ</label>
         <input
           type="text"
           value={cpf}
@@ -741,7 +737,7 @@ function PixForm({
       {error && (
         <div className="flex items-center gap-2 text-sm text-red-600 p-3 rounded-lg bg-red-50">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span style={{ fontFamily: "Inter, sans-serif" }}>{error}</span>
+          <span>{error}</span>
         </div>
       )}
 
@@ -785,13 +781,13 @@ function BoletoForm({
   if (result && boletoUrl) {
     return (
       <div className="text-center space-y-5">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F0E8D4]/60 text-[#856C42] text-sm font-medium" style={{ fontFamily: "Inter, sans-serif" }}>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F0E8D4]/60 text-[#856C42] text-sm font-medium">
           <FileText className="w-4 h-4" />
           Boleto gerado com sucesso
         </div>
 
         <div className="p-5 rounded-xl bg-white border border-[#F0E8D4] shadow-sm">
-          <p className="text-sm text-[#052413] mb-4" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-sm text-[#052413] mb-4">
             Seu boleto foi gerado. Clique abaixo para visualizar e pagar:
           </p>
           <a
@@ -801,7 +797,6 @@ function BoletoForm({
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
             style={{
               background: "linear-gradient(135deg, #165B36, #052413)",
-              fontFamily: "Inter, sans-serif",
             }}
           >
             <FileText className="w-4 h-4" />
@@ -810,7 +805,7 @@ function BoletoForm({
         </div>
 
         <div className="p-4 rounded-xl bg-[#EBBF74]/10 border border-[#EBBF74]/20">
-          <p className="text-xs text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-xs text-[#856C42]">
             O boleto pode levar até <strong>3 dias úteis</strong> para ser compensado.
             O pagamento será confirmado automaticamente.
           </p>
@@ -818,7 +813,7 @@ function BoletoForm({
 
         <div className="flex items-center justify-center gap-2.5 p-3.5 rounded-xl" style={{ backgroundColor: "rgba(235,191,116,0.1)", borderWidth: 1, borderColor: "rgba(235,191,116,0.25)" }}>
           <div className="w-4 h-4 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(235,191,116,0.3)", borderTopColor: "#EBBF74" }} />
-          <p className="text-xs font-medium text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-xs font-medium text-[#856C42]">
             Aguardando confirmação do pagamento...
           </p>
         </div>
@@ -852,18 +847,18 @@ function BoletoForm({
       <div className="p-4 rounded-xl bg-[#EBBF74]/10 border border-[#EBBF74]/20 mb-2">
         <div className="flex items-center gap-2 mb-1.5">
           <FileText className="w-4 h-4 text-[#856C42]" />
-          <p className="text-sm font-medium text-[#052413]" style={{ fontFamily: "Inter, sans-serif" }}>
+          <p className="text-sm font-medium text-[#052413]">
             Boleto bancário
           </p>
         </div>
-        <p className="text-xs text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+        <p className="text-xs text-[#856C42]">
           Após preencher seus dados, vamos gerar o boleto para pagamento. Prazo de compensação: até 3 dias úteis.
         </p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={labelClasses} style={labelStyle}>Nome</label>
+          <label className={labelClasses}>Nome</label>
           <input
             type="text"
             value={firstName}
@@ -874,7 +869,7 @@ function BoletoForm({
           />
         </div>
         <div>
-          <label className={labelClasses} style={labelStyle}>Sobrenome</label>
+          <label className={labelClasses}>Sobrenome</label>
           <input
             type="text"
             value={lastName}
@@ -887,7 +882,7 @@ function BoletoForm({
       </div>
 
       <div>
-        <label className={labelClasses} style={labelStyle}>E-mail</label>
+        <label className={labelClasses}>E-mail</label>
         <input
           type="email"
           value={email}
@@ -899,7 +894,7 @@ function BoletoForm({
       </div>
 
       <div>
-        <label className={labelClasses} style={labelStyle}>CPF ou CNPJ</label>
+        <label className={labelClasses}>CPF ou CNPJ</label>
         <input
           type="text"
           value={cpf}
@@ -914,7 +909,7 @@ function BoletoForm({
       {error && (
         <div className="flex items-center gap-2 text-sm text-red-600 p-3 rounded-lg bg-red-50">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span style={{ fontFamily: "Inter, sans-serif" }}>{error}</span>
+          <span>{error}</span>
         </div>
       )}
 
@@ -1274,7 +1269,6 @@ export function PaymentPage() {
         <Link
           to="/"
           className="inline-flex items-center gap-2 mb-6 text-[#EBBF74]/70 hover:text-[#EBBF74] transition-colors text-sm"
-          style={{ fontFamily: "Inter, sans-serif" }}
         >
           <ArrowLeft className="w-4 h-4" />
           Voltar ao site
@@ -1287,7 +1281,7 @@ export function PaymentPage() {
             style={{ filter: "brightness(10) saturate(0)" }}
           />
         </div>
-        <p className="text-sm text-[#EBBF74]/60" style={{ fontFamily: "Inter, sans-serif" }}>
+        <p className="text-sm text-[#EBBF74]/60">
           Checkout seguro
         </p>
       </header>
@@ -1298,7 +1292,7 @@ export function PaymentPage() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-8 h-8 animate-spin text-[#EBBF74] mb-3" />
-              <p className="text-sm text-[#856C42]/60" style={{ fontFamily: "Inter, sans-serif" }}>
+              <p className="text-sm text-[#856C42]/60">
                 Carregando informações de pagamento...
               </p>
             </div>
@@ -1310,16 +1304,15 @@ export function PaymentPage() {
               style={{ backgroundColor: "#FFFDF8", boxShadow: "0 8px 40px rgba(5,36,19,0.12)" }}
             >
               <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-              <h2 className="text-lg text-[#052413] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h2 className="text-lg text-[#052413] mb-2 font-serif">
                 Pagamento indisponível
               </h2>
-              <p className="text-sm text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+              <p className="text-sm text-[#856C42]">
                 {error}
               </p>
               <Link
                 to="/"
                 className="inline-flex items-center gap-2 mt-6 text-sm text-[#165B36] hover:underline"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 <ArrowLeft className="w-4 h-4" />
                 Voltar ao site
@@ -1338,19 +1331,19 @@ export function PaymentPage() {
               >
                 <CheckCircle className="w-8 h-8 text-[#0a7c3e]" />
               </div>
-              <h2 className="text-xl text-[#052413] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h2 className="text-xl text-[#052413] mb-2 font-serif">
                 Pagamento confirmado!
               </h2>
-              <p className="text-sm text-[#856C42] mb-1" style={{ fontFamily: "Inter, sans-serif" }}>
+              <p className="text-sm text-[#856C42] mb-1">
                 {info?.title}
               </p>
-              <p className="text-lg font-bold text-[#052413] tracking-tight mb-1" style={{ fontFamily: "Inter, sans-serif" }}>
+              <p className="text-lg font-bold text-[#052413] tracking-tight mb-1">
                 {info ? (info.depositPercent && info.depositPercent > 0 && info.depositPercent < 100
                   ? `${formatCurrency(info.chargeAmount)} (entrada ${info.depositPercent}%)`
                   : formatCurrency(info.price)) : ""}
               </p>
               {info?.depositPercent && info.depositPercent > 0 && info.depositPercent < 100 && info.remainderAmount ? (
-                <p className="text-xs text-[#856C42] mb-4" style={{ fontFamily: "Inter, sans-serif" }}>
+                <p className="text-xs text-[#856C42] mb-4">
                   Valor total: {formatCurrency(info.price)} ·{" "}
                   {info.installmentPlan?.enabled
                     ? `Restante em ${info.installmentPlan.totalInstallments}x via PIX: ${formatCurrency(info.remainderAmount)}`
@@ -1358,19 +1351,19 @@ export function PaymentPage() {
                 </p>
               ) : null}
               {info?.paidAt && (
-                <p className="text-xs text-[#856C42]/60 mb-6" style={{ fontFamily: "Inter, sans-serif" }}>
+                <p className="text-xs text-[#856C42]/60 mb-6">
                   Pago em {formatDate(info.paidAt)}
                 </p>
               )}
               <div className="p-4 rounded-xl bg-[#165B36]/5 border border-[#165B36]/10">
-                <p className="text-sm text-[#052413]" style={{ fontFamily: "Inter, sans-serif" }}>
+                <p className="text-sm text-[#052413]">
                   Seu pagamento foi recebido e a produção do seu projeto será iniciada em breve.
                   Acompanhe o andamento na sua <Link to="/minha-conta" className="text-[#165B36] font-medium hover:underline">área do cliente</Link>.
                 </p>
               </div>
               {info?.depositPercent && info.depositPercent > 0 && info.depositPercent < 100 && info.remainderAmount ? (
                 <div className="mt-3 p-3 rounded-xl border" style={{ backgroundColor: "rgba(235,191,116,0.06)", borderColor: "rgba(235,191,116,0.2)" }}>
-                  <p className="text-xs text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+                  <p className="text-xs text-[#856C42]">
                     {info.installmentPlan?.enabled ? (
                       <>
                         O saldo restante de <strong className="text-[#052413]">{formatCurrency(info.remainderAmount)}</strong> sera pago em{" "}
@@ -1408,10 +1401,10 @@ export function PaymentPage() {
                     <BookOpen className="w-6 h-6 text-[#165B36]" />
                   </div>
                   <div className="min-w-0">
-                    <h2 className="text-lg text-[#052413]" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <h2 className="text-lg text-[#052413] font-serif">
                       {info.title}
                     </h2>
-                    <p className="text-sm text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+                    <p className="text-sm text-[#856C42]">
                       {info.author}
                     </p>
                   </div>
@@ -1420,12 +1413,12 @@ export function PaymentPage() {
                 {/* Project Details */}
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   {info.format && (
-                    <div className="flex items-center gap-1.5 text-xs text-[#856C42]/80" style={{ fontFamily: "Inter, sans-serif" }}>
+                    <div className="flex items-center gap-1.5 text-xs text-[#856C42]/80">
                       <span className="text-[#856C42]/40">Formato:</span> {info.format}
                     </div>
                   )}
                   {info.pageCount && (
-                    <div className="flex items-center gap-1.5 text-xs text-[#856C42]/80" style={{ fontFamily: "Inter, sans-serif" }}>
+                    <div className="flex items-center gap-1.5 text-xs text-[#856C42]/80">
                       <span className="text-[#856C42]/40">Páginas:</span> ~{info.pageCount}
                     </div>
                   )}
@@ -1438,7 +1431,6 @@ export function PaymentPage() {
                         key={s}
                         className="inline-flex items-center px-2 py-0.5 rounded-md text-[0.65rem] font-medium"
                         style={{
-                          fontFamily: "Inter, sans-serif",
                           backgroundColor: "rgba(22,91,54,0.08)",
                           color: "#165B36",
                         }}
@@ -1450,13 +1442,13 @@ export function PaymentPage() {
                 )}
 
                 <div className="p-3 rounded-xl mb-3" style={{ backgroundColor: "#F0E8D4" }}>
-                  <p className="text-xs text-[#856C42] mb-0.5" style={{ fontFamily: "Inter, sans-serif" }}>
+                  <p className="text-xs text-[#856C42] mb-0.5">
                     {info.budgetDescription}
                   </p>
                 </div>
 
                 {info.description && (
-                  <p className="text-xs text-[#856C42]/60 mb-3 leading-relaxed" style={{ fontFamily: "Inter, sans-serif" }}>
+                  <p className="text-xs text-[#856C42]/60 mb-3 leading-relaxed">
                     {info.description}
                   </p>
                 )}
@@ -1464,10 +1456,10 @@ export function PaymentPage() {
                 {/* Pricing breakdown */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between p-4 rounded-xl" style={{ background: "linear-gradient(135deg, rgba(235,191,116,0.15), rgba(133,108,66,0.08))" }}>
-                    <span className="text-sm text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+                    <span className="text-sm text-[#856C42]">
                       Valor total
                     </span>
-                    <span className="text-2xl font-bold text-[#052413] tracking-tight" style={{ fontFamily: "Inter, sans-serif" }}>
+                    <span className="text-2xl font-bold text-[#052413] tracking-tight">
                       {formatCurrency(info.price)}
                     </span>
                   </div>
@@ -1475,20 +1467,20 @@ export function PaymentPage() {
                   {info.depositPercent > 0 && info.depositPercent < 100 && (
                     <>
                       <div className="flex items-center justify-between px-4 py-3 rounded-xl border-2 border-[#165B36]/20" style={{ backgroundColor: "rgba(22,91,54,0.04)" }}>
-                        <span className="text-sm font-medium text-[#165B36]" style={{ fontFamily: "Inter, sans-serif" }}>
+                        <span className="text-sm font-medium text-[#165B36]">
                           Entrada ({info.depositPercent}%) — pagar agora
                         </span>
-                        <span className="text-xl font-bold text-[#165B36] tracking-tight" style={{ fontFamily: "Inter, sans-serif" }}>
+                        <span className="text-xl font-bold text-[#165B36] tracking-tight">
                           {formatCurrency(info.chargeAmount)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between px-4 py-2.5 rounded-xl" style={{ backgroundColor: "rgba(133,108,66,0.05)" }}>
-                        <span className="text-xs text-[#856C42]/70" style={{ fontFamily: "Inter, sans-serif" }}>
+                        <span className="text-xs text-[#856C42]/70">
                           {info.installmentPlan?.enabled
                             ? `Restante via parcelamento PIX (${info.installmentPlan.totalInstallments}x)`
                             : "Restante na entrega do projeto"}
                         </span>
-                        <span className="text-sm font-semibold text-[#856C42]/70 tracking-tight" style={{ fontFamily: "Inter, sans-serif" }}>
+                        <span className="text-sm font-semibold text-[#856C42]/70 tracking-tight">
                           {formatCurrency(info.remainderAmount)}
                         </span>
                       </div>
@@ -1517,10 +1509,10 @@ export function PaymentPage() {
                     )}
                   </div>
                   <div>
-                    <h3 className="text-base text-[#052413]" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <h3 className="text-base text-[#052413] font-serif">
                       Contrato de prestacao de servicos
                     </h3>
-                    <p className="text-[0.65rem] text-[#856C42]/60" style={{ fontFamily: "Inter, sans-serif" }}>
+                    <p className="text-[0.65rem] text-[#856C42]/60">
                       {contractAccepted
                         ? `Aceito em ${info.contractAcceptedAt ? formatDate(info.contractAcceptedAt) : "data registrada"}`
                         : `Versao ${CONTRACT_VERSION} — Personalizado com seus dados e servicos`}
@@ -1530,7 +1522,7 @@ export function PaymentPage() {
 
                 {contractAccepted ? (
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 p-3 rounded-xl text-sm text-[#0a7c3e]" style={{ backgroundColor: "rgba(10,124,62,0.06)", fontFamily: "Inter, sans-serif" }}>
+                    <div className="flex items-center gap-2 p-3 rounded-xl text-sm text-[#0a7c3e]" style={{ backgroundColor: "rgba(10,124,62,0.06)" }}>
                       <CheckCircle className="w-4 h-4 flex-shrink-0" />
                       <div>
                         <span className="font-medium">Contrato aceito eletronicamente</span>
@@ -1549,12 +1541,11 @@ export function PaymentPage() {
                             }
                           }}
                           className="w-full flex items-center justify-center gap-2 p-2.5 text-xs font-medium text-[#856C42] transition-colors hover:bg-[#F0E8D4]/30 cursor-pointer"
-                          style={{ fontFamily: "Inter, sans-serif" }}
                         >
                           <Download className="w-3.5 h-3.5" />
                           Documento complementar em PDF ({info.contractPdfName || "contrato.pdf"})
                         </button>
-                        <p className="text-[0.55rem] text-[#856C42]/40 text-center pb-2 px-3" style={{ fontFamily: "Inter, sans-serif" }}>
+                        <p className="text-[0.55rem] text-[#856C42]/40 text-center pb-2 px-3">
                           Documento adicional fornecido pela editora para seu arquivo pessoal.
                         </p>
                       </div>
@@ -1563,7 +1554,6 @@ export function PaymentPage() {
                     <button
                       onClick={handleContractDownload}
                       className="flex items-center justify-center gap-1.5 w-full py-1.5 text-[0.6rem] text-[#856C42]/40 hover:text-[#856C42]/70 transition-colors cursor-pointer"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       <Download className="w-2.5 h-2.5" />
                       Salvar copia do contrato
@@ -1573,22 +1563,22 @@ export function PaymentPage() {
                   <>
                     {/* Step 1: Identification fields FIRST so they appear live in contract */}
                     <div className="space-y-3 mb-4">
-                      <p className="text-xs text-[#856C42]/70" style={{ fontFamily: "Inter, sans-serif" }}>
+                      <p className="text-xs text-[#856C42]/70">
                         Preencha seus dados abaixo. Eles serao inseridos automaticamente no contrato.
                       </p>
                       <div>
-                        <label className={labelClasses} style={labelStyle}>Nome completo do contratante</label>
+                        <label className={labelClasses}>Nome completo do contratante</label>
                         <input type="text" value={contractName} onChange={(e) => setContractName(e.target.value)} placeholder="Nome completo" className={inputClasses} style={inputStyle} />
                       </div>
                       <div>
-                        <label className={labelClasses} style={labelStyle}>E-mail do contratante</label>
+                        <label className={labelClasses}>E-mail do contratante</label>
                         <input type="email" value={contractEmail} onChange={(e) => setContractEmail(e.target.value)} placeholder="seu@email.com" className={inputClasses} style={inputStyle} />
                       </div>
                       <div>
-                        <label className={labelClasses} style={labelStyle}>CPF ou CNPJ do contratante</label>
+                        <label className={labelClasses}>CPF ou CNPJ do contratante</label>
                         <input type="text" value={contractCpf} onChange={(e) => setContractCpf(formatCPFOrCNPJ(e.target.value))} placeholder="000.000.000-00 ou 00.000.000/0000-00" className={inputClasses} style={inputStyle} maxLength={18} />
                         {contractCpf.replace(/\D/g, "").length > 0 && contractCpf.replace(/\D/g, "").length < 11 && (
-                          <p className="text-[0.6rem] text-[#856C42]/50 mt-1" style={{ fontFamily: "Inter, sans-serif" }}>CPF: 11 digitos | CNPJ: 14 digitos</p>
+                          <p className="text-[0.6rem] text-[#856C42]/50 mt-1">CPF: 11 digitos | CNPJ: 14 digitos</p>
                         )}
                       </div>
                     </div>
@@ -1597,7 +1587,7 @@ export function PaymentPage() {
                     <button
                       onClick={() => setContractExpanded(!contractExpanded)}
                       className="w-full flex items-center justify-between p-3 rounded-xl mb-3 cursor-pointer transition-colors hover:bg-[#F0E8D4]/40"
-                      style={{ backgroundColor: "#F0E8D4", fontFamily: "Inter, sans-serif" }}
+                      style={{ backgroundColor: "#F0E8D4" }}
                     >
                       <span className="text-xs font-medium text-[#052413]">
                         {contractExpanded ? "Ocultar contrato" : "Ler contrato completo"}
@@ -1617,14 +1607,14 @@ export function PaymentPage() {
                           <div
                             id="contract-full-text"
                             className="rounded-xl border p-4 mb-4 max-h-[400px] overflow-y-auto scrollbar-thin text-[0.7rem] leading-relaxed text-[#052413]/80"
-                            style={{ borderColor: "rgba(133,108,66,0.15)", backgroundColor: "rgba(255,255,255,0.7)", fontFamily: "Inter, sans-serif" }}
+                            style={{ borderColor: "rgba(133,108,66,0.15)", backgroundColor: "rgba(255,255,255,0.7)" }}
                           >
                             {/* Branded header */}
                             <div className="text-center mb-5 pb-4 border-b" style={{ borderColor: "rgba(133,108,66,0.15)" }}>
                               <div className="flex items-center justify-center gap-3 mb-2">
                                 <img src={logoImg} alt={COMPANY_NAME} className="h-10 object-contain" style={{ filter: "drop-shadow(0 1px 2px rgba(5,36,19,0.1))" }} />
                               </div>
-                              <p className="font-bold text-xs text-[#052413] tracking-wide" style={{ fontFamily: "'Playfair Display', serif" }}>CONTRATO DE PRESTACAO DE SERVICOS EDITORIAIS</p>
+                              <p className="font-bold text-xs text-[#052413] tracking-wide font-serif">CONTRATO DE PRESTACAO DE SERVICOS EDITORIAIS</p>
                               <div className="flex items-center justify-center gap-2 mt-1.5">
                                 <div className="h-px w-8" style={{ backgroundColor: "rgba(235,191,116,0.5)" }} />
                                 <p className="text-[0.55rem] text-[#856C42]/80 uppercase tracking-widest">Versao {CONTRACT_VERSION}</p>
@@ -1776,12 +1766,11 @@ export function PaymentPage() {
                             }
                           }}
                           className="w-full flex items-center justify-center gap-2 p-2.5 text-xs font-medium text-[#856C42] transition-colors hover:bg-[#F0E8D4]/30 cursor-pointer"
-                          style={{ fontFamily: "Inter, sans-serif" }}
                         >
                           <Download className="w-3.5 h-3.5" />
                           Documento complementar em PDF ({info.contractPdfName || "contrato.pdf"})
                         </button>
-                        <p className="text-[0.55rem] text-[#856C42]/40 text-center pb-2 px-3" style={{ fontFamily: "Inter, sans-serif" }}>
+                        <p className="text-[0.55rem] text-[#856C42]/40 text-center pb-2 px-3">
                           Documento adicional fornecido pela editora. O aceite juridico refere-se ao contrato acima.
                         </p>
                       </div>
@@ -1789,7 +1778,7 @@ export function PaymentPage() {
 
                     {/* Step 3: Checkbox + accept button */}
                     <div className="space-y-3">
-                      <label className="flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-colors hover:bg-[#F0E8D4]/30" style={{ fontFamily: "Inter, sans-serif" }}>
+                      <label className="flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-colors hover:bg-[#F0E8D4]/30">
                         <input type="checkbox" checked={contractChecked} onChange={(e) => setContractChecked(e.target.checked)} className="mt-0.5 w-4 h-4 rounded border-[#856C42]/30 text-[#165B36] focus:ring-[#EBBF74]/40 cursor-pointer" />
                         <span className="text-xs text-[#052413] leading-relaxed">
                           Eu, <strong>{contractName.trim() || "_______________"}</strong>, inscrito(a) no {contractCpf.replace(/\D/g, "").length === 14 ? "CNPJ" : "CPF"} n. <strong>{contractCpf || "___.___.___-__"}</strong>, declaro que li integralmente, compreendo e aceito todas as clausulas do <strong>Contrato de Prestacao de Servicos Editoriais</strong> da {COMPANY_NAME} (versao {CONTRACT_VERSION}), concordando com seus termos e condicoes.
@@ -1870,7 +1859,7 @@ export function PaymentPage() {
                   boxShadow: "0 8px 40px rgba(5,36,19,0.12), 0 0 0 1px rgba(133,108,66,0.08)",
                 }}
               >
-                <h3 className="text-base text-[#052413] mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <h3 className="text-base text-[#052413] mb-4 font-serif">
                   Forma de pagamento
                 </h3>
 
@@ -1922,16 +1911,16 @@ export function PaymentPage() {
               {/* Security Footer */}
               <div className="mt-5 text-center space-y-2">
                 <div className="flex items-center justify-center gap-4 flex-wrap">
-                  <div className="flex items-center gap-1.5 text-[0.65rem] text-[#856C42]/50" style={{ fontFamily: "Inter, sans-serif" }}>
+                  <div className="flex items-center gap-1.5 text-[0.65rem] text-[#856C42]/50">
                     <Shield className="w-3.5 h-3.5" />
                     Ambiente seguro
                   </div>
-                  <div className="flex items-center gap-1.5 text-[0.65rem] text-[#856C42]/50" style={{ fontFamily: "Inter, sans-serif" }}>
+                  <div className="flex items-center gap-1.5 text-[0.65rem] text-[#856C42]/50">
                     <Lock className="w-3.5 h-3.5" />
                     Dados criptografados
                   </div>
                 </div>
-                <p className="text-[0.6rem] text-[#856C42]/30" style={{ fontFamily: "Inter, sans-serif" }}>
+                <p className="text-[0.6rem] text-[#856C42]/30">
                   Processado por Mercado Pago — Plataforma de pagamentos segura
                 </p>
               </div>
@@ -1945,7 +1934,6 @@ export function PaymentPage() {
         position="bottom-right"
         toastOptions={{
           style: {
-            fontFamily: "Inter, sans-serif",
             borderRadius: "12px",
             border: "1px solid rgba(133, 108, 66, 0.15)",
             background: "#FFFDF8",

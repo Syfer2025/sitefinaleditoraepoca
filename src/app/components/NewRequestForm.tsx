@@ -191,7 +191,6 @@ export function NewRequestForm({
   const inputClasses =
     "w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#052413] focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 transition-colors";
   const inputStyle = {
-    fontFamily: "Inter, sans-serif" as const,
     backgroundColor: "#FFFDF8",
     borderColor: "rgba(133,108,66,0.2)",
   };
@@ -239,8 +238,7 @@ export function NewRequestForm({
         >
           <div>
             <h2
-              className="text-xl text-[#052413]"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-xl text-[#052413] font-serif"
             >
               Nova <span className="italic text-[#165B36]">solicitação</span>
             </h2>
@@ -278,7 +276,6 @@ export function NewRequestForm({
                           : "text-[#856C42]/40"
                     }`}
                     style={{
-                      fontFamily: "Inter, sans-serif",
                       ...(isCurrent
                         ? {
                             background:
@@ -331,7 +328,6 @@ export function NewRequestForm({
               >
                 <p
                   className="text-xs text-[#856C42] mb-1"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   Informações básicas sobre a obra
                 </p>
@@ -339,7 +335,6 @@ export function NewRequestForm({
                   <div>
                     <label
                       className="block text-xs font-medium text-[#052413] mb-1.5"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       Título da obra *
                     </label>
@@ -356,7 +351,6 @@ export function NewRequestForm({
                   <div>
                     <label
                       className="block text-xs font-medium text-[#052413] mb-1.5"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       Autor
                     </label>
@@ -373,7 +367,6 @@ export function NewRequestForm({
                 <div>
                   <label
                     className="block text-xs font-medium text-[#052413] mb-1.5"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     Descrição do projeto
                   </label>
@@ -400,7 +393,6 @@ export function NewRequestForm({
               >
                 <p
                   className="text-xs text-[#856C42] mb-3"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   Selecione os serviços que você precisa
                 </p>
@@ -429,7 +421,6 @@ export function NewRequestForm({
                         <div className="flex items-start justify-between gap-1">
                           <p
                             className={`text-xs font-medium leading-tight ${isSelected ? "text-[#165B36]" : "text-[#052413]"}`}
-                            style={{ fontFamily: "Inter, sans-serif" }}
                           >
                             {svc.label}
                           </p>
@@ -439,7 +430,6 @@ export function NewRequestForm({
                         </div>
                         <p
                           className="text-[0.6rem] text-[#856C42]/70 mt-0.5 leading-tight"
-                          style={{ fontFamily: "Inter, sans-serif" }}
                         >
                           {svc.desc}
                         </p>
@@ -449,7 +439,6 @@ export function NewRequestForm({
                 </div>
                 <p
                   className="text-[0.6rem] text-[#856C42]/50 mt-3"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   "Pacote completo" inclui todos os serviços. Selecionar outro
                   desmarca o pacote completo.
@@ -469,7 +458,6 @@ export function NewRequestForm({
               >
                 <p
                   className="text-xs text-[#856C42] mb-1"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   Escolha o formato e especificações do livro
                 </p>
@@ -477,7 +465,6 @@ export function NewRequestForm({
                   <div>
                     <label
                       className="block text-xs font-medium text-[#052413] mb-1.5"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       Formato do livro
                     </label>
@@ -497,7 +484,6 @@ export function NewRequestForm({
                   <div>
                     <label
                       className="block text-xs font-medium text-[#052413] mb-1.5"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       Páginas estimadas
                     </label>
@@ -516,7 +502,6 @@ export function NewRequestForm({
                   <div>
                     <label
                       className="block text-xs font-medium text-[#052413] mb-1.5"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       Formato personalizado
                     </label>
@@ -533,7 +518,6 @@ export function NewRequestForm({
                 <div>
                   <label
                     className="block text-xs font-medium text-[#052413] mb-1.5"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     Observações adicionais
                   </label>
@@ -560,13 +544,12 @@ export function NewRequestForm({
               >
                 <p
                   className="text-xs text-[#856C42] mb-3"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   Envie o manuscrito e materiais de apoio (opcional)
                 </p>
                 <div
                   className="flex items-start gap-2 mb-3 p-2.5 rounded-lg text-[0.65rem] leading-relaxed"
-                  style={{ backgroundColor: "rgba(22,91,54,0.05)", border: "1px solid rgba(22,91,54,0.1)", fontFamily: "Inter, sans-serif", color: "#052413" }}
+                  style={{ backgroundColor: "rgba(22,91,54,0.05)", border: "1px solid rgba(22,91,54,0.1)", color: "#052413" }}
                 >
                   <svg className="w-3.5 h-3.5 text-[#165B36] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" /></svg>
                   <span>
@@ -608,7 +591,6 @@ export function NewRequestForm({
                   <Upload className="w-7 h-7 text-[#856C42]/30 mx-auto mb-2" />
                   <p
                     className="text-xs text-[#052413]"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     Arraste arquivos aqui ou{" "}
                     <span className="text-[#165B36] font-medium">
@@ -617,7 +599,6 @@ export function NewRequestForm({
                   </p>
                   <p
                     className="text-[0.6rem] text-[#856C42]/50 mt-1"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     Word, PDF, TXT, RTF, ODT, InDesign, imagens, ZIP — máx. 50
                     MB/arquivo
@@ -636,13 +617,11 @@ export function NewRequestForm({
                         <div className="min-w-0 flex-1">
                           <p
                             className="text-xs text-[#052413] truncate"
-                            style={{ fontFamily: "Inter, sans-serif" }}
                           >
                             {file.name}
                           </p>
                           <p
                             className="text-[0.6rem] text-[#856C42]/60"
-                            style={{ fontFamily: "Inter, sans-serif" }}
                           >
                             {formatFileSize(file.size)}
                           </p>
@@ -672,7 +651,7 @@ export function NewRequestForm({
               style={{ backgroundColor: "rgba(212,24,61,0.05)" }}
             >
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <span style={{ fontFamily: "Inter, sans-serif" }}>{error}</span>
+              <span>{error}</span>
             </div>
           )}
         </div>
@@ -686,7 +665,6 @@ export function NewRequestForm({
             type="button"
             onClick={step === 0 ? onClose : handleBack}
             className="px-4 py-2.5 rounded-xl text-sm text-[#856C42] hover:bg-[#F0E8D4] transition-colors cursor-pointer"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             {step === 0 ? "Cancelar" : "Voltar"}
           </button>
@@ -714,7 +692,6 @@ export function NewRequestForm({
                 className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                 style={{
                   background: "linear-gradient(135deg, #165B36, #052413)",
-                  fontFamily: "Inter, sans-serif",
                 }}
               >
                 Próximo

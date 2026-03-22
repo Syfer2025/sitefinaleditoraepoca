@@ -87,16 +87,6 @@ export function getUserToken(): string | null {
   }
 }
 
-// Legacy helpers kept for backward compatibility but they now also
-// update the Supabase session when called.
-export function setUserToken(_token: string) {
-  // No-op: session is managed by the Supabase client now
-}
-
-export function clearUserToken() {
-  // No-op: use supabase.auth.signOut() instead
-}
-
 export function getUserData(): { id: string; email: string; name: string; role: string } | null {
   const raw = localStorage.getItem("user_data");
   if (!raw) return null;

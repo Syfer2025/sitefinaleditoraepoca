@@ -3,7 +3,6 @@ import { Upload, Loader2, Save, ImageIcon, Check } from "lucide-react";
 import { getLogos, updateAdminLogoKey, uploadFile } from "../../data/api";
 import { toast } from "sonner";
 
-const F = "Inter, sans-serif";
 
 type LogoKey = "navbar" | "footer" | "favicon";
 
@@ -88,8 +87,8 @@ function LogoPanel({
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-6 space-y-4 shadow-sm">
       <div>
-        <h2 className="text-base font-semibold text-gray-900" style={{ fontFamily: F }}>{config.label}</h2>
-        <p className="text-xs text-gray-400 mt-0.5" style={{ fontFamily: F }}>{config.description}</p>
+        <h2 className="text-base font-semibold text-gray-900">{config.label}</h2>
+        <p className="text-xs text-gray-400 mt-0.5">{config.description}</p>
       </div>
 
       {/* Preview */}
@@ -102,7 +101,7 @@ function LogoPanel({
             <img src={displayImg} alt={config.label} className="h-7 object-contain" />
           </div>
           {state.preview && (
-            <span className="text-xs text-[#165B36] font-medium" style={{ fontFamily: F }}>
+            <span className="text-xs text-[#165B36] font-medium">
               Prévia — ainda não salva
             </span>
           )}
@@ -136,10 +135,10 @@ function LogoPanel({
               <Upload className="w-4 h-4 text-gray-400" />
             )}
           </div>
-          <p className="text-sm font-medium text-gray-600" style={{ fontFamily: F }}>
+          <p className="text-sm font-medium text-gray-600">
             {state.uploading ? "Enviando para Supabase..." : state.dragging ? "Solte aqui" : displayImg ? "Trocar imagem" : "Clique ou arraste"}
           </p>
-          <p className="text-xs text-gray-400" style={{ fontFamily: F }}>{config.hint}</p>
+          <p className="text-xs text-gray-400">{config.hint}</p>
         </div>
       </div>
 
@@ -149,7 +148,6 @@ function LogoPanel({
         disabled={!state.preview || state.saving}
         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         style={{
-          fontFamily: F,
           background: state.preview ? "linear-gradient(135deg, #EBBF74, #D4AF5A)" : "#d1d5db",
           color: state.preview ? "#052413" : "#9ca3af",
         }}
@@ -202,8 +200,8 @@ export function AdminLogo() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: F }}>Logos</h1>
-        <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: F }}>
+        <h1 className="text-2xl font-semibold text-gray-900">Logos</h1>
+        <p className="text-sm text-gray-500 mt-1">
           Gerencie as logos do site de forma independente. As imagens são enviadas para o Supabase Storage.
         </p>
       </div>

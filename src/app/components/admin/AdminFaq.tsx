@@ -16,7 +16,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { getFaqs, updateAdminFaqs } from "../../data/api";
 import { toast } from "sonner";
 
-const F = "Inter, sans-serif";
 
 interface FaqItem {
   id: string;
@@ -130,10 +129,10 @@ export function AdminFaq() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: F }}>
+          <h1 className="text-2xl font-semibold text-gray-900">
             Perguntas Frequentes
           </h1>
-          <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: F }}>
+          <p className="text-sm text-gray-500 mt-1">
             Gerencie as perguntas exibidas na seção de FAQ do site
           </p>
         </div>
@@ -141,7 +140,6 @@ export function AdminFaq() {
           <button
             onClick={startAdd}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-[#165B36] bg-[#165B36]/5 hover:bg-[#165B36]/10 transition-colors cursor-pointer"
-            style={{ fontFamily: F }}
           >
             <Plus className="w-3.5 h-3.5" />
             Nova pergunta
@@ -151,7 +149,6 @@ export function AdminFaq() {
             disabled={!dirty || saving}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              fontFamily: F,
               background: dirty ? "linear-gradient(135deg, #EBBF74, #D4AF5A)" : "#d1d5db",
               color: dirty ? "#052413" : "#9ca3af",
             }}
@@ -171,7 +168,7 @@ export function AdminFaq() {
           style={{ backgroundColor: "rgba(235,191,116,0.1)", borderColor: "rgba(235,191,116,0.4)" }}
         >
           <span className="w-2 h-2 rounded-full bg-[#EBBF74] animate-pulse" />
-          <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>
+          <p className="text-xs text-[#856C42]">
             Alterações não salvas — clique em "Salvar alterações" para publicar no site.
           </p>
         </motion.div>
@@ -195,7 +192,7 @@ export function AdminFaq() {
                 /* Edit mode */
                 <div className="p-5 space-y-3">
                   <div>
-                    <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>
+                    <label className="text-xs font-medium text-gray-500 mb-1 block">
                       Pergunta
                     </label>
                     <input
@@ -203,11 +200,10 @@ export function AdminFaq() {
                       value={editDraft.question}
                       onChange={(e) => setEditDraft((d) => ({ ...d, question: e.target.value }))}
                       className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                      style={{ fontFamily: F }}
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>
+                    <label className="text-xs font-medium text-gray-500 mb-1 block">
                       Resposta
                     </label>
                     <textarea
@@ -215,21 +211,18 @@ export function AdminFaq() {
                       onChange={(e) => setEditDraft((d) => ({ ...d, answer: e.target.value }))}
                       rows={4}
                       className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40 resize-none"
-                      style={{ fontFamily: F }}
                     />
                   </div>
                   <div className="flex justify-end gap-2">
                     <button
                       onClick={cancelEdit}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
-                      style={{ fontFamily: F }}
                     >
                       <X className="w-3.5 h-3.5" /> Cancelar
                     </button>
                     <button
                       onClick={confirmEdit}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer"
-                      style={{ fontFamily: F }}
                     >
                       <Check className="w-3.5 h-3.5" /> Confirmar
                     </button>
@@ -240,10 +233,10 @@ export function AdminFaq() {
                 <div className="flex items-start gap-3 p-4">
                   <GripVertical className="w-4 h-4 text-gray-300 mt-1 shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <p className="text-sm font-medium text-gray-900 mb-1 font-serif">
                       {faq.question}
                     </p>
-                    <p className="text-xs text-gray-500 leading-relaxed" style={{ fontFamily: F }}>
+                    <p className="text-xs text-gray-500 leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>
@@ -288,13 +281,12 @@ export function AdminFaq() {
         {faqs.length === 0 && !adding && (
           <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
             <HelpCircle className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-            <p className="text-sm text-gray-400" style={{ fontFamily: F }}>
+            <p className="text-sm text-gray-400">
               Nenhuma pergunta cadastrada.
             </p>
             <button
               onClick={startAdd}
               className="mt-3 text-xs text-[#165B36] hover:underline cursor-pointer"
-              style={{ fontFamily: F }}
             >
               Adicionar primeira pergunta
             </button>
@@ -310,11 +302,11 @@ export function AdminFaq() {
               exit={{ opacity: 0, y: -6 }}
               className="bg-white border-2 border-dashed border-[#165B36]/30 rounded-xl p-5 space-y-3"
             >
-              <p className="text-xs font-semibold text-[#165B36]" style={{ fontFamily: F }}>
+              <p className="text-xs font-semibold text-[#165B36]">
                 Nova pergunta
               </p>
               <div>
-                <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>
+                <label className="text-xs font-medium text-gray-500 mb-1 block">
                   Pergunta
                 </label>
                 <input
@@ -323,11 +315,10 @@ export function AdminFaq() {
                   onChange={(e) => setNewDraft((d) => ({ ...d, question: e.target.value }))}
                   placeholder="Ex: Como funciona o processo editorial?"
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                  style={{ fontFamily: F }}
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-500 mb-1 block" style={{ fontFamily: F }}>
+                <label className="text-xs font-medium text-gray-500 mb-1 block">
                   Resposta
                 </label>
                 <textarea
@@ -336,21 +327,18 @@ export function AdminFaq() {
                   placeholder="Descreva a resposta de forma clara e objetiva..."
                   rows={4}
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40 resize-none"
-                  style={{ fontFamily: F }}
                 />
               </div>
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => setAdding(false)}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
-                  style={{ fontFamily: F }}
                 >
                   <X className="w-3.5 h-3.5" /> Cancelar
                 </button>
                 <button
                   onClick={confirmAdd}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer"
-                  style={{ fontFamily: F }}
                 >
                   <Plus className="w-3.5 h-3.5" /> Adicionar
                 </button>
@@ -362,7 +350,7 @@ export function AdminFaq() {
 
       {/* Counter */}
       {faqs.length > 0 && (
-        <p className="text-xs text-gray-400 text-right" style={{ fontFamily: F }}>
+        <p className="text-xs text-gray-400 text-right">
           {faqs.length} {faqs.length === 1 ? "pergunta" : "perguntas"} cadastradas
         </p>
       )}

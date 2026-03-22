@@ -20,18 +20,14 @@ export function CtaBanner() {
               <Feather className="w-6 h-6 text-[#EBBF74]" />
             </div>
             <h2
-              className="text-[2rem] md:text-[2.75rem] text-white mb-3"
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                lineHeight: 1.2,
-              }}
+              className="text-[2rem] md:text-[2.75rem] text-white mb-3 font-serif leading-[1.2]"
             >
               Tem um manuscrito esperando{" "}
               <span className="italic text-[#EBBF74]">para nascer?</span>
             </h2>
             <p
               className="text-white/70 max-w-xl mx-auto mb-6 text-[1.05rem]"
-              style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
+              style={{ lineHeight: 1.7 }}
             >
               Conheça nosso plano Profissional — o mais escolhido pelos autores
               que buscam excelência editorial, distribuição nacional e suporte
@@ -44,7 +40,6 @@ export function CtaBanner() {
               <a
                 href="#contato"
                 className="border border-white/30 text-white px-8 py-3.5 rounded-full hover:bg-white/10 hover:border-white/50 transition-all duration-300"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Enviar manuscrito
               </a>

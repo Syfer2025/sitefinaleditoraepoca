@@ -72,7 +72,7 @@ export function WhatsAppButton() {
             {/* Tooltip desktop */}
             <div
               className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none hidden sm:block"
-              style={{ backgroundColor: "#052413", color: "#fff", fontFamily: "Inter, sans-serif", fontSize: "0.8rem", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}
+              style={{ backgroundColor: "#052413", color: "#fff", fontSize: "0.8rem", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}
             >
               Fale conosco
               <span className="absolute left-full top-1/2 -translate-y-1/2" style={{ borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: "5px solid #052413" }} />

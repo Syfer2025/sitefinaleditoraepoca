@@ -5,8 +5,6 @@ import { Footer } from "./Footer";
 import { Shield, ArrowLeft } from "lucide-react";
 import { useSEO } from "../hooks/useSEO";
 
-const F = "Inter, sans-serif";
-const PF = "'Playfair Display', serif";
 
 export function PrivacyPage() {
   const navigate = useNavigate();
@@ -25,7 +23,6 @@ export function PrivacyPage() {
           <button
             onClick={() => navigate(-1)}
             className="inline-flex items-center gap-1.5 text-sm text-[#856C42] hover:text-[#165B36] transition-colors mb-6"
-            style={{ fontFamily: F }}
           >
             <ArrowLeft className="w-4 h-4" /> Voltar
           </button>
@@ -35,16 +32,16 @@ export function PrivacyPage() {
               <Shield className="w-5 h-5 text-[#EBBF74]" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-semibold text-[#052413]" style={{ fontFamily: PF }}>
+              <h1 className="text-2xl md:text-3xl font-semibold text-[#052413] font-serif">
                 Política de Privacidade
               </h1>
-              <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>Última atualização: 21 de março de 2026</p>
+              <p className="text-xs text-[#856C42]">Última atualização: 21 de março de 2026</p>
             </div>
           </div>
 
-          <div className="prose prose-sm max-w-none text-[#052413]/80 leading-relaxed space-y-6" style={{ fontFamily: F }}>
+          <div className="prose prose-sm max-w-none text-[#052413]/80 leading-relaxed space-y-6">
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>1. Identificação do Controlador</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">1. Identificação do Controlador</h2>
               <p>
                 <strong>Época Editora de Livros</strong>, pessoa jurídica de direito privado, com sede na cidade de Maringá,
                 Estado do Paraná, Brasil, é a controladora dos dados pessoais coletados por meio deste site,
@@ -53,7 +50,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>2. Dados Pessoais Coletados</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">2. Dados Pessoais Coletados</h2>
               <p>Coletamos os seguintes dados pessoais:</p>
               <ul className="list-disc pl-6 space-y-1 mt-2">
                 <li><strong>Dados cadastrais:</strong> nome completo, e-mail, CPF ou CNPJ, razão social (para PJ);</li>
@@ -66,7 +63,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>3. Finalidades do Tratamento</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">3. Finalidades do Tratamento</h2>
               <p>Os dados pessoais são tratados para as seguintes finalidades:</p>
               <ul className="list-disc pl-6 space-y-1 mt-2">
                 <li>Prestação de serviços editoriais contratados (base legal: execução de contrato — art. 7, V, LGPD);</li>
@@ -78,7 +75,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>4. Compartilhamento de Dados</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">4. Compartilhamento de Dados</h2>
               <p>Seus dados pessoais podem ser compartilhados com:</p>
               <ul className="list-disc pl-6 space-y-1 mt-2">
                 <li><strong>Mercado Pago:</strong> para processamento de pagamentos;</li>
@@ -92,7 +89,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>5. Retenção de Dados</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">5. Retenção de Dados</h2>
               <p>
                 Os dados pessoais serão retidos pelo período de <strong>5 (cinco) anos</strong> após a conclusão do contrato,
                 para fins de cumprimento de obrigações legais e fiscais. Após esse período, os dados serão anonimizados ou eliminados.
@@ -103,7 +100,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>6. Direitos do Titular</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">6. Direitos do Titular</h2>
               <p>Conforme o art. 18 da LGPD, você tem direito a:</p>
               <ul className="list-disc pl-6 space-y-1 mt-2">
                 <li>Confirmar a existência de tratamento de dados;</li>
@@ -128,7 +125,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>7. Cookies</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">7. Cookies</h2>
               <p>Utilizamos os seguintes tipos de cookies:</p>
               <ul className="list-disc pl-6 space-y-1 mt-2">
                 <li><strong>Cookies essenciais:</strong> necessários para o funcionamento básico do site (autenticação, preferências de sessão);</li>
@@ -140,7 +137,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>8. Segurança</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">8. Segurança</h2>
               <p>
                 Adotamos medidas técnicas e administrativas adequadas para proteger seus dados pessoais, incluindo:
               </p>
@@ -154,7 +151,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>9. Encarregado de Dados (DPO)</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">9. Encarregado de Dados (DPO)</h2>
               <p>
                 Nosso Encarregado de Dados (DPO), designado conforme art. 37 da LGPD, pode ser contactado para
                 questões relacionadas à proteção de dados pessoais:
@@ -171,7 +168,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>9a. Incidentes de Segurança (Art. 48 LGPD)</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">9a. Incidentes de Segurança (Art. 48 LGPD)</h2>
               <p>
                 Em caso de incidente de segurança que possa acarretar risco ou dano relevante aos titulares,
                 a Época Editora notificará a Autoridade Nacional de Proteção de Dados (ANPD) e os titulares
@@ -187,7 +184,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>10. Alterações nesta Política</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">10. Alterações nesta Política</h2>
               <p>
                 Esta política pode ser atualizada periodicamente. Notificaremos sobre alterações significativas
                 por meio de aviso no site ou por e-mail. Recomendamos a revisão periódica deste documento.
@@ -195,7 +192,7 @@ export function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3" style={{ fontFamily: PF }}>11. Foro Competente</h2>
+              <h2 className="text-lg font-semibold text-[#052413] mt-8 mb-3 font-serif">11. Foro Competente</h2>
               <p>
                 Fica eleito o foro da Comarca de Maringá, Estado do Paraná, para dirimir quaisquer questões
                 relacionadas a esta Política de Privacidade, com exclusão de qualquer outro.

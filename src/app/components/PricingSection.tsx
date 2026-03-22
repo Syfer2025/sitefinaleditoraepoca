@@ -3,7 +3,7 @@ import { GoldButton } from "./GoldButton";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { useState, useEffect } from "react";
 import { getPlans, type ServicesCard } from "../data/api";
-import { buildWhatsAppUrl as _buildWhatsAppUrl } from "../data/constants";
+import { buildWhatsAppUrl } from "../data/constants";
 
 const PRICING_CACHE_KEY = "epoca_pricing_v1";
 
@@ -39,8 +39,8 @@ const DEFAULT_PLANS = [
   { id: "premium", name: "Premium", description: "Experiência completa para projetos editoriais ambiciosos.", price: "9.490", featured: false, features: ["Tudo do plano Profissional", "Editor dedicado ao projeto", "Capa ilustrada sob medida", "100 exemplares impressos", "Campanha de marketing completa", "Presença em feiras literárias", "Book trailer promocional", "Audiobook (narração profissional)", "Consultoria de carreira autoral"] },
 ];
 
-function buildWhatsAppUrl(planName: string) {
-  return _buildWhatsAppUrl(
+function planWhatsAppUrl(planName: string) {
+  return buildWhatsAppUrl(
     `Olá! Tenho interesse no plano *${planName}* e gostaria de saber mais informações.`
   );
 }
@@ -78,22 +78,17 @@ export function PricingSection() {
         <RevealOnScroll direction="up" className="text-center mb-10">
           <p
             className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             Planos
           </p>
           <h2
-            className="text-[2.5rem] md:text-[3rem] text-foreground mb-4"
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              lineHeight: 1.15,
-            }}
+            className="text-[2.5rem] md:text-[3rem] text-foreground mb-4 font-serif leading-[1.15]"
           >
             Publique seu <span className="italic">livro</span>
           </h2>
           <p
             className="text-muted-foreground max-w-2xl mx-auto"
-            style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
+            style={{ lineHeight: 1.7 }}
           >
             Escolha o plano ideal para transformar seu manuscrito em uma obra
             publicada. Todos incluem acompanhamento editorial personalizado.
@@ -124,7 +119,6 @@ export function PricingSection() {
                     style={{
                       background:
                         "linear-gradient(90deg, #8B6914 0%, #D4AF5A 50%, #8B6914 100%)",
-                      fontFamily: "Inter, sans-serif",
                       fontSize: "0.75rem",
                       letterSpacing: "0.15em",
                       textTransform: "uppercase",
@@ -138,9 +132,8 @@ export function PricingSection() {
 
                 <div className="p-6">
                   <h3
-                    className="text-[1.25rem] mb-2"
+                    className="text-[1.25rem] mb-2 font-serif"
                     style={{
-                      fontFamily: "'Playfair Display', serif",
                       color: plan.featured
                         ? "var(--primary-foreground)"
                         : "var(--foreground)",
@@ -151,7 +144,6 @@ export function PricingSection() {
                   <p
                     className="text-[0.875rem] mb-4"
                     style={{
-                      fontFamily: "Inter, sans-serif",
                       lineHeight: 1.6,
                       color: plan.featured
                         ? "rgba(247, 244, 238, 0.6)"
@@ -167,7 +159,6 @@ export function PricingSection() {
                         <span
                           className="text-[0.875rem]"
                           style={{
-                            fontFamily: "Inter, sans-serif",
                             color: plan.featured
                               ? "rgba(247, 244, 238, 0.5)"
                               : "var(--muted-foreground)",
@@ -176,10 +167,8 @@ export function PricingSection() {
                           R$
                         </span>
                         <span
-                          className="text-[2.75rem]"
+                          className="text-[2.75rem] font-serif leading-[1]"
                           style={{
-                            fontFamily: "'Playfair Display', serif",
-                            lineHeight: 1,
                             color: plan.featured ? "#EBBF74" : "var(--foreground)",
                           }}
                         >
@@ -189,7 +178,6 @@ export function PricingSection() {
                       <p
                         className="text-[0.8rem] mt-1"
                         style={{
-                          fontFamily: "Inter, sans-serif",
                           color: plan.featured
                             ? "rgba(247, 244, 238, 0.4)"
                             : "var(--muted-foreground)",
@@ -201,7 +189,7 @@ export function PricingSection() {
                   )}
 
                   <GoldButton
-                    href={buildWhatsAppUrl(plan.name)}
+                    href={planWhatsAppUrl(plan.name)}
                     target="_blank"
                     className="w-full py-3 mb-6"
                   >
@@ -231,7 +219,6 @@ export function PricingSection() {
                         <span
                           className="text-[0.9rem]"
                           style={{
-                            fontFamily: "Inter, sans-serif",
                             lineHeight: 1.5,
                             color: plan.featured
                               ? "rgba(247, 244, 238, 0.85)"
@@ -263,7 +250,6 @@ export function PricingSection() {
                 className="flex items-center justify-center gap-1.5 py-2.5"
                 style={{
                   background: "linear-gradient(90deg, #8B6914 0%, #D4AF5A 50%, #8B6914 100%)",
-                  fontFamily: "Inter, sans-serif",
                   fontSize: "0.75rem",
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
@@ -277,14 +263,14 @@ export function PricingSection() {
               <div className="p-8">
                 <div className="text-center mb-8">
                   <h3
-                    className="text-[1.75rem] mb-3"
-                    style={{ fontFamily: "'Playfair Display', serif", color: "var(--primary-foreground)" }}
+                    className="text-[1.75rem] mb-3 font-serif"
+                    style={{ color: "var(--primary-foreground)" }}
                   >
                     {servicesCard.title}
                   </h3>
                   <p
                     className="text-[0.9rem] max-w-xl mx-auto"
-                    style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.7, color: "rgba(247,244,238,0.6)" }}
+                    style={{ lineHeight: 1.7, color: "rgba(247,244,238,0.6)" }}
                   >
                     {servicesCard.subtitle}
                   </p>
@@ -302,7 +288,7 @@ export function PricingSection() {
                         </span>
                         <span
                           className="text-[0.9rem]"
-                          style={{ fontFamily: "Inter, sans-serif", lineHeight: 1.5, color: "rgba(247,244,238,0.85)" }}
+                          style={{ lineHeight: 1.5, color: "rgba(247,244,238,0.85)" }}
                         >
                           {svc}
                         </span>
@@ -324,7 +310,6 @@ export function PricingSection() {
         <RevealOnScroll direction="up" delay={0.3}>
           <p
             className="text-center mt-8 text-[0.85rem] text-muted-foreground"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             Todos os planos incluem contrato transparente e suporte dedicado.{" "}
             <a

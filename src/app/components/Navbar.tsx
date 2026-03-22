@@ -94,7 +94,6 @@ export function Navbar() {
                 href={link.href}
                 className="relative py-1 transition-colors duration-300 group"
                 style={{
-                  fontFamily: "Inter, sans-serif",
                   color: isActive ? "#165B36" : "#856C42",
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = "#165B36"; }}
@@ -118,11 +117,11 @@ export function Navbar() {
             >
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-[0.6rem] font-semibold"
-                style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)", color: "#052413", fontFamily: "Inter, sans-serif" }}
+                style={{ background: "linear-gradient(135deg, #EBBF74, #D4AF5A)", color: "#052413" }}
               >
                 {user.name?.[0]?.toUpperCase() || user.email[0]?.toUpperCase()}
               </div>
-              <span className="text-sm max-w-[80px] truncate" style={{ fontFamily: "Inter, sans-serif", color: "#EBBF74" }}>
+              <span className="text-sm max-w-[80px] truncate" style={{ color: "#EBBF74" }}>
                 {user.name?.split(" ")[0] || "Conta"}
               </span>
             </Link>
@@ -130,7 +129,7 @@ export function Navbar() {
             <Link
               to="/entrar"
               className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm transition-all duration-300 hover:scale-105"
-              style={{ fontFamily: "Inter, sans-serif", background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
+              style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
             >
               <LogIn className="w-3.5 h-3.5" />
               Entrar
@@ -144,7 +143,7 @@ export function Navbar() {
             <Link
               to="/minha-conta"
               className="w-8 h-8 rounded-full flex items-center justify-center text-[0.6rem] font-semibold"
-              style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74", fontFamily: "Inter, sans-serif" }}
+              style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
               aria-label="Minha conta"
             >
               {user.name?.[0]?.toUpperCase() || user.email[0]?.toUpperCase()}
@@ -153,7 +152,7 @@ export function Navbar() {
             <Link
               to="/entrar"
               className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium"
-              style={{ fontFamily: "Inter, sans-serif", background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
+              style={{ background: "linear-gradient(135deg, #165B36, #052413)", color: "#EBBF74" }}
             >
               <LogIn className="w-3.5 h-3.5" />
               Entrar
@@ -211,7 +210,6 @@ export function Navbar() {
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg transition-colors"
                   style={{
-                    fontFamily: "Inter, sans-serif",
                     fontSize: "0.875rem",
                     color: isActive ? "#165B36" : "#856C42",
                     backgroundColor: isActive ? "rgba(22,91,54,0.06)" : "transparent",
@@ -239,7 +237,6 @@ export function Navbar() {
                   to="/minha-conta"
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-2 min-w-0"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                 >
                   <div
                     className="w-6 h-6 rounded-full flex items-center justify-center text-[0.6rem] font-semibold flex-shrink-0"
@@ -254,7 +251,6 @@ export function Navbar() {
                 <button
                   onClick={() => { logout(); setIsOpen(false); navigate("/entrar"); }}
                   className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-[#856C42] hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer flex-shrink-0"
-                  style={{ fontFamily: "Inter, sans-serif" }}
                   aria-label="Sair da conta"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -266,7 +262,6 @@ export function Navbar() {
                 to="/entrar"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-1.5 text-xs text-[#165B36] font-medium"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 <LogIn className="w-3.5 h-3.5" />
                 Entrar
@@ -279,7 +274,6 @@ export function Navbar() {
               className="flex items-center justify-center px-4 py-1.5 rounded-full text-[#1a1206] text-xs font-semibold ml-3"
               style={{
                 background: "linear-gradient(90deg, #8B6914 0%, #BF953F 12%, #D4AF5A 25%, #E8CC73 40%, #F5DFA0 50%, #E8CC73 60%, #D4AF5A 75%, #BF953F 88%, #8B6914 100%)",
-                fontFamily: "Inter, sans-serif",
               }}
             >
               Publicar meu livro

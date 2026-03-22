@@ -5,7 +5,6 @@ import { getPaymentInfo, getPublicContractTemplate, getContractPdfUrl, getLogos 
 import { toast, Toaster } from "sonner";
 const logoImg = "/assets/logo.png";
 
-const f = { play: "'Playfair Display', serif", inter: "Inter, sans-serif" };
 
 function formatCurrency(v: number): string {
   return `R$ ${v.toFixed(2).replace(".", ",")}`;
@@ -231,7 +230,7 @@ export function ContractViewPage() {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FFFDF8" }}>
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 animate-spin text-[#856C42]" />
-          <p className="text-sm text-[#856C42]" style={{ fontFamily: f.inter }}>Carregando contrato...</p>
+          <p className="text-sm text-[#856C42]">Carregando contrato...</p>
         </div>
       </div>
     );
@@ -243,8 +242,8 @@ export function ContractViewPage() {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FFFDF8" }}>
         <div className="max-w-md text-center px-6">
           <AlertTriangle className="w-12 h-12 text-[#EBBF74] mx-auto mb-4" />
-          <h2 className="text-lg text-[#052413] mb-2" style={{ fontFamily: f.play }}>{error || "Contrato nao encontrado"}</h2>
-          <Link to="/" className="text-sm text-[#165B36] hover:underline" style={{ fontFamily: f.inter }}>
+          <h2 className="text-lg text-[#052413] mb-2 font-serif">{error || "Contrato nao encontrado"}</h2>
+          <Link to="/" className="text-sm text-[#165B36] hover:underline">
             <ArrowLeft className="w-3.5 h-3.5 inline mr-1" />Voltar
           </Link>
         </div>
@@ -260,7 +259,7 @@ export function ContractViewPage() {
       {/* Top bar */}
       <div className="sticky top-0 z-20 border-b print:hidden" style={{ backgroundColor: "rgba(255,253,248,0.95)", backdropFilter: "blur(8px)", borderColor: "rgba(133,108,66,0.1)" }}>
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <button onClick={() => { if (window.history.length > 1) navigate(-1 as any); else navigate("/minha-conta"); }} className="flex items-center gap-1.5 text-sm text-[#856C42] hover:text-[#052413] transition-colors cursor-pointer" style={{ fontFamily: f.inter }}>
+          <button onClick={() => { if (window.history.length > 1) navigate(-1 as any); else navigate("/minha-conta"); }} className="flex items-center gap-1.5 text-sm text-[#856C42] hover:text-[#052413] transition-colors cursor-pointer">
             <ArrowLeft className="w-4 h-4" /> Voltar
           </button>
           <div className="flex items-center gap-2">
@@ -269,7 +268,6 @@ export function ContractViewPage() {
                 onClick={handleDownloadPdf}
                 disabled={downloadingPdf}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[#856C42] bg-[#856C42]/5 hover:bg-[#856C42]/10 transition-colors cursor-pointer disabled:opacity-50"
-                style={{ fontFamily: f.inter }}
               >
                 {downloadingPdf ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                 Baixar PDF
@@ -278,7 +276,7 @@ export function ContractViewPage() {
             <button
               onClick={handlePrint}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-opacity hover:opacity-90 cursor-pointer"
-              style={{ fontFamily: f.inter, background: "linear-gradient(135deg, #165B36, #052413)" }}
+              style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
             >
               <Printer className="w-3.5 h-3.5" /> Imprimir
             </button>
@@ -291,16 +289,16 @@ export function ContractViewPage() {
         {/* Header */}
         <div className="text-center mb-8 pb-5 border-b-2" style={{ borderColor: "#EBBF74" }}>
           <img src={logoBase64 || logoImg} alt={COMPANY_NAME} className="h-12 mx-auto mb-3" />
-          <h1 className="text-base font-bold tracking-wide text-[#052413]" style={{ fontFamily: f.play }}>
+          <h1 className="text-base font-bold tracking-wide text-[#052413] font-serif">
             CONTRATO DE PRESTACAO DE SERVICOS EDITORIAIS
           </h1>
-          <p className="text-[0.6rem] text-[#856C42] uppercase tracking-[3px] mt-1" style={{ fontFamily: f.inter }}>
+          <p className="text-[0.6rem] text-[#856C42] uppercase tracking-[3px] mt-1">
             Versao {CONTRACT_VERSION}
           </p>
         </div>
 
         {/* Preamble */}
-        <p className="text-sm text-[#333] leading-relaxed mb-6" style={{ fontFamily: f.inter }}>{CONTRACT_PREAMBLE}</p>
+        <p className="text-sm text-[#333] leading-relaxed mb-6">{CONTRACT_PREAMBLE}</p>
 
         {/* Clauses rendered inline */}
         <ContractClause num={1} title="DAS PARTES">
@@ -434,9 +432,9 @@ f) Casos omissos serao resolvidos pela legislacao brasileira vigente." />
         <div className="mt-10 p-5 rounded-xl border-2" style={{ borderColor: "#0a7c3e", backgroundColor: "rgba(10,124,62,0.03)" }}>
           <div className="flex items-center gap-2 mb-4">
             <div className="w-2 h-2 rounded-full bg-[#0a7c3e]" />
-            <h3 className="text-sm font-bold text-[#0a7c3e]" style={{ fontFamily: f.play }}>Aceite Eletronico Registrado</h3>
+            <h3 className="text-sm font-bold text-[#0a7c3e] font-serif">Aceite Eletronico Registrado</h3>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm" style={{ fontFamily: f.inter }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
             <div>
               <span className="text-[0.6rem] text-[#856C42]/60 uppercase tracking-wider">Nome</span>
               <p className="text-[#052413] font-medium">{info.contractAcceptorName || "—"}</p>
@@ -460,7 +458,7 @@ f) Casos omissos serao resolvidos pela legislacao brasileira vigente." />
           </div>
           {info.contractHash && (
             <div className="mt-3 pt-3 border-t" style={{ borderColor: "rgba(10,124,62,0.15)" }}>
-              <span className="text-[0.5rem] text-[#856C42]/50 uppercase tracking-wider" style={{ fontFamily: f.inter }}>Integridade SHA-256</span>
+              <span className="text-[0.5rem] text-[#856C42]/50 uppercase tracking-wider">Integridade SHA-256</span>
               <p className="text-[0.6rem] text-[#052413] font-mono break-all mt-0.5">{info.contractHash}</p>
             </div>
           )}
@@ -468,7 +466,7 @@ f) Casos omissos serao resolvidos pela legislacao brasileira vigente." />
 
         {/* Footer */}
         <div className="mt-8 pt-4 border-t-2 text-center" style={{ borderColor: "#EBBF74" }}>
-          <p className="text-[0.6rem] text-[#856C42]" style={{ fontFamily: f.inter }}>
+          <p className="text-[0.6rem] text-[#856C42]">
             Contrato aceito eletronicamente em {info.contractAcceptedAt ? new Date(info.contractAcceptedAt).toLocaleString("pt-BR") : "data registrada"}.
             Documento juridicamente vinculante nos termos da MP n. 2.200-2/2001.
           </p>
@@ -483,10 +481,10 @@ f) Casos omissos serao resolvidos pela legislacao brasileira vigente." />
 function ContractClause({ num, title, children }: { num: number; title: string; children: React.ReactNode }) {
   return (
     <div className="mb-4">
-      <h3 className="text-xs font-bold text-[#052413] mt-5 mb-1.5" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <h3 className="text-xs font-bold text-[#052413] mt-5 mb-1.5 font-serif">
         CLÁUSULA {num} — {title}
       </h3>
-      <div className="text-sm text-[#333] leading-relaxed space-y-1" style={{ fontFamily: "Inter, sans-serif" }}>
+      <div className="text-sm text-[#333] leading-relaxed space-y-1">
         {children}
       </div>
     </div>

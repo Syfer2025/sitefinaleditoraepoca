@@ -8,10 +8,8 @@ import { projectId, publicAnonKey } from "/utils/supabase/info";
 
 const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-e413165d`;
 
-const F = "Inter, sans-serif";
-const PF = "'Playfair Display', serif";
 const inputClasses = "w-full px-4 py-3 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 transition-all duration-300";
-const inputStyle = { fontFamily: F, backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" };
+const inputStyle = { backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" };
 const labelClasses = "block text-sm font-medium text-[#052413] mb-1.5";
 
 function getPasswordStrength(pw: string): { score: number; label: string; color: string } {
@@ -108,14 +106,14 @@ export function PasswordResetPage() {
           <div className="absolute top-10 right-1/4 w-72 h-72 rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, #EBBF74, transparent)" }} />
         </div>
         <div className="relative max-w-7xl mx-auto px-6 w-full">
-          <Link to="/entrar" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors mb-4" style={{ fontFamily: F }}>
+          <Link to="/entrar" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors mb-4">
             <ArrowLeft className="w-4 h-4" /> Voltar ao login
           </Link>
-          <h1 className="text-3xl md:text-4xl text-white" style={{ fontFamily: PF, lineHeight: 1.2 }}>
+          <h1 className="text-3xl md:text-4xl text-white font-serif leading-[1.2]">
             {mode === "request" ? "Recuperar " : "Nova "}
             <span className="italic text-[#EBBF74]">{mode === "request" ? "conta" : "senha"}</span>
           </h1>
-          <p className="text-white/50 mt-2 text-sm" style={{ fontFamily: F }}>
+          <p className="text-white/50 mt-2 text-sm">
             {mode === "request"
               ? "Informe seu e-mail e enviaremos um link para redefinir sua senha."
               : "Escolha uma nova senha para sua conta."
@@ -140,10 +138,10 @@ export function PasswordResetPage() {
                 <CheckCircle className="w-7 h-7 text-[#165B36]" />
               </div>
               <div>
-                <p className="text-base font-semibold text-[#052413]" style={{ fontFamily: PF }}>
+                <p className="text-base font-semibold text-[#052413] font-serif">
                   {mode === "request" ? "E-mail enviado!" : "Senha redefinida!"}
                 </p>
-                <p className="text-sm text-[#856C42] mt-1" style={{ fontFamily: F }}>
+                <p className="text-sm text-[#856C42] mt-1">
                   {mode === "request"
                     ? `Verifique sua caixa de entrada (${email}) e clique no link para redefinir sua senha.`
                     : "Sua senha foi atualizada. Redirecionando para o login..."
@@ -151,7 +149,7 @@ export function PasswordResetPage() {
                 </p>
               </div>
               {mode === "request" && (
-                <Link to="/entrar" className="text-sm text-[#165B36] font-medium hover:underline" style={{ fontFamily: F }}>
+                <Link to="/entrar" className="text-sm text-[#165B36] font-medium hover:underline">
                   Voltar ao login
                 </Link>
               )}
@@ -164,7 +162,7 @@ export function PasswordResetPage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   className="mb-4 p-3 rounded-lg text-sm overflow-hidden"
-                  style={{ backgroundColor: "rgba(212,24,61,0.08)", color: "#d4183d", fontFamily: F }}
+                  style={{ backgroundColor: "rgba(212,24,61,0.08)", color: "#d4183d" }}
                 >
                   <div className="flex items-start gap-2">
                     <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -176,7 +174,7 @@ export function PasswordResetPage() {
               {mode === "request" ? (
                 <form onSubmit={handleRequestReset} className="space-y-4">
                   <div>
-                    <label className={labelClasses} style={{ fontFamily: F }}>
+                    <label className={labelClasses}>
                       <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-[#856C42]/60" /> E-mail cadastrado *</span>
                     </label>
                     <input
@@ -192,7 +190,7 @@ export function PasswordResetPage() {
                   <GoldButton type="submit" className="w-full py-3.5 mt-2" disabled={loading}>
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Mail className="w-4 h-4" /> Enviar link de recuperação</>}
                   </GoldButton>
-                  <p className="text-center text-xs text-[#856C42]/60 mt-2" style={{ fontFamily: F }}>
+                  <p className="text-center text-xs text-[#856C42]/60 mt-2">
                     Lembrou a senha?{" "}
                     <Link to="/entrar" className="text-[#165B36] font-medium hover:underline">
                       Entrar
@@ -202,7 +200,7 @@ export function PasswordResetPage() {
               ) : (
                 <form onSubmit={handleSetPassword} className="space-y-4">
                   <div>
-                    <label className={labelClasses} style={{ fontFamily: F }}>
+                    <label className={labelClasses}>
                       <span className="flex items-center gap-1.5"><KeyRound className="w-3.5 h-3.5 text-[#856C42]/60" /> Nova senha *</span>
                     </label>
                     <div className="relative">
@@ -227,14 +225,14 @@ export function PasswordResetPage() {
                             <div key={i} className="h-1 flex-1 rounded-full transition-all duration-300" style={{ backgroundColor: i <= pwStrength.score ? pwStrength.color : "rgba(133,108,66,0.15)" }} />
                           ))}
                         </div>
-                        <p className="text-[0.65rem] font-medium" style={{ fontFamily: F, color: pwStrength.color }}>
+                        <p className="text-[0.65rem] font-medium" style={{ color: pwStrength.color }}>
                           Força: {pwStrength.label}
                         </p>
                       </div>
                     )}
                   </div>
                   <div>
-                    <label className={labelClasses} style={{ fontFamily: F }}>Confirmar nova senha *</label>
+                    <label className={labelClasses}>Confirmar nova senha *</label>
                     <input
                       type={showPassword ? "text" : "password"}
                       value={confirmPassword}
@@ -244,7 +242,7 @@ export function PasswordResetPage() {
                       style={{ ...inputStyle, borderColor: confirmPassword && !passwordsMatch ? "rgba(212,24,61,0.4)" : inputStyle.borderColor }}
                     />
                     {confirmPassword && !passwordsMatch && (
-                      <p className="text-xs text-red-500 mt-1" style={{ fontFamily: F }}>As senhas não coincidem.</p>
+                      <p className="text-xs text-red-500 mt-1">As senhas não coincidem.</p>
                     )}
                   </div>
                   <GoldButton type="submit" className="w-full py-3.5 mt-2" disabled={loading}>

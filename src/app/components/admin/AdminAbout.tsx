@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { getAbout, updateAdminAbout } from "../../data/api";
 import { toast } from "sonner";
 
-const F = "Inter, sans-serif";
 
 interface Stat {
   key: string;
@@ -81,15 +80,14 @@ export function AdminAbout() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: F }}>Sobre a Editora</h1>
-          <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: F }}>Edite os números e estatísticas da seção "Nossa História"</p>
+          <h1 className="text-2xl font-semibold text-gray-900">Sobre a Editora</h1>
+          <p className="text-sm text-gray-500 mt-1">Edite os números e estatísticas da seção "Nossa História"</p>
         </div>
         <button
           onClick={handleSave}
           disabled={!dirty || saving}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           style={{
-            fontFamily: F,
             background: dirty ? "linear-gradient(135deg, #EBBF74, #D4AF5A)" : "#d1d5db",
             color: dirty ? "#052413" : "#9ca3af",
           }}
@@ -108,7 +106,7 @@ export function AdminAbout() {
             style={{ backgroundColor: "rgba(235,191,116,0.1)", borderColor: "rgba(235,191,116,0.4)" }}
           >
             <span className="w-2 h-2 rounded-full bg-[#EBBF74] animate-pulse" />
-            <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>Alterações não salvas — clique em "Salvar alterações" para publicar no site.</p>
+            <p className="text-xs text-[#856C42]">Alterações não salvas — clique em "Salvar alterações" para publicar no site.</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -123,8 +121,8 @@ export function AdminAbout() {
             <Info className="w-4 h-4 text-[#052413]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-white" style={{ fontFamily: F }}>Badge de destaque</p>
-            <p className="text-xs text-white/50" style={{ fontFamily: F }}>Exibido sobre a foto na seção "Nossa História"</p>
+            <p className="text-sm font-semibold text-white">Badge de destaque</p>
+            <p className="text-xs text-white/50">Exibido sobre a foto na seção "Nossa História"</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -132,27 +130,27 @@ export function AdminAbout() {
             className="bg-[#052413] border border-[#EBBF74]/30 px-6 py-4 rounded-xl text-center"
             style={{ minWidth: 100 }}
           >
-            <p className="text-3xl text-[#EBBF74]" style={{ fontFamily: "'Playfair Display', serif" }}>{about.yearsOfHistory}</p>
-            <p className="text-xs text-[#EBBF74]/60 mt-0.5" style={{ fontFamily: F }}>anos de história</p>
+            <p className="text-3xl text-[#EBBF74] font-serif">{about.yearsOfHistory}</p>
+            <p className="text-xs text-[#EBBF74]/60 mt-0.5">anos de história</p>
           </div>
           <div className="flex-1">
-            <label className="text-xs font-medium text-white/60 mb-1.5 block" style={{ fontFamily: F }}>Anos de história</label>
+            <label className="text-xs font-medium text-white/60 mb-1.5 block">Anos de história</label>
             <input
               type="number"
               min={1}
               value={about.yearsOfHistory}
               onChange={(e) => updateYears(Number(e.target.value))}
               className="w-full px-3 py-2 rounded-lg border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#EBBF74]/30"
-              style={{ fontFamily: F, borderColor: "rgba(235,191,116,0.3)", backgroundColor: "rgba(255,255,255,0.95)" }}
+              style={{ borderColor: "rgba(235,191,116,0.3)", backgroundColor: "rgba(255,255,255,0.95)" }}
             />
-            <p className="text-xs text-white/40 mt-1" style={{ fontFamily: F }}>Atualize conforme a data atual</p>
+            <p className="text-xs text-white/40 mt-1">Atualize conforme a data atual</p>
           </div>
         </div>
       </div>
 
       {/* Stats grid */}
       <div>
-        <p className="text-sm font-medium text-gray-700 mb-3" style={{ fontFamily: F }}>Estatísticas (grid de 4 itens)</p>
+        <p className="text-sm font-medium text-gray-700 mb-3">Estatísticas (grid de 4 itens)</p>
         <div className="grid sm:grid-cols-2 gap-4">
           {about.stats.map((stat) => {
             const Icon = ICON_MAP[stat.key] || BookOpen;
@@ -167,41 +165,38 @@ export function AdminAbout() {
                     <Icon className="w-4.5 h-4.5 text-[#165B36]" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-[#165B36]" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <p className="text-2xl font-bold text-[#165B36] font-serif">
                       {stat.value}{stat.suffix}
                     </p>
-                    <p className="text-xs text-gray-400" style={{ fontFamily: F }}>{stat.label}</p>
+                    <p className="text-xs text-gray-400">{stat.label}</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className="text-[0.7rem] font-medium text-gray-400 mb-1 block" style={{ fontFamily: F }}>Valor</label>
+                    <label className="text-[0.7rem] font-medium text-gray-400 mb-1 block">Valor</label>
                     <input
                       type="number"
                       min={0}
                       value={stat.value}
                       onChange={(e) => updateStat(stat.key, "value", Number(e.target.value))}
                       className="w-full px-2 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                      style={{ fontFamily: F }}
                     />
                   </div>
                   <div>
-                    <label className="text-[0.7rem] font-medium text-gray-400 mb-1 block" style={{ fontFamily: F }}>Sufixo</label>
+                    <label className="text-[0.7rem] font-medium text-gray-400 mb-1 block">Sufixo</label>
                     <input
                       value={stat.suffix}
                       onChange={(e) => updateStat(stat.key, "suffix", e.target.value)}
                       placeholder="+ ou vazio"
                       className="w-full px-2 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                      style={{ fontFamily: F }}
                     />
                   </div>
                   <div>
-                    <label className="text-[0.7rem] font-medium text-gray-400 mb-1 block" style={{ fontFamily: F }}>Rótulo</label>
+                    <label className="text-[0.7rem] font-medium text-gray-400 mb-1 block">Rótulo</label>
                     <input
                       value={stat.label}
                       onChange={(e) => updateStat(stat.key, "label", e.target.value)}
                       className="w-full px-2 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                      style={{ fontFamily: F }}
                     />
                   </div>
                 </div>

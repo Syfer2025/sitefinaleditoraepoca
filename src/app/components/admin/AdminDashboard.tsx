@@ -97,13 +97,11 @@ export function AdminDashboard() {
             </div>
             <p
               className="text-2xl font-semibold text-[#052413]"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               {card.value}
             </p>
             <p
               className="text-xs text-[#856C42] mt-0.5"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               {card.label}
             </p>
@@ -125,15 +123,13 @@ export function AdminDashboard() {
         >
           <div className="flex items-center justify-between mb-4">
             <h3
-              className="text-base text-[#052413]"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-base text-[#052413] font-serif"
             >
               Mensagens Recentes
             </h3>
             <a
               href="/admin/mensagens"
               className="text-xs text-[#165B36] hover:underline"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               Ver todas
             </a>
@@ -142,7 +138,6 @@ export function AdminDashboard() {
           {recentMessages.length === 0 ? (
             <p
               className="text-sm text-[#856C42] text-center py-8"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               Nenhuma mensagem ainda
             </p>
@@ -168,7 +163,6 @@ export function AdminDashboard() {
                     <div className="flex items-center gap-2">
                       <p
                         className="text-sm text-[#052413] font-medium truncate"
-                        style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         {msg.name}
                       </p>
@@ -181,14 +175,12 @@ export function AdminDashboard() {
                     </div>
                     <p
                       className="text-xs text-[#856C42] truncate"
-                      style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       {msg.subject} — {msg.message?.slice(0, 60)}...
                     </p>
                   </div>
                   <span
                     className="text-[0.6rem] text-[#856C42]/60 flex-shrink-0"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {new Date(msg.createdAt).toLocaleDateString("pt-BR")}
                   </span>
@@ -210,18 +202,17 @@ export function AdminDashboard() {
           }}
         >
           <h3
-            className="text-base text-[#052413] mb-4"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-base text-[#052413] mb-4 font-serif"
           >
             Catálogo
           </h3>
           <div className="flex items-center gap-4 mb-4 p-4 rounded-lg" style={{ backgroundColor: "rgba(22,91,54,0.05)" }}>
             <BookOpen className="w-8 h-8 text-[#165B36]" />
             <div>
-              <p className="text-2xl font-semibold text-[#052413]" style={{ fontFamily: "Inter, sans-serif" }}>
+              <p className="text-2xl font-semibold text-[#052413]">
                 {allBooks.length}
               </p>
-              <p className="text-xs text-[#856C42]" style={{ fontFamily: "Inter, sans-serif" }}>
+              <p className="text-xs text-[#856C42]">
                 Livros publicados
               </p>
             </div>
@@ -235,7 +226,6 @@ export function AdminDashboard() {
                 <div key={genre} className="flex items-center gap-3">
                   <span
                     className="text-xs text-[#856C42] w-16"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {genre}
                   </span>
@@ -255,7 +245,6 @@ export function AdminDashboard() {
                   </div>
                   <span
                     className="text-xs text-[#052413] w-6 text-right"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {count}
                   </span>

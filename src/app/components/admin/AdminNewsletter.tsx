@@ -4,7 +4,6 @@ import { motion } from "motion/react";
 import { getAdminSubscribers } from "../../data/api";
 import { toast } from "sonner";
 
-const F = "Inter, sans-serif";
 
 interface Subscriber {
   email: string;
@@ -70,8 +69,8 @@ export function AdminNewsletter() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: F }}>Newsletter</h1>
-          <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: F }}>
+          <h1 className="text-2xl font-semibold text-gray-900">Newsletter</h1>
+          <p className="text-sm text-gray-500 mt-1">
             Gerencie os inscritos da newsletter
           </p>
         </div>
@@ -80,7 +79,6 @@ export function AdminNewsletter() {
           disabled={subscribers.length === 0}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           style={{
-            fontFamily: F,
             background: "linear-gradient(135deg, #EBBF74, #D4AF5A)",
             color: "#052413",
           }}
@@ -96,19 +94,19 @@ export function AdminNewsletter() {
           className="rounded-xl p-4 border"
           style={{ backgroundColor: "rgba(22,91,54,0.04)", borderColor: "rgba(22,91,54,0.12)" }}
         >
-          <p className="text-2xl font-semibold text-[#165B36]" style={{ fontFamily: F }}>
+          <p className="text-2xl font-semibold text-[#165B36]">
             {loading ? "—" : subscribers.length}
           </p>
-          <p className="text-xs text-gray-500 mt-0.5" style={{ fontFamily: F }}>Total de inscritos</p>
+          <p className="text-xs text-gray-500 mt-0.5">Total de inscritos</p>
         </div>
         <div
           className="rounded-xl p-4 border"
           style={{ backgroundColor: "rgba(235,191,116,0.08)", borderColor: "rgba(235,191,116,0.25)" }}
         >
-          <p className="text-2xl font-semibold text-[#856C42]" style={{ fontFamily: F }}>
+          <p className="text-2xl font-semibold text-[#856C42]">
             {loading ? "—" : thisMonth}
           </p>
-          <p className="text-xs text-gray-500 mt-0.5" style={{ fontFamily: F }}>Novos este mês</p>
+          <p className="text-xs text-gray-500 mt-0.5">Novos este mês</p>
         </div>
       </div>
 
@@ -121,7 +119,6 @@ export function AdminNewsletter() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-          style={{ fontFamily: F }}
         />
         {search && (
           <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer">
@@ -138,13 +135,13 @@ export function AdminNewsletter() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
           <Users className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-          <p className="text-sm text-gray-400" style={{ fontFamily: F }}>
+          <p className="text-sm text-gray-400">
             {search ? "Nenhum inscrito encontrado." : "Nenhum inscrito ainda."}
           </p>
         </div>
       ) : (
         <div className="border border-gray-200 rounded-xl overflow-hidden">
-          <table className="w-full text-sm" style={{ fontFamily: F }}>
+          <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 text-left">
                 <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">E-mail</th>
@@ -180,7 +177,7 @@ export function AdminNewsletter() {
           </table>
           {search && (
             <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
-              <p className="text-xs text-gray-400" style={{ fontFamily: F }}>
+              <p className="text-xs text-gray-400">
                 {filtered.length} de {subscribers.length} inscritos
               </p>
             </div>

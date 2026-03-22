@@ -82,7 +82,6 @@ interface CheckoutData {
 // ============================================
 // Helpers
 // ============================================
-const f = { play: "'Playfair Display', serif", inter: "Inter, sans-serif" };
 
 function formatCurrency(value: number): string {
   return `R$ ${value.toFixed(2).replace(".", ",")}`;
@@ -392,7 +391,7 @@ export function InstallmentCheckoutPage() {
       <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(180deg, #FFFDF8 0%, #F5F0E8 100%)" }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-[#856C42] mx-auto mb-4" />
-          <p className="text-sm text-[#856C42]" style={{ fontFamily: f.inter }}>Carregando parcelas...</p>
+          <p className="text-sm text-[#856C42]">Carregando parcelas...</p>
         </motion.div>
       </div>
     );
@@ -408,9 +407,9 @@ export function InstallmentCheckoutPage() {
           <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: "rgba(239,68,68,0.1)" }}>
             <AlertCircle className="w-8 h-8 text-red-500" />
           </div>
-          <h2 className="text-xl font-bold text-[#052413] mb-2" style={{ fontFamily: f.play }}>Erro ao carregar</h2>
-          <p className="text-sm text-[#856C42]/70 mb-6" style={{ fontFamily: f.inter }}>{error || "Dados nao encontrados"}</p>
-          <Link to="/minha-conta" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-[#856C42] hover:bg-[#F0E8D4] transition-colors" style={{ fontFamily: f.inter }}>
+          <h2 className="text-xl font-bold text-[#052413] mb-2 font-serif">Erro ao carregar</h2>
+          <p className="text-sm text-[#856C42]/70 mb-6">{error || "Dados nao encontrados"}</p>
+          <Link to="/minha-conta" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-[#856C42] hover:bg-[#F0E8D4] transition-colors">
             <ArrowLeft className="w-4 h-4" /> Voltar a minha conta
           </Link>
         </motion.div>
@@ -445,16 +444,16 @@ export function InstallmentCheckoutPage() {
           <div className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center" style={{ background: "linear-gradient(135deg, rgba(10,124,62,0.1), rgba(10,124,62,0.2))" }}>
             <CheckCircle className="w-10 h-10 text-[#0a7c3e]" />
           </div>
-          <h1 className="text-3xl font-bold text-[#052413] mb-3" style={{ fontFamily: f.play }}>Pagamento Concluido!</h1>
-          <p className="text-base text-[#856C42]/80 mb-2" style={{ fontFamily: f.inter }}>
+          <h1 className="text-3xl font-bold text-[#052413] mb-3 font-serif">Pagamento Concluido!</h1>
+          <p className="text-base text-[#856C42]/80 mb-2">
             Todas as <strong>{installmentPlan.totalInstallments} parcelas</strong> do livro <strong>&ldquo;{data.title}&rdquo;</strong> foram pagas.
           </p>
-          <p className="text-2xl font-bold text-[#0a7c3e] mb-8" style={{ fontFamily: f.inter }}>
+          <p className="text-2xl font-bold text-[#0a7c3e] mb-8">
             {formatCurrency(totalProjectAmount)}
           </p>
           <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl mb-8" style={{ background: "rgba(10,124,62,0.06)", border: "1px solid rgba(10,124,62,0.15)" }}>
             <Shield className="w-4 h-4 text-[#0a7c3e]" />
-            <span className="text-sm text-[#0a7c3e] font-medium" style={{ fontFamily: f.inter }}>Pagamento 100% quitado</span>
+            <span className="text-sm text-[#0a7c3e] font-medium">Pagamento 100% quitado</span>
           </div>
           <div>
             <Link to="/minha-conta">
@@ -479,7 +478,7 @@ export function InstallmentCheckoutPage() {
       {/* Header */}
       <header className="border-b" style={{ borderColor: "rgba(133,108,66,0.1)", background: "rgba(255,253,248,0.95)", backdropFilter: "blur(12px)" }}>
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/minha-conta" className="flex items-center gap-2 text-sm text-[#856C42] hover:text-[#052413] transition-colors" style={{ fontFamily: f.inter }}>
+          <Link to="/minha-conta" className="flex items-center gap-2 text-sm text-[#856C42] hover:text-[#052413] transition-colors">
             <ArrowLeft className="w-4 h-4" /> Minha conta
           </Link>
           <Link to="/">
@@ -487,7 +486,7 @@ export function InstallmentCheckoutPage() {
           </Link>
           <div className="flex items-center gap-1.5">
             <Shield className="w-3.5 h-3.5 text-[#0a7c3e]" />
-            <span className="text-[0.65rem] text-[#0a7c3e] font-medium" style={{ fontFamily: f.inter }}>Pagamento seguro</span>
+            <span className="text-[0.65rem] text-[#0a7c3e] font-medium">Pagamento seguro</span>
           </div>
         </div>
       </header>
@@ -500,14 +499,14 @@ export function InstallmentCheckoutPage() {
               <BookOpen className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-bold text-[#052413] mb-1 leading-tight" style={{ fontFamily: f.play }}>
+              <h1 className="text-2xl font-bold text-[#052413] mb-1 leading-tight font-serif">
                 Parcelamento PIX
               </h1>
-              <p className="text-sm text-[#856C42]/70" style={{ fontFamily: f.inter }}>
+              <p className="text-sm text-[#856C42]/70">
                 {data.title} {data.author && <>— <span className="text-[#052413]">{data.author}</span></>}
               </p>
               {data.userName && (
-                <p className="text-xs text-[#856C42]/50 mt-0.5" style={{ fontFamily: f.inter }}>
+                <p className="text-xs text-[#856C42]/50 mt-0.5">
                   Cliente: {data.userName}
                 </p>
               )}
@@ -527,12 +526,11 @@ export function InstallmentCheckoutPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-[#856C42]" />
-                <span className="text-sm font-semibold text-[#052413]" style={{ fontFamily: f.inter }}>
+                <span className="text-sm font-semibold text-[#052413]">
                   Progresso do pagamento
                 </span>
               </div>
               <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{
-                fontFamily: f.inter,
                 background: "linear-gradient(135deg, rgba(235,191,116,0.15), rgba(133,108,66,0.08))",
                 color: "#856C42"
               }}>
@@ -554,20 +552,20 @@ export function InstallmentCheckoutPage() {
             {/* Amounts */}
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-3 rounded-xl" style={{ background: "rgba(10,124,62,0.04)" }}>
-                <p className="text-[0.65rem] text-[#856C42]/60 mb-1 uppercase tracking-wider font-medium" style={{ fontFamily: f.inter }}>Pago</p>
-                <p className="text-lg font-bold text-[#0a7c3e]" style={{ fontFamily: f.inter }}>
+                <p className="text-[0.65rem] text-[#856C42]/60 mb-1 uppercase tracking-wider font-medium">Pago</p>
+                <p className="text-lg font-bold text-[#0a7c3e]">
                   {formatCurrency(totalPaidSoFar)}
                 </p>
               </div>
               <div className="text-center p-3 rounded-xl" style={{ background: "rgba(235,191,116,0.08)" }}>
-                <p className="text-[0.65rem] text-[#856C42]/60 mb-1 uppercase tracking-wider font-medium" style={{ fontFamily: f.inter }}>Restante</p>
-                <p className="text-lg font-bold text-[#856C42]" style={{ fontFamily: f.inter }}>
+                <p className="text-[0.65rem] text-[#856C42]/60 mb-1 uppercase tracking-wider font-medium">Restante</p>
+                <p className="text-lg font-bold text-[#856C42]">
                   {formatCurrency(Math.max(0, totalProjectAmount - totalPaidSoFar))}
                 </p>
               </div>
               <div className="text-center p-3 rounded-xl" style={{ background: "rgba(5,36,19,0.03)" }}>
-                <p className="text-[0.65rem] text-[#856C42]/60 mb-1 uppercase tracking-wider font-medium" style={{ fontFamily: f.inter }}>Total</p>
-                <p className="text-lg font-bold text-[#052413]" style={{ fontFamily: f.inter }}>
+                <p className="text-[0.65rem] text-[#856C42]/60 mb-1 uppercase tracking-wider font-medium">Total</p>
+                <p className="text-lg font-bold text-[#052413]">
                   {formatCurrency(totalProjectAmount)}
                 </p>
               </div>
@@ -577,7 +575,7 @@ export function InstallmentCheckoutPage() {
             {hasDeposit && (
               <div className="mt-3 flex items-center gap-2 px-3 py-2.5 rounded-lg" style={{ background: depositPaid ? "rgba(10,124,62,0.04)" : "rgba(235,191,116,0.08)", border: `1px solid ${depositPaid ? "rgba(10,124,62,0.1)" : "rgba(235,191,116,0.2)"}` }}>
                 {depositPaid ? <CheckCircle className="w-3.5 h-3.5 text-[#0a7c3e] flex-shrink-0" /> : <CreditCard className="w-3.5 h-3.5 text-[#856C42] flex-shrink-0" />}
-                <p className="text-[0.65rem] text-[#856C42]/70 leading-relaxed" style={{ fontFamily: f.inter }}>
+                <p className="text-[0.65rem] text-[#856C42]/70 leading-relaxed">
                   {depositPaid
                     ? <>Entrada de {data.depositPercent}% (<strong className="text-[#0a7c3e]">{formatCurrency(data.chargeAmount)}</strong>) paga — trabalhos iniciados. As {installmentPlan.totalInstallments} parcelas abaixo cobrem o restante de <strong className="text-[#052413]">{formatCurrency(data.totalPrice)}</strong>. A 1ª parcela vence 30 dias apos o pagamento da entrada.</>
                     : <>Entrada de {data.depositPercent}% (<strong className="text-[#052413]">{formatCurrency(data.chargeAmount)}</strong>) para <strong>inicio dos trabalhos</strong>. Apos a confirmacao, as {installmentPlan.totalInstallments} parcelas serao liberadas com a 1ª vencendo em 30 dias.</>
@@ -606,10 +604,10 @@ export function InstallmentCheckoutPage() {
                 <ScrollText className="w-5 h-5 text-[#856C42]" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-[#052413]" style={{ fontFamily: f.play }}>
+                <h2 className="text-base font-bold text-[#052413] font-serif">
                   Aceite do Contrato
                 </h2>
-                <p className="text-xs text-[#856C42]/70" style={{ fontFamily: f.inter }}>
+                <p className="text-xs text-[#856C42]/70">
                   E necessario aceitar o contrato antes de acessar os PIX de pagamento
                 </p>
               </div>
@@ -620,22 +618,22 @@ export function InstallmentCheckoutPage() {
               {loadingContract ? (
                 <div className="text-center py-8">
                   <Loader2 className="w-6 h-6 animate-spin text-[#856C42] mx-auto mb-2" />
-                  <p className="text-xs text-[#856C42]/60" style={{ fontFamily: f.inter }}>Carregando contrato...</p>
+                  <p className="text-xs text-[#856C42]/60">Carregando contrato...</p>
                 </div>
               ) : contractLoadError && !contractTemplate ? (
                 <div className="text-center py-4 space-y-3">
                   <AlertCircle className="w-5 h-5 text-[#856C42]/60 mx-auto" />
-                  <p className="text-xs text-[#856C42]/60" style={{ fontFamily: f.inter }}>
+                  <p className="text-xs text-[#856C42]/60">
                     Nao foi possivel carregar o contrato. Verifique sua conexao e tente novamente.
                   </p>
                   <button
                     onClick={loadContractTemplate}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium text-[#052413] cursor-pointer hover:bg-[#F0E8D4]/60 transition-colors"
-                    style={{ background: "rgba(240,232,212,0.4)", border: "1px solid rgba(133,108,66,0.15)", fontFamily: f.inter }}
+                    style={{ background: "rgba(240,232,212,0.4)", border: "1px solid rgba(133,108,66,0.15)" }}
                   >
                     <RefreshCw className="w-3 h-3" /> Tentar novamente
                   </button>
-                  <p className="text-[0.6rem] text-[#856C42]/40 leading-relaxed" style={{ fontFamily: f.inter }}>
+                  <p className="text-[0.6rem] text-[#856C42]/40 leading-relaxed">
                     Se o problema persistir, entre em contato com a editora para prosseguir com o pagamento.
                   </p>
                 </div>
@@ -644,7 +642,7 @@ export function InstallmentCheckoutPage() {
                   <button
                     onClick={() => setContractExpanded(!contractExpanded)}
                     className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-[#052413] cursor-pointer hover:bg-[#F0E8D4]/50 transition-colors"
-                    style={{ background: contractExpanded ? "rgba(240,232,212,0.5)" : "rgba(240,232,212,0.3)", border: `1px solid ${contractExpanded ? "rgba(133,108,66,0.2)" : "rgba(133,108,66,0.1)"}`, fontFamily: f.inter }}
+                    style={{ background: contractExpanded ? "rgba(240,232,212,0.5)" : "rgba(240,232,212,0.3)", border: `1px solid ${contractExpanded ? "rgba(133,108,66,0.2)" : "rgba(133,108,66,0.1)"}` }}
                   >
                     <span className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-[#856C42]" />
@@ -653,7 +651,7 @@ export function InstallmentCheckoutPage() {
                     {contractExpanded ? <ChevronUp className="w-4 h-4 text-[#856C42]" /> : <ChevronDown className="w-4 h-4 text-[#856C42]" />}
                   </button>
                   {!contractExpanded && (
-                    <p className="text-[0.6rem] text-[#856C42]/50 mt-1.5 text-center" style={{ fontFamily: f.inter }}>
+                    <p className="text-[0.6rem] text-[#856C42]/50 mt-1.5 text-center">
                       Clique acima para ler o contrato antes de aceitar
                     </p>
                   )}
@@ -668,7 +666,7 @@ export function InstallmentCheckoutPage() {
                       >
                         <div
                           className="mt-3 p-4 rounded-xl max-h-[500px] overflow-y-auto text-xs leading-relaxed text-[#052413]/80"
-                          style={{ background: "rgba(255,253,248,0.8)", border: "1px solid rgba(133,108,66,0.1)", fontFamily: f.inter }}
+                          style={{ background: "rgba(255,253,248,0.8)", border: "1px solid rgba(133,108,66,0.1)" }}
                           dangerouslySetInnerHTML={{ __html: generateContractHTML() }}
                         />
                       </motion.div>
@@ -677,7 +675,7 @@ export function InstallmentCheckoutPage() {
                 </div>
               ) : (
                 <div className="text-center py-4">
-                  <p className="text-xs text-[#856C42]/60" style={{ fontFamily: f.inter }}>
+                  <p className="text-xs text-[#856C42]/60">
                     Modelo de contrato nao disponivel. Entre em contato com a editora.
                   </p>
                 </div>
@@ -686,36 +684,36 @@ export function InstallmentCheckoutPage() {
               {/* Acceptance form */}
               <div className="space-y-3 pt-2">
                 <div>
-                  <label className="text-[0.65rem] text-[#856C42]/70 uppercase tracking-wider font-semibold mb-1 block" style={{ fontFamily: f.inter }}>Nome completo *</label>
+                  <label className="text-[0.65rem] text-[#856C42]/70 uppercase tracking-wider font-semibold mb-1 block">Nome completo *</label>
                   <input
                     type="text"
                     value={contractName}
                     onChange={(e) => setContractName(e.target.value)}
                     placeholder="Seu nome completo"
                     className="w-full px-4 py-3 rounded-xl text-sm text-[#052413] focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                    style={{ background: "rgba(240,232,212,0.3)", border: "1px solid rgba(133,108,66,0.15)", fontFamily: f.inter }}
+                    style={{ background: "rgba(240,232,212,0.3)", border: "1px solid rgba(133,108,66,0.15)" }}
                   />
                 </div>
                 <div>
-                  <label className="text-[0.65rem] text-[#856C42]/70 uppercase tracking-wider font-semibold mb-1 block" style={{ fontFamily: f.inter }}>Email *</label>
+                  <label className="text-[0.65rem] text-[#856C42]/70 uppercase tracking-wider font-semibold mb-1 block">Email *</label>
                   <input
                     type="email"
                     value={contractEmail}
                     onChange={(e) => setContractEmail(e.target.value)}
                     placeholder="seu@email.com"
                     className="w-full px-4 py-3 rounded-xl text-sm text-[#052413] focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                    style={{ background: "rgba(240,232,212,0.3)", border: "1px solid rgba(133,108,66,0.15)", fontFamily: f.inter }}
+                    style={{ background: "rgba(240,232,212,0.3)", border: "1px solid rgba(133,108,66,0.15)" }}
                   />
                 </div>
                 <div>
-                  <label className="text-[0.65rem] text-[#856C42]/70 uppercase tracking-wider font-semibold mb-1 block" style={{ fontFamily: f.inter }}>CPF/CNPJ (opcional)</label>
+                  <label className="text-[0.65rem] text-[#856C42]/70 uppercase tracking-wider font-semibold mb-1 block">CPF/CNPJ (opcional)</label>
                   <input
                     type="text"
                     value={contractCpf}
                     onChange={(e) => setContractCpf(e.target.value)}
                     placeholder="000.000.000-00"
                     className="w-full px-4 py-3 rounded-xl text-sm text-[#052413] focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
-                    style={{ background: "rgba(240,232,212,0.3)", border: "1px solid rgba(133,108,66,0.15)", fontFamily: f.inter }}
+                    style={{ background: "rgba(240,232,212,0.3)", border: "1px solid rgba(133,108,66,0.15)" }}
                   />
                 </div>
 
@@ -723,7 +721,7 @@ export function InstallmentCheckoutPage() {
                   onClick={handleAcceptContract}
                   disabled={acceptingContract || !contractName.trim() || !contractEmail.trim() || !contractTemplate}
                   className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 cursor-pointer disabled:opacity-50"
-                  style={{ background: contractTemplate ? "linear-gradient(135deg, #165B36, #052413)" : "#999", fontFamily: f.inter }}
+                  style={{ background: contractTemplate ? "linear-gradient(135deg, #165B36, #052413)" : "#999" }}
                 >
                   {acceptingContract ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> Registrando aceite...</>
@@ -732,7 +730,7 @@ export function InstallmentCheckoutPage() {
                   )}
                 </button>
 
-                <p className="text-[0.6rem] text-[#856C42]/50 text-center leading-relaxed" style={{ fontFamily: f.inter }}>
+                <p className="text-[0.6rem] text-[#856C42]/50 text-center leading-relaxed">
                   Ao clicar, voce declara ter lido e aceito o contrato de prestacao de servicos editoriais, nos termos da MP n. 2.200-2/2001.
                 </p>
               </div>
@@ -751,9 +749,9 @@ export function InstallmentCheckoutPage() {
           >
             <CheckCircle className="w-4 h-4 text-[#0a7c3e] flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <span className="text-xs font-semibold text-[#0a7c3e]" style={{ fontFamily: f.inter }}>Contrato aceito</span>
+              <span className="text-xs font-semibold text-[#0a7c3e]">Contrato aceito</span>
               {data.contractAcceptedAt && (
-                <span className="text-[0.6rem] text-[#0a7c3e]/60 ml-2" style={{ fontFamily: f.inter }}>
+                <span className="text-[0.6rem] text-[#0a7c3e]/60 ml-2">
                   em {formatDateTime(data.contractAcceptedAt)}
                 </span>
               )}
@@ -761,7 +759,6 @@ export function InstallmentCheckoutPage() {
             <Link
               to={`/contrato/${projectId}`}
               className="text-[0.65rem] text-[#165B36] font-medium hover:underline"
-              style={{ fontFamily: f.inter }}
             >
               Ver contrato
             </Link>
@@ -782,10 +779,10 @@ export function InstallmentCheckoutPage() {
                 <Lock className="w-5 h-5 text-[#052413]" />
               </div>
               <div className="flex-1">
-                <p className="text-base font-bold text-[#052413] mb-1" style={{ fontFamily: f.inter }}>
+                <p className="text-base font-bold text-[#052413] mb-1">
                   Parcelas bloqueadas
                 </p>
-                <p className="text-sm text-[#856C42]/80 leading-relaxed mb-4" style={{ fontFamily: f.inter }}>
+                <p className="text-sm text-[#856C42]/80 leading-relaxed mb-4">
                   O pagamento das parcelas so e liberado apos a confirmacao da entrada de <strong className="text-[#052413]">{formatCurrency(data.chargeAmount)}</strong>.
                   Pague a entrada para dar inicio aos trabalhos e desbloquear as parcelas.
                 </p>
@@ -793,7 +790,7 @@ export function InstallmentCheckoutPage() {
                   <a
                     href={`/pagamento/${data.projectId}`}
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-[#052413] transition-all hover:shadow-md hover:opacity-90"
-                    style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+                    style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
                   >
                     <CreditCard className="w-4 h-4" />
                     Pagar entrada — {formatCurrency(data.chargeAmount)}
@@ -826,16 +823,16 @@ export function InstallmentCheckoutPage() {
                   <Banknote className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-[#052413]" style={{ fontFamily: f.inter }}>
+                  <h2 className="text-base font-bold text-[#052413]">
                     Parcela {currentInstallment.number} de {installmentPlan.totalInstallments}
                   </h2>
-                  <p className="text-xs text-[#856C42]/70" style={{ fontFamily: f.inter }}>
+                  <p className="text-xs text-[#856C42]/70">
                     Vencimento: {formatDateBR(currentInstallment.dueDate)}
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-[#052413]" style={{ fontFamily: f.inter }}>
+                <p className="text-2xl font-bold text-[#052413]">
                   {formatCurrency(currentInstallment.amount)}
                 </p>
               </div>
@@ -852,7 +849,7 @@ export function InstallmentCheckoutPage() {
                       className="w-48 h-48 mx-auto"
                     />
                   </div>
-                  <p className="text-xs text-[#856C42]/50" style={{ fontFamily: f.inter }}>
+                  <p className="text-xs text-[#856C42]/50">
                     Escaneie o QR Code com o app do seu banco
                   </p>
                 </div>
@@ -884,7 +881,7 @@ export function InstallmentCheckoutPage() {
                         onClick={() => handleRegeneratePix(currentInstallment.number)}
                         disabled={regenerating === currentInstallment.number}
                         className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 cursor-pointer disabled:opacity-50"
-                        style={{ background: "rgba(133,108,66,0.08)", color: "#856C42", fontFamily: f.inter }}
+                        style={{ background: "rgba(133,108,66,0.08)", color: "#856C42" }}
                         title="Regenerar PIX (caso tenha expirado)"
                       >
                         {regenerating === currentInstallment.number ? (
@@ -902,13 +899,13 @@ export function InstallmentCheckoutPage() {
               <div className="mt-4 p-3 rounded-xl flex items-start gap-2.5" style={{ background: "rgba(235,191,116,0.08)" }}>
                 <Shield className="w-4 h-4 text-[#856C42] mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-[0.7rem] text-[#856C42]/70 leading-relaxed" style={{ fontFamily: f.inter }}>
+                  <p className="text-[0.7rem] text-[#856C42]/70 leading-relaxed">
                     {hasDeposit && currentInstallment?.number === 1
                       ? "Esta e a 1ª parcela, com vencimento 30 dias apos o pagamento da entrada. Apos a confirmacao, o PIX da proxima parcela sera gerado automaticamente."
                       : "Apos o pagamento ser confirmado, o PIX da proxima parcela sera gerado automaticamente. Voce pode acompanhar o progresso abaixo."
                     }
                   </p>
-                  <p className="text-[0.65rem] text-[#856C42]/50 mt-1" style={{ fontFamily: f.inter }}>
+                  <p className="text-[0.65rem] text-[#856C42]/50 mt-1">
                     A confirmacao do PIX pode levar alguns minutos. Esta pagina atualiza automaticamente a cada 30 segundos.
                   </p>
                 </div>
@@ -939,16 +936,16 @@ export function InstallmentCheckoutPage() {
                   <Zap className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-sm font-bold text-[#052413]" style={{ fontFamily: f.inter }}>
+                  <h3 className="text-sm font-bold text-[#052413]">
                     Quitar tudo de uma vez
                   </h3>
-                  <p className="text-xs text-[#856C42]/60" style={{ fontFamily: f.inter }}>
+                  <p className="text-xs text-[#856C42]/60">
                     Pague {pendingCount} parcela(s) restante(s) com um unico PIX
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-lg font-bold text-[#856C42]" style={{ fontFamily: f.inter }}>
+                <span className="text-lg font-bold text-[#856C42]">
                   {formatCurrency(data.pendingAmount)}
                 </span>
                 {showPayoff ? <EyeOff className="w-4 h-4 text-[#856C42]/50" /> : <Eye className="w-4 h-4 text-[#856C42]/50" />}
@@ -969,13 +966,13 @@ export function InstallmentCheckoutPage() {
                     {hasPayoff && installmentPlan.payoff ? (
                       <div className="pt-5">
                         <div className="text-center mb-4">
-                          <p className="text-sm font-semibold text-[#052413] mb-1" style={{ fontFamily: f.inter }}>
+                          <p className="text-sm font-semibold text-[#052413] mb-1">
                             PIX de quitacao gerado
                           </p>
-                          <p className="text-2xl font-bold text-[#856C42]" style={{ fontFamily: f.inter }}>
+                          <p className="text-2xl font-bold text-[#856C42]">
                             {formatCurrency(installmentPlan.payoff.amount)}
                           </p>
-                          <p className="text-[0.65rem] text-[#856C42]/50 mt-1" style={{ fontFamily: f.inter }}>
+                          <p className="text-[0.65rem] text-[#856C42]/50 mt-1">
                             Cobre {installmentPlan.payoff.installmentsCovered.length} parcela(s) restante(s)
                           </p>
                         </div>
@@ -1017,7 +1014,7 @@ export function InstallmentCheckoutPage() {
                                   onClick={() => handleRegeneratePix("payoff")}
                                   disabled={regenerating === "payoff"}
                                   className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 cursor-pointer disabled:opacity-50"
-                                  style={{ background: "rgba(133,108,66,0.08)", color: "#856C42", fontFamily: f.inter }}
+                                  style={{ background: "rgba(133,108,66,0.08)", color: "#856C42" }}
                                   title="Regenerar PIX de quitacao"
                                 >
                                   {regenerating === "payoff" ? (
@@ -1035,22 +1032,22 @@ export function InstallmentCheckoutPage() {
                     ) : payoffPaid ? (
                       <div className="pt-5 text-center">
                         <CheckCircle className="w-10 h-10 text-[#0a7c3e] mx-auto mb-2" />
-                        <p className="text-sm font-semibold text-[#0a7c3e]" style={{ fontFamily: f.inter }}>Quitacao concluida!</p>
+                        <p className="text-sm font-semibold text-[#0a7c3e]">Quitacao concluida!</p>
                       </div>
                     ) : (
                       <div className="pt-5">
                         <div className="p-4 rounded-xl mb-4" style={{ background: "rgba(235,191,116,0.06)", border: "1px solid rgba(235,191,116,0.15)" }}>
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs text-[#856C42]/70" style={{ fontFamily: f.inter }}>Parcelas restantes</span>
-                            <span className="text-xs font-bold text-[#856C42]" style={{ fontFamily: f.inter }}>{pendingCount}x</span>
+                            <span className="text-xs text-[#856C42]/70">Parcelas restantes</span>
+                            <span className="text-xs font-bold text-[#856C42]">{pendingCount}x</span>
                           </div>
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs text-[#856C42]/70" style={{ fontFamily: f.inter }}>Valor total de quitacao</span>
-                            <span className="text-base font-bold text-[#052413]" style={{ fontFamily: f.inter }}>{formatCurrency(data.pendingAmount)}</span>
+                            <span className="text-xs text-[#856C42]/70">Valor total de quitacao</span>
+                            <span className="text-base font-bold text-[#052413]">{formatCurrency(data.pendingAmount)}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-[#856C42]/70" style={{ fontFamily: f.inter }}>Desconto</span>
-                            <span className="text-xs text-[#0a7c3e] font-medium" style={{ fontFamily: f.inter }}>Sem juros</span>
+                            <span className="text-xs text-[#856C42]/70">Desconto</span>
+                            <span className="text-xs text-[#0a7c3e] font-medium">Sem juros</span>
                           </div>
                         </div>
 
@@ -1069,13 +1066,13 @@ export function InstallmentCheckoutPage() {
                           </button>
                         ) : (
                           <div className="text-center">
-                            <p className="text-xs text-[#856C42]/60 mb-3" style={{ fontFamily: f.inter }}>
+                            <p className="text-xs text-[#856C42]/60 mb-3">
                               Faca login para gerar o PIX de quitacao
                             </p>
                             <Link
                               to="/entrar"
                               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-[#052413] transition-all hover:opacity-90"
-                              style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)", fontFamily: f.inter }}
+                              style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
                             >
                               Entrar na conta
                             </Link>
@@ -1100,17 +1097,17 @@ export function InstallmentCheckoutPage() {
         >
           <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(133,108,66,0.08)" }}>
             <div className="flex items-center justify-between mb-1">
-              <h3 className="text-sm font-semibold text-[#052413]" style={{ fontFamily: f.inter }}>
+              <h3 className="text-sm font-semibold text-[#052413]">
                 {hasDeposit ? "Entrada + Parcelas" : "Todas as parcelas"}
               </h3>
-              <span className="text-xs text-[#856C42]/60" style={{ fontFamily: f.inter }}>
+              <span className="text-xs text-[#856C42]/60">
                 {hasDeposit
                   ? `Entrada + ${installmentPlan.totalInstallments}x de ~${formatCurrency(data.totalPrice / installmentPlan.totalInstallments)}`
                   : `${installmentPlan.totalInstallments}x de ~${formatCurrency(data.totalPrice / installmentPlan.totalInstallments)}`
                 }
               </span>
             </div>
-            <p className="text-[0.6rem] text-[#856C42]/50 flex items-center gap-1" style={{ fontFamily: f.inter }}>
+            <p className="text-[0.6rem] text-[#856C42]/50 flex items-center gap-1">
               <QrCode className="w-3 h-3" />
               Parcelas pagas exclusivamente via PIX — cada codigo expira na data de vencimento
             </p>
@@ -1137,18 +1134,17 @@ export function InstallmentCheckoutPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-base font-bold text-[#052413]" style={{ fontFamily: f.inter }}>
+                      <span className="text-base font-bold text-[#052413]">
                         {formatCurrency(data.chargeAmount)}
                       </span>
                       <span className="text-[0.6rem] px-2 py-0.5 rounded-full font-semibold" style={{
-                        fontFamily: f.inter,
                         background: data.depositStatus === "paid" ? "rgba(10,124,62,0.08)" : "rgba(235,191,116,0.15)",
                         color: data.depositStatus === "paid" ? "#0a7c3e" : "#856C42",
                       }}>
                         {data.depositStatus === "paid" ? "Pago" : "Pendente"}
                       </span>
                     </div>
-                    <p className="text-xs text-[#856C42]/60" style={{ fontFamily: f.inter }}>
+                    <p className="text-xs text-[#856C42]/60">
                       Entrada ({data.depositPercent}%) — inicio dos trabalhos
                       {data.depositStatus === "paid" && data.depositPaidAt && ` · Pago em ${formatDateTime(data.depositPaidAt)}`}
                     </p>
@@ -1158,7 +1154,6 @@ export function InstallmentCheckoutPage() {
                       href={`/pagamento/${data.projectId}`}
                       className="px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer"
                       style={{
-                        fontFamily: f.inter,
                         background: "linear-gradient(135deg, #EBBF74, #d4a84a)",
                         color: "#052413",
                       }}
@@ -1198,31 +1193,31 @@ export function InstallmentCheckoutPage() {
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-base font-bold text-[#052413]" style={{ fontFamily: f.inter }}>
+                        <span className="text-base font-bold text-[#052413]">
                           {formatCurrency(inst.amount)}
                         </span>
                         {isPaid && (
-                          <span className="text-[0.6rem] px-2 py-0.5 rounded-full bg-green-50 text-green-700 font-semibold" style={{ fontFamily: f.inter }}>
+                          <span className="text-[0.6rem] px-2 py-0.5 rounded-full bg-green-50 text-green-700 font-semibold">
                             Pago
                           </span>
                         )}
                         {isOverdue && (
-                          <span className="text-[0.6rem] px-2 py-0.5 rounded-full bg-red-50 text-red-600 font-semibold" style={{ fontFamily: f.inter }}>
+                          <span className="text-[0.6rem] px-2 py-0.5 rounded-full bg-red-50 text-red-600 font-semibold">
                             Vencida
                           </span>
                         )}
                         {isCurrent && !isPaid && !isOverdue && (
-                          <span className="text-[0.6rem] px-2 py-0.5 rounded-full font-semibold" style={{ fontFamily: f.inter, background: "rgba(22,91,54,0.1)", color: "#165B36" }}>
+                          <span className="text-[0.6rem] px-2 py-0.5 rounded-full font-semibold" style={{ background: "rgba(22,91,54,0.1)", color: "#165B36" }}>
                             Atual
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-[#856C42]/60" style={{ fontFamily: f.inter }}>
+                      <p className="text-xs text-[#856C42]/60">
                         Vencimento: {formatDateShort(inst.dueDate)}
                         {isPaid && inst.paidAt && ` · Pago em ${formatDateTime(inst.paidAt)}`}
                       </p>
                       {isOverdue && !isPaid && hasPix && (
-                        <p className="text-[0.6rem] text-red-500/70 mt-0.5" style={{ fontFamily: f.inter }}>
+                        <p className="text-[0.6rem] text-red-500/70 mt-0.5">
                           Vencida — o codigo PIX expirou. Clique em "Renovar PIX" para gerar um novo.
                         </p>
                       )}
@@ -1238,7 +1233,7 @@ export function InstallmentCheckoutPage() {
                               onClick={() => handleRegeneratePix(inst.number)}
                               disabled={regenerating === inst.number}
                               className="px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
-                              style={{ fontFamily: f.inter, background: "rgba(239,68,68,0.08)", color: "#dc2626" }}
+                              style={{ background: "rgba(239,68,68,0.08)", color: "#dc2626" }}
                               title="PIX vencido — gerar novo codigo"
                             >
                               {regenerating === inst.number ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
@@ -1251,7 +1246,6 @@ export function InstallmentCheckoutPage() {
                               onClick={() => handleCopyPix(inst.number, inst.pixCode!)}
                               className="px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer"
                               style={{
-                                fontFamily: f.inter,
                                 background: copiedPix === inst.number ? "#165B36" : "rgba(22,91,54,0.08)",
                                 color: copiedPix === inst.number ? "white" : "#165B36",
                               }}
@@ -1287,7 +1281,7 @@ export function InstallmentCheckoutPage() {
                         onClick={() => handleRegeneratePix(inst.number)}
                         disabled={regenerating === inst.number}
                         className="px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
-                        style={{ fontFamily: f.inter, background: "rgba(22,91,54,0.08)", color: "#165B36" }}
+                        style={{ background: "rgba(22,91,54,0.08)", color: "#165B36" }}
                         title="Gerar código PIX para esta parcela"
                       >
                         {regenerating === inst.number ? (
@@ -1299,7 +1293,7 @@ export function InstallmentCheckoutPage() {
                       </button>
                     )}
                     {!isPaid && !hasPix && !user && (
-                      <span className="text-[0.65rem] text-[#856C42]/40 italic flex-shrink-0" style={{ fontFamily: f.inter }}>
+                      <span className="text-[0.65rem] text-[#856C42]/40 italic flex-shrink-0">
                         Aguardando
                       </span>
                     )}
@@ -1317,7 +1311,7 @@ export function InstallmentCheckoutPage() {
                         <div className="px-5 pb-4">
                           <div className="p-4 rounded-xl bg-white text-center" style={{ border: "1px solid rgba(133,108,66,0.1)" }}>
                             <img src={`data:image/png;base64,${inst.pixQrCode}`} alt="QR Code PIX" className="w-40 h-40 mx-auto mb-2" />
-                            <p className="text-[0.6rem] text-[#856C42]/50" style={{ fontFamily: f.inter }}>Parcela {inst.number} — {formatCurrency(inst.amount)}</p>
+                            <p className="text-[0.6rem] text-[#856C42]/50">Parcela {inst.number} — {formatCurrency(inst.amount)}</p>
                           </div>
                         </div>
                       </motion.div>
@@ -1341,10 +1335,10 @@ export function InstallmentCheckoutPage() {
             style={{ background: "rgba(133,108,66,0.03)", border: "1px dashed rgba(133,108,66,0.2)" }}
           >
             <Lock className="w-10 h-10 text-[#856C42]/30 mx-auto mb-3" />
-            <p className="text-sm font-medium text-[#856C42]/60" style={{ fontFamily: f.inter }}>
+            <p className="text-sm font-medium text-[#856C42]/60">
               Os PIX de pagamento serao liberados apos o aceite do contrato
             </p>
-            <p className="text-xs text-[#856C42]/40 mt-1" style={{ fontFamily: f.inter }}>
+            <p className="text-xs text-[#856C42]/40 mt-1">
               {hasDeposit
                 ? <>Entrada de {formatCurrency(data.chargeAmount)} (inicio dos trabalhos) + {installmentPlan.totalInstallments} parcelas de ~{formatCurrency(data.totalPrice / installmentPlan.totalInstallments)} (1ª em 30 dias apos a entrada)</>
                 : <>{installmentPlan.totalInstallments} parcelas de ~{formatCurrency(data.totalPrice / installmentPlan.totalInstallments)}</>
@@ -1362,11 +1356,11 @@ export function InstallmentCheckoutPage() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-3" style={{ background: "rgba(133,108,66,0.04)" }}>
             <Shield className="w-3.5 h-3.5 text-[#856C42]/40" />
-            <span className="text-[0.65rem] text-[#856C42]/50" style={{ fontFamily: f.inter }}>
+            <span className="text-[0.65rem] text-[#856C42]/50">
               Pagamentos processados via Mercado Pago · Dados criptografados
             </span>
           </div>
-          <p className="text-[0.6rem] text-[#856C42]/30" style={{ fontFamily: f.inter }}>
+          <p className="text-[0.6rem] text-[#856C42]/30">
             {hasDeposit
               ? "A entrada e para inicio dos trabalhos. A 1ª parcela vence 30 dias apos a entrada. Cada parcela seguinte e gerada automaticamente apos a confirmacao da anterior."
               : "A proxima parcela e gerada automaticamente apos a confirmacao do pagamento anterior."

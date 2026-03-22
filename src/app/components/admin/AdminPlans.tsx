@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { getPlans, updateAdminPlans, type ServicesCard } from "../../data/api";
 import { toast } from "sonner";
 
-const F = "Inter, sans-serif";
 
 interface Plan {
   id: string;
@@ -174,8 +173,8 @@ export function AdminPlans() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: F }}>Planos de Preço</h1>
-          <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: F }}>
+          <h1 className="text-2xl font-semibold text-gray-900">Planos de Preço</h1>
+          <p className="text-sm text-gray-500 mt-1">
             Edite os planos exibidos na seção de preços do site
           </p>
         </div>
@@ -183,7 +182,6 @@ export function AdminPlans() {
           <button
             onClick={addPlan}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-[#165B36] bg-[#165B36]/5 hover:bg-[#165B36]/10 transition-colors cursor-pointer"
-            style={{ fontFamily: F }}
           >
             <Plus className="w-4 h-4" /> Adicionar plano
           </button>
@@ -192,7 +190,6 @@ export function AdminPlans() {
             disabled={!dirty || saving}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              fontFamily: F,
               background: dirty ? "linear-gradient(135deg, #EBBF74, #D4AF5A)" : "#d1d5db",
               color: dirty ? "#052413" : "#9ca3af",
             }}
@@ -214,7 +211,7 @@ export function AdminPlans() {
             style={{ backgroundColor: "rgba(235,191,116,0.1)", borderColor: "rgba(235,191,116,0.4)" }}
           >
             <span className="w-2 h-2 rounded-full bg-[#EBBF74] animate-pulse" />
-            <p className="text-xs text-[#856C42]" style={{ fontFamily: F }}>
+            <p className="text-xs text-[#856C42]">
               Alterações não salvas — clique em "Salvar alterações" para publicar no site.
             </p>
           </motion.div>
@@ -233,17 +230,17 @@ export function AdminPlans() {
         >
           <div className="flex items-center gap-2">
             <LayoutList className="w-4 h-4" style={{ color: servicesCard.active ? "#EBBF74" : "#9ca3af" }} />
-            <span className="text-sm font-semibold" style={{ fontFamily: F, color: servicesCard.active ? "#EBBF74" : "#6b7280" }}>
+            <span className="text-sm font-semibold" style={{ color: servicesCard.active ? "#EBBF74" : "#6b7280" }}>
               Card de Serviços Editoriais
             </span>
-            <span className="text-[0.65rem] px-2 py-0.5 rounded-full" style={{ fontFamily: F, background: servicesCard.active ? "rgba(235,191,116,0.2)" : "rgba(0,0,0,0.06)", color: servicesCard.active ? "#EBBF74" : "#9ca3af" }}>
+            <span className="text-[0.65rem] px-2 py-0.5 rounded-full" style={{ background: servicesCard.active ? "rgba(235,191,116,0.2)" : "rgba(0,0,0,0.06)", color: servicesCard.active ? "#EBBF74" : "#9ca3af" }}>
               {servicesCard.active ? "Ativo no site" : "Oculto no site"}
             </span>
           </div>
           <button
             onClick={() => updateServicesCard("active", !servicesCard.active)}
             className="flex items-center gap-1.5 text-sm font-medium cursor-pointer transition-colors"
-            style={{ fontFamily: F, color: servicesCard.active ? "#EBBF74" : "#9ca3af" }}
+            style={{ color: servicesCard.active ? "#EBBF74" : "#9ca3af" }}
           >
             {servicesCard.active
               ? <ToggleRight className="w-6 h-6" style={{ color: "#EBBF74" }} />
@@ -256,27 +253,25 @@ export function AdminPlans() {
         <div className="p-5 space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block" style={{ fontFamily: F }}>Título</label>
+              <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block">Título</label>
               <input
                 value={servicesCard.title}
                 onChange={(e) => updateServicesCard("title", e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                style={{ fontFamily: "'Playfair Display', serif" }}
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40 font-serif"
               />
             </div>
             <div>
-              <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block" style={{ fontFamily: F }}>Subtítulo</label>
+              <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block">Subtítulo</label>
               <input
                 value={servicesCard.subtitle}
                 onChange={(e) => updateServicesCard("subtitle", e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                style={{ fontFamily: F }}
               />
             </div>
           </div>
 
           <div>
-            <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-2 block" style={{ fontFamily: F }}>
+            <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-2 block">
               Serviços listados ({servicesCard.services.length})
             </label>
             <div className="grid sm:grid-cols-2 gap-1 mb-2 max-h-56 overflow-y-auto pr-1">
@@ -298,7 +293,6 @@ export function AdminPlans() {
                       updateServicesCard("services", next);
                     }}
                     className="flex-1 px-2 py-1 rounded border border-gray-200 text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#165B36]/20"
-                    style={{ fontFamily: F }}
                   />
                   <button onClick={() => removeService(i)} className="p-0.5 text-gray-300 hover:text-red-400 transition-colors cursor-pointer opacity-0 group-hover:opacity-100">
                     <X className="w-3.5 h-3.5" />
@@ -313,7 +307,6 @@ export function AdminPlans() {
                 onKeyDown={(e) => e.key === "Enter" && addService()}
                 placeholder="Novo serviço..."
                 className="flex-1 px-2 py-1.5 rounded-lg border border-dashed border-gray-300 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                style={{ fontFamily: F }}
               />
               <button onClick={addService} className="p-1.5 rounded-lg bg-[#165B36]/5 text-[#165B36] hover:bg-[#165B36]/10 transition-colors cursor-pointer">
                 <Plus className="w-3.5 h-3.5" />
@@ -345,7 +338,7 @@ export function AdminPlans() {
             >
               <span
                 className="text-[0.7rem] font-semibold tracking-wider uppercase"
-                style={{ color: plan.featured ? "#1a1206" : "#9ca3af", fontFamily: F }}
+                style={{ color: plan.featured ? "#1a1206" : "#9ca3af" }}
               >
                 {plan.featured ? "★ Mais popular" : "Plano"}
               </span>
@@ -354,7 +347,6 @@ export function AdminPlans() {
                   onClick={() => toggleFeatured(plan.id)}
                   className="text-[0.65rem] px-2 py-0.5 rounded-full border transition-colors cursor-pointer"
                   style={{
-                    fontFamily: F,
                     borderColor: plan.featured ? "rgba(26,18,6,0.3)" : "rgba(0,0,0,0.12)",
                     color: plan.featured ? "#1a1206" : "#9ca3af",
                     background: plan.featured ? "rgba(26,18,6,0.08)" : "transparent",
@@ -375,18 +367,17 @@ export function AdminPlans() {
             <div className="p-5 space-y-4">
               {/* Name */}
               <div>
-                <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block" style={{ fontFamily: F }}>Nome do plano</label>
+                <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block">Nome do plano</label>
                 <input
                   value={plan.name}
                   onChange={(e) => update(plan.id, "name", e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40 font-serif"
                 />
               </div>
 
               {/* Price */}
               <div>
-                <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block" style={{ fontFamily: F }}>Preço (R$) <span className="normal-case tracking-normal text-gray-300">— opcional</span></label>
+                <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block">Preço (R$) <span className="normal-case tracking-normal text-gray-300">— opcional</span></label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                   <input
@@ -394,26 +385,24 @@ export function AdminPlans() {
                     onChange={(e) => update(plan.id, "price", e.target.value)}
                     placeholder="Deixe em branco para ocultar"
                     className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                    style={{ fontFamily: F }}
                   />
                 </div>
               </div>
 
               {/* Description */}
               <div>
-                <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block" style={{ fontFamily: F }}>Descrição</label>
+                <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-1 block">Descrição</label>
                 <textarea
                   value={plan.description}
                   onChange={(e) => update(plan.id, "description", e.target.value)}
                   rows={2}
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40 resize-none"
-                  style={{ fontFamily: F }}
                 />
               </div>
 
               {/* Features */}
               <div>
-                <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-2 block" style={{ fontFamily: F }}>
+                <label className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wider mb-2 block">
                   Itens incluídos ({plan.features.length})
                 </label>
                 <div className="space-y-1 mb-2 max-h-48 overflow-y-auto pr-1">
@@ -435,7 +424,6 @@ export function AdminPlans() {
                           update(plan.id, "features", next);
                         }}
                         className="flex-1 px-2 py-1 rounded border border-gray-200 text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#165B36]/20"
-                        style={{ fontFamily: F }}
                       />
                       <button
                         onClick={() => removeFeature(plan.id, i)}
@@ -453,7 +441,6 @@ export function AdminPlans() {
                     onKeyDown={(e) => e.key === "Enter" && addFeature(plan.id)}
                     placeholder="Novo item..."
                     className="flex-1 px-2 py-1.5 rounded-lg border border-dashed border-gray-300 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#165B36]/20 focus:border-[#165B36]/40"
-                    style={{ fontFamily: F }}
                   />
                   <button
                     onClick={() => addFeature(plan.id)}

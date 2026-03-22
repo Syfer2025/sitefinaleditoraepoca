@@ -74,7 +74,7 @@ export function AuthorsSection() {
                     <path d="M66.52 7.74A8.55 8.55 0 0 0 60.45 1.6C55.14 0 34 0 34 0S12.86 0 7.55 1.6A8.55 8.55 0 0 0 1.48 7.74 89.6 89.6 0 0 0 0 24a89.6 89.6 0 0 0 1.48 16.26 8.55 8.55 0 0 0 6.07 6.14C12.86 48 34 48 34 48s21.14 0 26.45-1.6a8.55 8.55 0 0 0 6.07-6.14A89.6 89.6 0 0 0 68 24a89.6 89.6 0 0 0-1.48-16.26Z" fill="#052413"/>
                     <path d="M27 34l18-10-18-10v20Z" fill="#F7F4EE"/>
                   </svg>
-                  <p className="text-foreground/30 text-sm" style={{ fontFamily: "Inter, sans-serif" }}>
+                  <p className="text-foreground/30 text-sm">
                     Configure o vídeo no painel admin → Autores
                   </p>
                 </div>
@@ -87,19 +87,17 @@ export function AuthorsSection() {
             <div className="text-center md:text-left">
               <p
                 className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-4"
-                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Nossos Autores
               </p>
               <h2
-                className="text-[2rem] md:text-[2.5rem] text-foreground mb-5"
-                style={{ fontFamily: "'Playfair Display', serif", lineHeight: 1.2 }}
+                className="text-[2rem] md:text-[2.5rem] text-foreground mb-5 font-serif leading-[1.2]"
               >
                 {video.title}
               </h2>
               <p
                 className="text-muted-foreground leading-relaxed"
-                style={{ fontFamily: "Inter, sans-serif", fontSize: "1rem", lineHeight: 1.8 }}
+                style={{ fontSize: "1rem", lineHeight: 1.8 }}
               >
                 {video.text}
               </p>

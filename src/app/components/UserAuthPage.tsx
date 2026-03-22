@@ -7,8 +7,6 @@ import { useUserAuth } from "./UserAuthContext";
 import { projectId, publicAnonKey } from "/utils/supabase/info";
 
 const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-e413165d`;
-const F = "Inter, sans-serif";
-const PF = "'Playfair Display', serif";
 
 // ============================================
 // Formatters & Validators
@@ -92,7 +90,7 @@ function getPasswordStrength(pw: string): { score: number; label: string; color:
 }
 
 const inputClasses = "w-full px-4 py-3 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 transition-all duration-300";
-const inputStyle = { fontFamily: F, backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" };
+const inputStyle = { backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" };
 const labelClasses = "block text-sm font-medium text-[#052413] mb-1.5";
 
 // ============================================
@@ -115,10 +113,10 @@ function TermsModal({ onClose }: { onClose: () => void }) {
         className="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto shadow-2xl"
       >
         <div className="sticky top-0 bg-white px-6 py-4 border-b z-10" style={{ borderColor: "rgba(133,108,66,0.1)" }}>
-          <h3 className="text-base font-semibold text-[#052413]" style={{ fontFamily: PF }}>Termos de Uso da Plataforma</h3>
-          <p className="text-[0.65rem] text-[#856C42]/60 mt-0.5" style={{ fontFamily: F }}>Epoca Editora de Livros - Ultima atualizacao: Fevereiro de 2026</p>
+          <h3 className="text-base font-semibold text-[#052413] font-serif">Termos de Uso da Plataforma</h3>
+          <p className="text-[0.65rem] text-[#856C42]/60 mt-0.5">Epoca Editora de Livros - Ultima atualizacao: Fevereiro de 2026</p>
         </div>
-        <div className="px-6 py-5 space-y-4 text-xs text-[#052413]/80 leading-relaxed" style={{ fontFamily: F }}>
+        <div className="px-6 py-5 space-y-4 text-xs text-[#052413]/80 leading-relaxed">
           <div className="space-y-3">
             <p><strong>1. Aceitacao dos Termos</strong></p>
             <p>Ao criar uma conta na plataforma da Epoca Editora de Livros, o usuario declara ter lido, compreendido e aceito integralmente estes Termos de Uso. O uso da plataforma implica na aceitacao automatica de todas as condicoes aqui estabelecidas.</p>
@@ -155,7 +153,7 @@ function TermsModal({ onClose }: { onClose: () => void }) {
           <button
             onClick={onClose}
             className="w-full py-2.5 rounded-lg text-sm font-medium text-white cursor-pointer"
-            style={{ background: "linear-gradient(135deg, #165B36, #052413)", fontFamily: F }}
+            style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
           >
             Entendi
           </button>
@@ -430,17 +428,17 @@ export function UserAuthPage() {
           <div className="absolute top-10 right-1/4 w-72 h-72 rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, #EBBF74, transparent)" }} />
         </div>
         <div className="relative max-w-7xl mx-auto px-6 w-full">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors mb-6" style={{ fontFamily: F }}>
+          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors mb-6">
             <ArrowLeft className="w-4 h-4" /> Voltar ao site
           </Link>
           <Link to="/" className="block mb-5">
             <img src="/assets/logo.png" alt="Época Editora" className="h-10 brightness-0 invert" />
           </Link>
-          <h1 className="text-3xl md:text-4xl text-white" style={{ fontFamily: PF, lineHeight: 1.2 }}>
+          <h1 className="text-3xl md:text-4xl text-white font-serif leading-[1.2]">
             {mode === "login" ? "Bem-vindo " : "Crie sua "}
             <span className="italic text-[#EBBF74]">{mode === "login" ? "de volta" : "conta"}</span>
           </h1>
-          <p className="text-white/50 mt-2 text-sm" style={{ fontFamily: F }}>
+          <p className="text-white/50 mt-2 text-sm">
             {mode === "login" ? "Entre na sua conta para acompanhar seus projetos." : "Cadastre-se como pessoa fisica ou juridica para solicitar servicos editoriais."}
           </p>
         </div>
@@ -466,7 +464,7 @@ export function UserAuthPage() {
                 key={tab.key}
                 onClick={() => { setMode(tab.key); setError(""); }}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm transition-all duration-300 cursor-pointer ${mode === tab.key ? "text-[#052413] shadow-sm" : "text-[#856C42] hover:text-[#052413]"}`}
-                style={{ fontFamily: F, backgroundColor: mode === tab.key ? "#FFFDF8" : "transparent" }}
+                style={{ backgroundColor: mode === tab.key ? "#FFFDF8" : "transparent" }}
               >
                 <tab.icon className="w-4 h-4" />
                 {tab.label}
@@ -482,7 +480,7 @@ export function UserAuthPage() {
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-4 p-3 rounded-lg text-sm overflow-hidden"
-                style={{ backgroundColor: "rgba(212, 24, 61, 0.08)", color: "#d4183d", fontFamily: F }}
+                style={{ backgroundColor: "rgba(212, 24, 61, 0.08)", color: "#d4183d" }}
               >
                 <div className="flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -506,12 +504,12 @@ export function UserAuthPage() {
                 >
                   {/* PF/PJ Toggle */}
                   <div>
-                    <label className={labelClasses} style={{ fontFamily: F }}>Tipo de conta</label>
+                    <label className={labelClasses}>Tipo de conta</label>
                     <div className="flex rounded-lg p-1" style={{ backgroundColor: "#F0E8D4" }}>
-                      <button type="button" onClick={() => setPersonType("pf")} className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm transition-all duration-300 cursor-pointer ${personType === "pf" ? "text-[#052413] shadow-sm" : "text-[#856C42] hover:text-[#052413]"}`} style={{ fontFamily: F, backgroundColor: personType === "pf" ? "#FFFDF8" : "transparent" }}>
+                      <button type="button" onClick={() => setPersonType("pf")} className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm transition-all duration-300 cursor-pointer ${personType === "pf" ? "text-[#052413] shadow-sm" : "text-[#856C42] hover:text-[#052413]"}`} style={{ backgroundColor: personType === "pf" ? "#FFFDF8" : "transparent" }}>
                         <User className="w-4 h-4" /> Pessoa Fisica
                       </button>
-                      <button type="button" onClick={() => setPersonType("pj")} className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm transition-all duration-300 cursor-pointer ${personType === "pj" ? "text-[#052413] shadow-sm" : "text-[#856C42] hover:text-[#052413]"}`} style={{ fontFamily: F, backgroundColor: personType === "pj" ? "#FFFDF8" : "transparent" }}>
+                      <button type="button" onClick={() => setPersonType("pj")} className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm transition-all duration-300 cursor-pointer ${personType === "pj" ? "text-[#052413] shadow-sm" : "text-[#856C42] hover:text-[#052413]"}`} style={{ backgroundColor: personType === "pj" ? "#FFFDF8" : "transparent" }}>
                         <Building2 className="w-4 h-4" /> Pessoa Juridica
                       </button>
                     </div>
@@ -519,13 +517,13 @@ export function UserAuthPage() {
 
                   {/* Name */}
                   <div>
-                    <label className={labelClasses} style={{ fontFamily: F }}>{personType === "pf" ? "Nome completo *" : "Nome do responsavel *"}</label>
+                    <label className={labelClasses}>{personType === "pf" ? "Nome completo *" : "Nome do responsavel *"}</label>
                     <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder={personType === "pf" ? "Seu nome completo" : "Nome do responsavel legal"} className={inputClasses} style={inputStyle} />
                   </div>
 
                   {/* CPF / CNPJ */}
                   <div>
-                    <label className={labelClasses} style={{ fontFamily: F }}>{personType === "pf" ? "CPF *" : "CNPJ *"}</label>
+                    <label className={labelClasses}>{personType === "pf" ? "CPF *" : "CNPJ *"}</label>
                     <div className="relative">
                       <input type="text" value={docNumber} onChange={(e) => handleDocumentChange(e.target.value)} placeholder={personType === "pf" ? "000.000.000-00" : "00.000.000/0000-00"} className={inputClasses + " pr-12"} style={inputStyle} maxLength={personType === "pf" ? 14 : 18} />
                       {docChecking && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#856C42] animate-spin" />}
@@ -534,7 +532,7 @@ export function UserAuthPage() {
                       )}
                     </div>
                     {docCheckResult?.exists && (
-                      <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-2.5 rounded-lg text-xs flex items-start gap-2" style={{ backgroundColor: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.15)", fontFamily: F }}>
+                      <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-2.5 rounded-lg text-xs flex items-start gap-2" style={{ backgroundColor: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.15)" }}>
                         <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
                         <div className="text-amber-800">
                           <p className="font-medium">Documento ja cadastrado</p>
@@ -543,7 +541,7 @@ export function UserAuthPage() {
                       </motion.div>
                     )}
                     {personType === "pf" && docNumber.replace(/\D/g, "").length === 11 && !validateCPF(docNumber) && (
-                      <p className="text-xs text-red-500 mt-1" style={{ fontFamily: F }}>CPF invalido (digitos verificadores incorretos).</p>
+                      <p className="text-xs text-red-500 mt-1">CPF invalido (digitos verificadores incorretos).</p>
                     )}
                   </div>
 
@@ -552,23 +550,23 @@ export function UserAuthPage() {
                     <>
                       {docNumber.replace(/\D/g, "").length === 14 && !cnpjData && (
                         <div className="space-y-1.5">
-                          <p className="text-[0.65rem] text-[#856C42]/70 leading-relaxed" style={{ fontFamily: F }}>
+                          <p className="text-[0.65rem] text-[#856C42]/70 leading-relaxed">
                             Ao consultar, seu CNPJ sera enviado a API publica da Receita Federal (ReceitaWS) para validacao. Nenhum dado e armazenado por terceiros.
                           </p>
-                          <button type="button" onClick={handleValidateCNPJ} disabled={cnpjLoading} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer disabled:opacity-50" style={{ fontFamily: F, backgroundColor: "rgba(22,91,54,0.08)", color: "#165B36", border: "1px solid rgba(22,91,54,0.15)" }}>
+                          <button type="button" onClick={handleValidateCNPJ} disabled={cnpjLoading} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer disabled:opacity-50" style={{ backgroundColor: "rgba(22,91,54,0.08)", color: "#165B36", border: "1px solid rgba(22,91,54,0.15)" }}>
                             {cnpjLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                             Consultar CNPJ na Receita Federal
                           </button>
                         </div>
                       )}
-                      {cnpjError && <p className="text-xs text-red-500" style={{ fontFamily: F }}>{cnpjError}</p>}
+                      {cnpjError && <p className="text-xs text-red-500">{cnpjError}</p>}
                       {cnpjData && (
                         <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="p-3 rounded-xl space-y-2" style={{ backgroundColor: "rgba(22,91,54,0.04)", border: "1px solid rgba(22,91,54,0.12)" }}>
                           <div className="flex items-center gap-2 mb-1.5">
                             <CheckCircle className="w-4 h-4 text-green-600" />
-                            <span className="text-xs font-semibold text-green-700" style={{ fontFamily: F }}>CNPJ validado na Receita Federal</span>
+                            <span className="text-xs font-semibold text-green-700">CNPJ validado na Receita Federal</span>
                           </div>
-                          <div className="grid grid-cols-1 gap-1.5 text-xs" style={{ fontFamily: F }}>
+                          <div className="grid grid-cols-1 gap-1.5 text-xs">
                             <div><span className="text-gray-400">Razao social:</span> <span className="text-[#052413] font-medium">{cnpjData.razaoSocial}</span></div>
                             {cnpjData.nomeFantasia && <div><span className="text-gray-400">Fantasia:</span> <span className="text-[#052413]">{cnpjData.nomeFantasia}</span></div>}
                             <div><span className="text-gray-400">Situacao:</span> <span className={`font-medium ${cnpjData.situacao === "ATIVA" ? "text-green-600" : "text-red-500"}`}>{cnpjData.situacao}</span></div>
@@ -576,7 +574,7 @@ export function UserAuthPage() {
                         </motion.div>
                       )}
                       <div>
-                        <label className={labelClasses} style={{ fontFamily: F }}>Razao social *</label>
+                        <label className={labelClasses}>Razao social *</label>
                         <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Razao social da empresa" className={inputClasses} style={inputStyle} />
                       </div>
                     </>
@@ -584,7 +582,7 @@ export function UserAuthPage() {
 
                   {/* Phone */}
                   <div>
-                    <label className={labelClasses} style={{ fontFamily: F }}>
+                    <label className={labelClasses}>
                       <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-[#856C42]/60" /> Telefone / WhatsApp *</span>
                     </label>
                     <div className="relative">
@@ -609,7 +607,7 @@ export function UserAuthPage() {
                       )}
                     </div>
                     {phoneCheckResult?.exists && (
-                      <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-2.5 rounded-lg text-xs flex items-start gap-2" style={{ backgroundColor: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.15)", fontFamily: F }}>
+                      <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-2.5 rounded-lg text-xs flex items-start gap-2" style={{ backgroundColor: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.15)" }}>
                         <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
                         <div className="text-amber-800">
                           <p className="font-medium">Telefone ja cadastrado</p>
@@ -626,10 +624,10 @@ export function UserAuthPage() {
 
                   {/* Address Section */}
                   <div className="pt-2 border-t" style={{ borderColor: "rgba(133,108,66,0.1)" }}>
-                    <label className={labelClasses} style={{ fontFamily: F }}>
+                    <label className={labelClasses}>
                       <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-[#856C42]/60" /> Endereco para recebimento *</span>
                     </label>
-                    <p className="text-[0.65rem] text-[#856C42]/50 mb-3 -mt-0.5" style={{ fontFamily: F }}>
+                    <p className="text-[0.65rem] text-[#856C42]/50 mb-3 -mt-0.5">
                       Utilizado para envio de livros impressos. Voce podera alterar depois.
                     </p>
 
@@ -641,7 +639,7 @@ export function UserAuthPage() {
                         <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
                       )}
                     </div>
-                    {cepError && <p className="text-xs text-red-500 mb-2" style={{ fontFamily: F }}>{cepError}</p>}
+                    {cepError && <p className="text-xs text-red-500 mb-2">{cepError}</p>}
 
                     {/* Street + Number */}
                     <div className="grid grid-cols-[1fr_100px] gap-2 mb-2">
@@ -667,7 +665,7 @@ export function UserAuthPage() {
 
             {/* Email */}
             <div>
-              <label className={labelClasses} style={{ fontFamily: F }}>E-mail *</label>
+              <label className={labelClasses}>E-mail *</label>
               <div className="relative">
                 <input
                   type="email"
@@ -691,10 +689,10 @@ export function UserAuthPage() {
                 )}
               </div>
               {email && !emailValid && (
-                <p className="text-xs text-red-500 mt-1" style={{ fontFamily: F }}>Formato de e-mail invalido.</p>
+                <p className="text-xs text-red-500 mt-1">Formato de e-mail invalido.</p>
               )}
               {mode === "signup" && emailCheckResult?.exists && (
-                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-2.5 rounded-lg text-xs flex items-start gap-2" style={{ backgroundColor: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.15)", fontFamily: F }}>
+                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-2.5 rounded-lg text-xs flex items-start gap-2" style={{ backgroundColor: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.15)" }}>
                   <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
                   <div className="text-amber-800">
                     <p className="font-medium">E-mail ja cadastrado</p>
@@ -712,7 +710,7 @@ export function UserAuthPage() {
             {/* Confirm Email (signup only) */}
             {mode === "signup" && (
               <div>
-                <label className={labelClasses} style={{ fontFamily: F }}>Confirmar e-mail *</label>
+                <label className={labelClasses}>Confirmar e-mail *</label>
                 <input
                   type="email"
                   value={confirmEmail}
@@ -722,14 +720,14 @@ export function UserAuthPage() {
                   style={{ ...inputStyle, borderColor: confirmEmail && !emailsMatch ? "rgba(212,24,61,0.4)" : inputStyle.borderColor }}
                 />
                 {confirmEmail && !emailsMatch && (
-                  <p className="text-xs text-red-500 mt-1" style={{ fontFamily: F }}>Os e-mails nao coincidem.</p>
+                  <p className="text-xs text-red-500 mt-1">Os e-mails nao coincidem.</p>
                 )}
               </div>
             )}
 
             {/* Password */}
             <div>
-              <label className={labelClasses} style={{ fontFamily: F }}>Senha *</label>
+              <label className={labelClasses}>Senha *</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -754,7 +752,7 @@ export function UserAuthPage() {
                       <div key={i} className="h-1 flex-1 rounded-full transition-all duration-300" style={{ backgroundColor: i <= pwStrength.score ? pwStrength.color : "rgba(133,108,66,0.15)" }} />
                     ))}
                   </div>
-                  <p className="text-[0.65rem] font-medium" style={{ fontFamily: F, color: pwStrength.color }}>
+                  <p className="text-[0.65rem] font-medium" style={{ color: pwStrength.color }}>
                     Forca: {pwStrength.label}
                     {pwStrength.score < 3 && <span className="text-[#856C42]/50 font-normal"> — Use maiusculas, numeros e simbolos</span>}
                   </p>
@@ -765,7 +763,7 @@ export function UserAuthPage() {
             {/* Confirm Password (signup only) */}
             {mode === "signup" && (
               <div>
-                <label className={labelClasses} style={{ fontFamily: F }}>Confirmar senha *</label>
+                <label className={labelClasses}>Confirmar senha *</label>
                 <input
                   type={showPassword ? "text" : "password"}
                   value={confirmPassword}
@@ -775,7 +773,7 @@ export function UserAuthPage() {
                   style={{ ...inputStyle, borderColor: confirmPassword && !passwordsMatch ? "rgba(212,24,61,0.4)" : inputStyle.borderColor }}
                 />
                 {confirmPassword && !passwordsMatch && (
-                  <p className="text-xs text-red-500 mt-1" style={{ fontFamily: F }}>As senhas nao coincidem.</p>
+                  <p className="text-xs text-red-500 mt-1">As senhas nao coincidem.</p>
                 )}
               </div>
             )}
@@ -791,7 +789,7 @@ export function UserAuthPage() {
                     className="w-4 h-4 rounded accent-[#165B36] mt-0.5 flex-shrink-0"
                     id="accept-terms"
                   />
-                  <label htmlFor="accept-terms" className="text-xs text-[#052413] cursor-pointer leading-relaxed" style={{ fontFamily: F }}>
+                  <label htmlFor="accept-terms" className="text-xs text-[#052413] cursor-pointer leading-relaxed">
                     Li e aceito os{" "}
                     <button type="button" onClick={() => setShowTerms(true)} className="text-[#165B36] font-semibold underline underline-offset-2 hover:text-[#0a7c3e] cursor-pointer">
                       Termos de Uso
@@ -811,7 +809,7 @@ export function UserAuthPage() {
                     className="w-4 h-4 rounded accent-[#165B36] mt-0.5 flex-shrink-0"
                     id="accept-newsletter"
                   />
-                  <label htmlFor="accept-newsletter" className="text-xs text-[#052413]/70 cursor-pointer leading-relaxed" style={{ fontFamily: F }}>
+                  <label htmlFor="accept-newsletter" className="text-xs text-[#052413]/70 cursor-pointer leading-relaxed">
                     Desejo receber novidades, lancamentos e promocoes da Epoca Editora por e-mail. (opcional)
                   </label>
                 </div>
@@ -830,7 +828,7 @@ export function UserAuthPage() {
           </form>
 
           {/* Switch mode text */}
-          <p className="text-center text-sm text-[#856C42] mt-5" style={{ fontFamily: F }}>
+          <p className="text-center text-sm text-[#856C42] mt-5">
             {mode === "login" ? "Ainda nao tem conta? " : "Ja tem uma conta? "}
             <button onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); }} className="text-[#165B36] font-medium hover:underline cursor-pointer">
               {mode === "login" ? "Cadastre-se" : "Entrar"}
@@ -838,7 +836,7 @@ export function UserAuthPage() {
           </p>
 
           {mode === "login" && (
-            <p className="text-center text-xs text-[#856C42]/60 mt-3" style={{ fontFamily: F }}>
+            <p className="text-center text-xs text-[#856C42]/60 mt-3">
               Esqueceu a senha?{" "}
               <Link to="/recuperar-senha" className="text-[#165B36] font-medium hover:underline">
                 Recuperar acesso
