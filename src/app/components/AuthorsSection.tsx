@@ -36,7 +36,7 @@ export function AuthorsSection() {
   const embedUrl = getEmbedUrl(video.url);
 
   return (
-    <section id="autores" className="py-20 px-6 bg-background relative overflow-hidden">
+    <section id="autores" className="py-20 px-6 bg-background relative overflow-hidden" style={{ scrollMarginTop: "72px" }}>
       {/* Decorative glow */}
       <div
         className="absolute top-1/2 left-1/2 w-[700px] h-[700px] rounded-full opacity-[0.03] -translate-x-1/2 -translate-y-1/2 pointer-events-none"

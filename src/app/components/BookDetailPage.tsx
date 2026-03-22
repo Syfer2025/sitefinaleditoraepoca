@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router";
 import { useSEO } from "../hooks/useSEO";
-import { ArrowLeft, Star, MessageCircle, Images } from "lucide-react";
+import { ArrowLeft, Star, MessageCircle, Images, ZoomIn, ZoomOut, X, RotateCw } from "lucide-react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { WhatsAppButton } from "./WhatsAppButton";
@@ -18,6 +18,8 @@ export function BookDetailPage() {
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [lightboxZoom, setLightboxZoom] = useState(1);
+  const lightboxRef = useRef<HTMLDivElement>(null);
 
   useSEO({
     title: book ? `${book.title} — Época Editora de Livros` : "Livro não encontrado — Época Editora",
@@ -62,6 +64,19 @@ export function BookDetailPage() {
     }
     return () => { document.getElementById(scriptId)?.remove(); };
   }, [book, slug]);
+
+  useEffect(() => {
+    if (!selectedPhoto) return;
+    setLightboxZoom(1);
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedPhoto(null);
+      if (e.key === "+" || e.key === "=") setLightboxZoom((z) => Math.min(z + 0.25, 4));
+      if (e.key === "-") setLightboxZoom((z) => Math.max(z - 0.25, 0.5));
+      if (e.key === "0") setLightboxZoom(1);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [selectedPhoto]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -311,26 +326,79 @@ export function BookDetailPage() {
       <AnimatePresence>
         {selectedPhoto && (
           <motion.div
+            ref={lightboxRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/90 z-50 flex flex-col"
             onClick={() => setSelectedPhoto(null)}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="max-w-3xl max-h-[90vh] rounded-xl overflow-hidden"
+            {/* Toolbar */}
+            <div
+              className="flex items-center justify-between px-4 py-3 flex-shrink-0"
+              style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <img
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setLightboxZoom((z) => Math.max(z - 0.25, 0.5))}
+                  className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  aria-label="Diminuir zoom"
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </button>
+                <span className="text-xs text-white/50 min-w-[3rem] text-center" style={{ fontFamily: "Inter, sans-serif" }}>
+                  {Math.round(lightboxZoom * 100)}%
+                </span>
+                <button
+                  onClick={() => setLightboxZoom((z) => Math.min(z + 0.25, 4))}
+                  className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  aria-label="Aumentar zoom"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setLightboxZoom(1)}
+                  className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer hidden sm:flex"
+                  aria-label="Redefinir zoom"
+                >
+                  <RotateCw className="w-4 h-4" />
+                </button>
+              </div>
+              <button
+                onClick={() => setSelectedPhoto(null)}
+                className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Fechar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Image area */}
+            <div
+              className="flex-1 overflow-auto flex items-center justify-center p-4"
+              onClick={() => setSelectedPhoto(null)}
+            >
+              <motion.img
+                initial={{ scale: 0.92, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.92, opacity: 0 }}
+                transition={{ duration: 0.22 }}
                 src={selectedPhoto}
                 alt="Foto ampliada"
-                className="w-full h-full object-contain"
+                className="max-w-full max-h-full object-contain rounded-xl shadow-2xl transition-transform duration-200"
+                style={{ transform: `scale(${lightboxZoom})`, transformOrigin: "center center", cursor: lightboxZoom > 1 ? "zoom-out" : "zoom-in" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxZoom((z) => z > 1 ? 1 : 2);
+                }}
               />
-            </motion.div>
+            </div>
+
+            {/* Mobile hint */}
+            <p className="text-center text-[0.65rem] text-white/25 pb-3 sm:hidden" style={{ fontFamily: "Inter, sans-serif" }}>
+              Toque na imagem para ampliar · Toque fora para fechar
+            </p>
           </motion.div>
         )}
       </AnimatePresence>

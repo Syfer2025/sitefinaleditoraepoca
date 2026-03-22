@@ -1853,7 +1853,9 @@ export function UserAccountPage() {
       setLoadingProjects(true);
       const data = await getUserProjects();
       setProjects(data.projects || []);
-    } catch {
+    } catch (err: any) {
+      // Ignore auth errors that occur during/after logout
+      if (err?.message?.includes("401") || err?.message?.includes("403") || err?.message?.includes("auth")) return;
       toast.error("Erro ao carregar projetos.");
     } finally {
       setLoadingProjects(false);

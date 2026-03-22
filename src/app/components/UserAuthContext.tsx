@@ -299,7 +299,6 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut({ scope: "global" });
     clearUserData();
     setUser(null);
-    toast.success("Sessão encerrada com sucesso.");
   }, []);
 
   const updateProfile = useCallback(async (fields: { name?: string; email?: string; phone?: string }) => {

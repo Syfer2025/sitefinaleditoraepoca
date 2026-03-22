@@ -430,8 +430,11 @@ export function UserAuthPage() {
           <div className="absolute top-10 right-1/4 w-72 h-72 rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, #EBBF74, transparent)" }} />
         </div>
         <div className="relative max-w-7xl mx-auto px-6 w-full">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors mb-4" style={{ fontFamily: F }}>
+          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors mb-6" style={{ fontFamily: F }}>
             <ArrowLeft className="w-4 h-4" /> Voltar ao site
+          </Link>
+          <Link to="/" className="block mb-5">
+            <img src="/assets/logo.png" alt="Época Editora" className="h-10 brightness-0 invert" />
           </Link>
           <h1 className="text-3xl md:text-4xl text-white" style={{ fontFamily: PF, lineHeight: 1.2 }}>
             {mode === "login" ? "Bem-vindo " : "Crie sua "}
