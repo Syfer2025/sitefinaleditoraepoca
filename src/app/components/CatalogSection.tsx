@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { Star, BookX } from "lucide-react";
+import { BookX } from "lucide-react";
 import { GoldButton } from "./GoldButton";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { motion, AnimatePresence } from "motion/react";
@@ -158,14 +158,6 @@ export function CatalogSection() {
                     </div>
                   </div>
                   <div className="p-5">
-                    <div className="flex items-center gap-1 mb-2">
-                      <Star className="w-4 h-4 fill-[#EBBF74] text-[#EBBF74]" />
-                      <span
-                        className="text-[0.875rem] text-muted-foreground"
-                      >
-                        {book.rating}
-                      </span>
-                    </div>
                     <h3
                       className="text-[1.375rem] text-foreground mb-1 font-serif"
                     >

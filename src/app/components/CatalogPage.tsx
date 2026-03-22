@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSEO } from "../hooks/useSEO";
 import { Link } from "react-router";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { Star, BookX, Search, ArrowLeft, SlidersHorizontal, X } from "lucide-react";
+import { BookX, Search, ArrowLeft, SlidersHorizontal, X } from "lucide-react";
 import { GoldButton } from "./GoldButton";
 import { Footer } from "./Footer";
 import { BackToTop } from "./BackToTop";
@@ -14,7 +14,6 @@ import { buildWhatsAppUrl, useWhatsAppNumber } from "../data/constants";
 
 const sortOptions = [
   { label: "Mais recentes", value: "recent" },
-  { label: "Melhor avaliados", value: "rating" },
   { label: "A-Z", value: "az" },
 ];
 
@@ -63,7 +62,6 @@ export function CatalogPage() {
         })
         .sort((a, b) => {
           if (sortBy === "recent") return b.year - a.year;
-          if (sortBy === "rating") return b.rating - a.rating;
           return a.title.localeCompare(b.title);
         }),
     [books, activeGenre, search, sortBy]
@@ -316,14 +314,6 @@ export function CatalogPage() {
                     </div>
                   </div>
                   <div className="p-5">
-                    <div className="flex items-center gap-1 mb-2">
-                      <Star className="w-4 h-4 fill-[#EBBF74] text-[#EBBF74]" />
-                      <span
-                        className="text-[0.875rem] text-muted-foreground"
-                      >
-                        {book.rating}
-                      </span>
-                    </div>
                     <h3
                       className="text-[1.375rem] text-foreground mb-1 font-serif"
                     >

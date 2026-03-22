@@ -508,10 +508,9 @@ app.post(`${P}/auth/request-reset`, async (c) => {
       await sendEmail(
         email.trim(),
         "Recuperação de senha — Época Editora",
-        `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:#FFFDF8">
-          <div style="text-align:center;margin-bottom:24px">
-            <h1 style="color:#165B36;font-size:22px;margin:0;font-family:Georgia,serif">Época Editora de Livros</h1>
-          </div>
+        `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+          ${buildEmailHeader("Época Editora de Livros")}
+          <div style="padding:28px 24px">
           <h2 style="color:#052413;font-size:18px;margin:0 0 12px">Redefinição de senha</h2>
           <p style="color:#374151;font-size:14px;line-height:1.7;margin:0 0 20px">
             Recebemos uma solicitação para redefinir a senha da sua conta.<br>
@@ -526,10 +525,10 @@ app.post(`${P}/auth/request-reset`, async (c) => {
             Se você não solicitou a redefinição, ignore este e-mail.<br>
             O link expira em <strong>1 hora</strong>.
           </p>
-          <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0"/>
-          <p style="color:#9ca3af;font-size:11px;text-align:center;margin:0">
-            Época Editora de Livros · <a href="${siteUrl}" style="color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a>
-          </p>
+          </div>
+          <div style="background:#F0E8D4;padding:12px 24px;text-align:center;border-top:1px solid #e5e7eb">
+            <p style="color:#9ca3af;font-size:10px;margin:0">Época Editora de Livros · <a href="${siteUrl}" style="color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a></p>
+          </div>
         </div>`,
       );
       auditLog("password_reset_sent_smtp", { email });
@@ -580,10 +579,7 @@ app.post(`${P}/messages`, async (c) => {
         emailCfg.from_email || emailCfg.user,
         `📬 Nova mensagem de ${name} — Época Editora`,
         `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:0;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-          <div style="background:linear-gradient(135deg,#165B36,#052413);padding:24px;text-align:center">
-            <h1 style="color:#EBBF74;font-size:20px;margin:0;font-family:Georgia,serif;font-style:italic">Época Editora</h1>
-            <p style="color:rgba(255,255,255,0.7);font-size:12px;margin:6px 0 0">Nova mensagem recebida pelo site</p>
-          </div>
+          ${buildEmailHeader("Época Editora", "Nova mensagem recebida pelo site")}
           <div style="padding:28px 24px">
             <table style="width:100%;border-collapse:collapse;font-size:14px;color:#374151">
               <tr><td style="padding:8px 0;border-bottom:1px solid #f0e8d4;width:100px"><strong style="color:#052413">De:</strong></td><td style="padding:8px 0;border-bottom:1px solid #f0e8d4">${name}</td></tr>
@@ -738,10 +734,7 @@ app.post(`${P}/newsletter`, async (c) => {
       email,
       "Bem-vindo à newsletter da Época Editora!",
       `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:0;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-        <div style="background:linear-gradient(135deg,#165B36,#052413);padding:32px 24px;text-align:center">
-          <h1 style="color:#EBBF74;font-size:22px;margin:0;font-family:Georgia,serif;font-style:italic">Época Editora de Livros</h1>
-          <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:8px 0 0">Histórias que transformam</p>
-        </div>
+        ${buildEmailHeader("Época Editora de Livros", "Histórias que transformam")}
         <div style="padding:32px 24px">
           <h2 style="color:#052413;font-size:18px;margin:0 0 12px">Você está inscrito! 🎉</h2>
           <p style="color:#374151;font-size:14px;line-height:1.7;margin:0 0 20px">
@@ -2739,6 +2732,37 @@ async function sendEmail(to: string | string[], subject: string, html: string, t
   });
 }
 
+// ── Email branding helpers ────────────────────────────────────────────────────
+const EMAIL_LOGO_URL = "https://editoraepoca.com.br/assets/logo.png";
+
+function buildEmailHeader(fromName: string, subtitle?: string): string {
+  return `<div style="background:linear-gradient(135deg,#165B36,#052413);padding:24px;text-align:center">
+    <img src="${EMAIL_LOGO_URL}" alt="${fromName}" width="180" style="max-height:64px;max-width:180px;height:auto;display:block;margin:0 auto"/>
+    ${subtitle ? `<p style="color:rgba(255,255,255,0.65);font-size:12px;margin:8px 0 0;letter-spacing:0.05em">${subtitle}</p>` : ""}
+  </div>`;
+}
+
+async function buildSignatureHtml(siteUrl: string, fromName: string): Promise<string> {
+  const sig: any = await kv.get("email_signature") || {};
+  const name = sig.name || fromName;
+  const tagline = sig.tagline || "Editorial · Publicação · Literatura";
+  const extraLine = sig.extra_line || "";
+  const showLogo = sig.show_logo !== false;
+  return `<div style="margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb">
+    <table cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+      <tr>
+        ${showLogo ? `<td style="padding-right:12px;vertical-align:middle"><img src="${EMAIL_LOGO_URL}" alt="${name}" width="44" style="height:44px;width:auto;display:block"/></td>` : ""}
+        <td style="padding-left:14px;border-left:3px solid #EBBF74;vertical-align:middle">
+          <p style="margin:0;font-family:Georgia,serif;font-style:italic;font-size:15px;color:#052413;font-weight:bold">${name}</p>
+          <p style="margin:2px 0 0;font-size:11px;color:#856C42;letter-spacing:0.05em">${tagline}</p>
+          <a href="${siteUrl}" style="font-size:11px;color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a>
+          ${extraLine ? `<p style="margin:2px 0 0;font-size:11px;color:#856C42">${extraLine}</p>` : ""}
+        </td>
+      </tr>
+    </table>
+  </div>`;
+}
+
 // ── Admin: Email Config endpoints ──────────────────────────────────────────────
 app.get(`${P}/admin/email-config`, async (c) => {
   try {
@@ -2798,15 +2822,49 @@ app.post(`${P}/admin/email-config/test`, async (c) => {
     await sendEmail(
       recipient,
       "✅ Teste SMTP — Época Editora",
-      `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px">
-        <h2 style="color:#165B36;margin-bottom:8px">Configuração SMTP funcionando!</h2>
-        <p style="color:#374151">Se você recebeu este e-mail, as configurações estão corretas.</p>
-        <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0"/>
-        <p style="font-size:12px;color:#9ca3af">Servidor: <strong>${cfg.host}:${cfg.port}</strong> · Usuário: <strong>${cfg.user}</strong></p>
+      `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+        ${buildEmailHeader(cfg.from_name || "Época Editora")}
+        <div style="padding:24px">
+          <h2 style="color:#165B36;margin-bottom:8px">Configuração SMTP funcionando!</h2>
+          <p style="color:#374151">Se você recebeu este e-mail, as configurações estão corretas.</p>
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0"/>
+          <p style="font-size:12px;color:#9ca3af">Servidor: <strong>${cfg.host}:${cfg.port}</strong> · Usuário: <strong>${cfg.user}</strong></p>
+        </div>
       </div>`,
     );
     return c.json({ ok: true });
   } catch (e) { return err(c, `Erro ao enviar e-mail de teste: ${e}`); }
+});
+
+// ── Admin: Email Signature endpoints ─────────────────────────────────────────
+app.get(`${P}/admin/email-signature`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const sig: any = await kv.get("email_signature") || {};
+    return c.json({
+      name: sig.name || "",
+      tagline: sig.tagline || "",
+      extra_line: sig.extra_line || "",
+      show_logo: sig.show_logo !== false,
+    });
+  } catch (e) { return err(c, `Erro: ${e}`); }
+});
+
+app.put(`${P}/admin/email-signature`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const body = await c.req.json();
+    await kv.set("email_signature", {
+      name: (body.name || "").trim(),
+      tagline: (body.tagline || "").trim(),
+      extra_line: (body.extra_line || "").trim(),
+      show_logo: body.show_logo !== false,
+    });
+    auditLog("email_signature_updated", { by: auth.email });
+    return c.json({ success: true });
+  } catch (e) { return err(c, `Erro: ${e}`); }
 });
 
 // ── Admin: Compose & send email ───────────────────────────────────────────────
@@ -2833,26 +2891,11 @@ app.post(`${P}/admin/compose-email`, async (c) => {
       .map((p: string) => `<p style="margin:0 0 14px;color:#374151;font-size:14px;line-height:1.75">${p.replace(/\n/g, "<br>")}</p>`)
       .join("");
 
-    const signature = `
-      <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb">
-        <table cellpadding="0" cellspacing="0">
-          <tr>
-            <td style="padding-right:14px;border-right:3px solid #EBBF74;vertical-align:middle">
-              <p style="margin:0;font-family:Georgia,serif;font-style:italic;font-size:15px;color:#052413;font-weight:bold">${fromName}</p>
-            </td>
-            <td style="padding-left:14px;vertical-align:middle">
-              <p style="margin:0 0 2px;font-size:11px;color:#856C42;letter-spacing:0.05em">Editorial · Publicação · Literatura</p>
-              <a href="${siteUrl}" style="font-size:11px;color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a>
-            </td>
-          </tr>
-        </table>
-      </div>`;
+    const signature = await buildSignatureHtml(siteUrl, fromName);
 
     const html = `
       <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-        <div style="background:linear-gradient(135deg,#165B36,#052413);padding:22px 24px">
-          <h1 style="color:#EBBF74;font-size:20px;margin:0;font-family:Georgia,serif;font-style:italic">${fromName}</h1>
-        </div>
+        ${buildEmailHeader(fromName)}
         <div style="padding:32px 28px">
           ${bodyHtml}
           ${signature}
@@ -2901,11 +2944,7 @@ app.post(`${P}/admin/email-config/test-template`, async (c) => {
     const recipient = to || cfg.from_email || cfg.user;
     const fromName = cfg.from_name || "Época Editora";
 
-    const header = `
-      <div style="background:linear-gradient(135deg,#165B36,#052413);padding:28px 24px;text-align:center">
-        <h1 style="color:#EBBF74;font-size:22px;margin:0;font-family:Georgia,serif;font-style:italic">${fromName}</h1>
-        <p style="color:rgba(255,255,255,0.6);font-size:11px;margin:6px 0 0;letter-spacing:0.08em;text-transform:uppercase">Prévia de modelo</p>
-      </div>`;
+    const header = buildEmailHeader(fromName, "Prévia de modelo");
     const footer = `
       <div style="background:#F0E8D4;padding:14px 24px;text-align:center;border-top:1px solid #e5e7eb">
         <p style="color:#9ca3af;font-size:10px;margin:0">Época Editora de Livros · <a href="${siteUrl}" style="color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a></p>
@@ -3000,10 +3039,7 @@ app.post(`${P}/admin/email-config/test-template`, async (c) => {
         html = `<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;background:#F7F4EE;padding:24px 0">
           <tr><td align="center">
             <table width="520" cellpadding="0" cellspacing="0" style="background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;max-width:520px">
-              <tr><td style="background:linear-gradient(135deg,#165B36,#052413);padding:32px 24px;text-align:center">
-                <h1 style="color:#EBBF74;font-size:26px;margin:0;font-family:Georgia,serif;font-style:italic">${fromName}</h1>
-                <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:8px 0 0">Histórias que transformam</p>
-              </td></tr>
+              <tr><td>${buildEmailHeader(fromName, "Histórias que transformam")}</td></tr>
               <tr><td style="padding:32px 24px">
                 <h2 style="color:#052413;font-size:20px;margin:0 0 16px;font-family:Georgia,serif">Lançamentos desta temporada 📖</h2>
                 <p style="color:#374151;font-size:14px;line-height:1.8;margin:0 0 20px">

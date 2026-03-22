@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import {
   Save, Loader2, CheckCircle, XCircle, Eye, EyeOff,
   Send, Server, Lock, User, Mail, AtSign, RefreshCw, ShieldCheck, AlertTriangle,
-  Wifi, KeyRound, Newspaper, Bell, Megaphone,
+  Wifi, KeyRound, Newspaper, Bell, Megaphone, PenLine,
 } from "lucide-react";
-import { getAdminEmailConfig, updateAdminEmailConfig, testAdminEmailTemplate } from "../../data/api";
+import { getAdminEmailConfig, updateAdminEmailConfig, testAdminEmailTemplate, getAdminEmailSignature, updateAdminEmailSignature } from "../../data/api";
 import { toast } from "sonner";
 
 
@@ -29,11 +29,19 @@ interface Config {
   configured: boolean;
 }
 
+interface Signature {
+  name: string; tagline: string; extra_line: string; show_logo: boolean;
+}
+
 const EMPTY: Config = {
   host: "", port: "587", encryption: "tls",
   user: "", password: "",
   from_name: "", from_email: "", reply_to: "",
   configured: false,
+};
+
+const EMPTY_SIG: Signature = {
+  name: "", tagline: "", extra_line: "", show_logo: true,
 };
 
 export function AdminEmailConfig() {
@@ -44,10 +52,15 @@ export function AdminEmailConfig() {
   const [showPass, setShowPass] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [templateResults, setTemplateResults] = useState<Record<string, { status: "ok" | "fail" | "loading" | null; error: string }>>({});
+  const [sig, setSig] = useState<Signature>(EMPTY_SIG);
+  const [sigDirty, setSigDirty] = useState(false);
+  const [savingSig, setSavingSig] = useState(false);
 
   useEffect(() => {
-    getAdminEmailConfig()
-      .then((data) => setCfg({ ...EMPTY, ...data.config }))
+    Promise.all([
+      getAdminEmailConfig().then((data) => setCfg({ ...EMPTY, ...data.config })),
+      getAdminEmailSignature().then((data) => setSig({ ...EMPTY_SIG, ...data })),
+    ])
       .catch(() => toast.error("Erro ao carregar configurações de e-mail"))
       .finally(() => setLoading(false));
   }, []);
@@ -92,6 +105,19 @@ export function AdminEmailConfig() {
       toast.error(e.message || "Erro ao salvar");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleSaveSig() {
+    setSavingSig(true);
+    try {
+      await updateAdminEmailSignature(sig);
+      toast.success("Assinatura salva!");
+      setSigDirty(false);
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao salvar assinatura");
+    } finally {
+      setSavingSig(false);
     }
   }
 
@@ -422,6 +448,102 @@ export function AdminEmailConfig() {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* Email Signature */}
+      <div
+        className="rounded-2xl p-6 border space-y-4"
+        style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.15)" }}
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <PenLine className="w-4 h-4 text-[#165B36]" />
+          <h2 className="text-sm font-semibold text-[#052413]">Assinatura de E-mail</h2>
+        </div>
+        <p className="text-xs text-[#856C42]">
+          Esta assinatura é incluída automaticamente em todos os e-mails enviados pelo painel.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-[#052413] mb-1.5">Nome</label>
+            <input
+              type="text"
+              value={sig.name}
+              onChange={(e) => { setSig((s) => ({ ...s, name: e.target.value })); setSigDirty(true); }}
+              placeholder="Época Editora de Livros"
+              className="w-full px-3 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
+              style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[#052413] mb-1.5">Tagline</label>
+            <input
+              type="text"
+              value={sig.tagline}
+              onChange={(e) => { setSig((s) => ({ ...s, tagline: e.target.value })); setSigDirty(true); }}
+              placeholder="Editorial · Publicação · Literatura"
+              className="w-full px-3 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
+              style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-medium text-[#052413] mb-1.5">Linha extra (opcional)</label>
+            <input
+              type="text"
+              value={sig.extra_line}
+              onChange={(e) => { setSig((s) => ({ ...s, extra_line: e.target.value })); setSigDirty(true); }}
+              placeholder="Ex: (11) 99999-9999 · contato@editoraepoca.com.br"
+              className="w-full px-3 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
+              style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
+            />
+          </div>
+        </div>
+
+        {/* Show logo toggle */}
+        <button
+          type="button"
+          onClick={() => { setSig((s) => ({ ...s, show_logo: !s.show_logo })); setSigDirty(true); }}
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <div
+            className="relative w-9 h-5 rounded-full transition-colors"
+            style={{ backgroundColor: sig.show_logo ? "#165B36" : "rgba(133,108,66,0.25)" }}
+          >
+            <div
+              className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"
+              style={{ transform: sig.show_logo ? "translateX(18px)" : "translateX(2px)" }}
+            />
+          </div>
+          <span className="text-xs text-[#052413]">Exibir logomarca na assinatura</span>
+        </button>
+
+        {/* Preview */}
+        <div className="rounded-xl border p-4" style={{ backgroundColor: "#F7F4EE", borderColor: "rgba(133,108,66,0.15)" }}>
+          <p className="text-[0.65rem] text-[#856C42] uppercase tracking-wider mb-3">Prévia</p>
+          <div className="flex items-center gap-3">
+            {sig.show_logo && (
+              <img src="/assets/logo.png" alt="logo" className="h-10 w-auto object-contain flex-shrink-0" />
+            )}
+            <div className="border-l-4 pl-3" style={{ borderColor: "#EBBF74" }}>
+              <p className="font-serif italic font-bold text-[#052413] text-sm">{sig.name || "Época Editora de Livros"}</p>
+              <p className="text-[0.7rem] text-[#856C42]">{sig.tagline || "Editorial · Publicação · Literatura"}</p>
+              <p className="text-[0.7rem] text-[#165B36]">editoraepoca.com.br</p>
+              {sig.extra_line && <p className="text-[0.7rem] text-[#856C42]">{sig.extra_line}</p>}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            onClick={handleSaveSig}
+            disabled={savingSig || !sigDirty}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-[#052413] transition-all disabled:opacity-40 cursor-pointer"
+            style={{ background: sigDirty ? "linear-gradient(135deg, #EBBF74, #D4AF5A)" : "rgba(133,108,66,0.15)" }}
+          >
+            {savingSig ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {savingSig ? "Salvando..." : "Salvar assinatura"}
+          </button>
         </div>
       </div>
 

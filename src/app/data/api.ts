@@ -845,6 +845,14 @@ export async function testAdminEmailTemplate(template: string, to?: string) {
   return api("/admin/email-config/test-template", { method: "POST", body: { template, to } });
 }
 
+export async function getAdminEmailSignature(): Promise<{ name: string; tagline: string; extra_line: string; show_logo: boolean }> {
+  return api("/admin/email-signature");
+}
+
+export async function updateAdminEmailSignature(sig: { name: string; tagline: string; extra_line: string; show_logo: boolean }) {
+  return api("/admin/email-signature", { method: "PUT", body: sig });
+}
+
 export async function adminSendEmail(payload: { to: string[]; subject: string; body: string; replyTo?: string }) {
   return api("/admin/compose-email", { method: "POST", body: payload });
 }

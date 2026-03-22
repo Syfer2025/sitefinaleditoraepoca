@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import {
   Send, Loader2, CheckCircle, XCircle, Plus, X,
   Bold, Italic, AlignLeft, Link2, Eye, Pencil,
 } from "lucide-react";
-import { adminSendEmail } from "../../data/api";
+import { adminSendEmail, getAdminEmailSignature } from "../../data/api";
 import { toast } from "sonner";
 
 function TagInput({
@@ -92,6 +92,21 @@ export function AdminComposeMail() {
   const [resultMsg, setResultMsg] = useState("");
   const [mode, setMode] = useState<"write" | "preview">("write");
   const editorRef = useRef<HTMLDivElement>(null);
+  const [sigName, setSigName] = useState("Época Editora de Livros");
+  const [sigTagline, setSigTagline] = useState("Editorial · Publicação · Literatura");
+  const [sigExtra, setSigExtra] = useState("");
+  const [sigShowLogo, setSigShowLogo] = useState(true);
+
+  useEffect(() => {
+    getAdminEmailSignature()
+      .then((data) => {
+        if (data.name) setSigName(data.name);
+        if (data.tagline) setSigTagline(data.tagline);
+        if (data.extra_line !== undefined) setSigExtra(data.extra_line);
+        setSigShowLogo(data.show_logo !== false);
+      })
+      .catch(() => { /* use defaults */ });
+  }, []);
 
   function getBodyText() {
     if (!editorRef.current) return "";
@@ -106,29 +121,31 @@ export function AdminComposeMail() {
   // Build preview HTML (mirrors backend template)
   function previewHtml() {
     const body = getBodyHtml();
+    const sigHtml = `
+      <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb">
+        <table cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+          <tr>
+            ${sigShowLogo ? `<td style="padding-right:12px;vertical-align:middle"><img src="/assets/logo.png" alt="${sigName}" width="44" style="height:44px;width:auto;display:block"/></td>` : ""}
+            <td style="padding-left:14px;border-left:3px solid #EBBF74;vertical-align:middle">
+              <p style="margin:0;font-family:Georgia,serif;font-style:italic;font-size:15px;color:#052413;font-weight:bold">${sigName}</p>
+              <p style="margin:2px 0 0;font-size:11px;color:#856C42;letter-spacing:0.05em">${sigTagline}</p>
+              <a href="https://editoraepoca.com.br" style="font-size:11px;color:#165B36;text-decoration:none">editoraepoca.com.br</a>
+              ${sigExtra ? `<p style="margin:2px 0 0;font-size:11px;color:#856C42">${sigExtra}</p>` : ""}
+            </td>
+          </tr>
+        </table>
+      </div>`;
     return `
       <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-        <div style="background:linear-gradient(135deg,#165B36,#052413);padding:22px 24px">
-          <h1 style="color:#EBBF74;font-size:20px;margin:0;font-family:Georgia,serif;font-style:italic">Época Editora de Livros</h1>
+        <div style="background:linear-gradient(135deg,#165B36,#052413);padding:24px;text-align:center">
+          <img src="/assets/logo.png" alt="${sigName}" width="180" style="max-height:64px;max-width:180px;height:auto;display:block;margin:0 auto"/>
         </div>
         <div style="padding:32px 28px;font-size:14px;color:#374151;line-height:1.75">
           ${body || '<p style="color:#9ca3af;font-style:italic">Nenhum conteúdo ainda…</p>'}
-          <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb">
-            <table cellpadding="0" cellspacing="0">
-              <tr>
-                <td style="padding-right:14px;border-right:3px solid #EBBF74;vertical-align:middle">
-                  <p style="margin:0;font-family:Georgia,serif;font-style:italic;font-size:15px;color:#052413;font-weight:bold">Época Editora de Livros</p>
-                </td>
-                <td style="padding-left:14px;vertical-align:middle">
-                  <p style="margin:0 0 2px;font-size:11px;color:#856C42;letter-spacing:0.05em">Editorial · Publicação · Literatura</p>
-                  <a href="https://editoraepoca.com.br" style="font-size:11px;color:#165B36;text-decoration:none">editoraepoca.com.br</a>
-                </td>
-              </tr>
-            </table>
-          </div>
+          ${sigHtml}
         </div>
         <div style="background:#F0E8D4;padding:12px 24px;text-align:center;border-top:1px solid #e5e7eb">
-          <p style="color:#9ca3af;font-size:10px;margin:0">Época Editora de Livros · <a href="https://editoraepoca.com.br" style="color:#165B36;text-decoration:none">editoraepoca.com.br</a></p>
+          <p style="color:#9ca3af;font-size:10px;margin:0">${sigName} · <a href="https://editoraepoca.com.br" style="color:#165B36;text-decoration:none">editoraepoca.com.br</a></p>
         </div>
       </div>`;
   }
@@ -345,15 +362,18 @@ export function AdminComposeMail() {
       >
         <p className="text-xs font-medium text-[#856C42] uppercase tracking-wider">Assinatura automática</p>
         <div className="flex items-center gap-4">
-          <div className="w-1 h-12 rounded-full" style={{ background: "#EBBF74" }} />
-          <div>
-            <p className="font-serif italic font-bold text-[#052413]">Época Editora de Livros</p>
-            <p className="text-xs text-[#856C42] mt-0.5">Editorial · Publicação · Literatura</p>
+          {sigShowLogo && (
+            <img src="/assets/logo.png" alt={sigName} className="h-10 w-auto object-contain flex-shrink-0" />
+          )}
+          <div className="border-l-4 pl-3" style={{ borderColor: "#EBBF74" }}>
+            <p className="font-serif italic font-bold text-[#052413]">{sigName}</p>
+            <p className="text-xs text-[#856C42] mt-0.5">{sigTagline}</p>
             <a href="https://editoraepoca.com.br" className="text-xs text-[#165B36]" target="_blank" rel="noreferrer">editoraepoca.com.br</a>
+            {sigExtra && <p className="text-xs text-[#856C42] mt-0.5">{sigExtra}</p>}
           </div>
         </div>
         <p className="text-[0.68rem] text-[#856C42]/70">
-          Esta assinatura é adicionada automaticamente a todos os e-mails enviados pelo painel.
+          Esta assinatura é adicionada automaticamente a todos os e-mails enviados pelo painel. Para editar, acesse <strong>Configurações de E-mail</strong>.
         </p>
       </div>
     </div>
