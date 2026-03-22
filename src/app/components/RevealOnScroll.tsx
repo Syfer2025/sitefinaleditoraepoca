@@ -1,5 +1,4 @@
-import { motion, type Variant } from "motion/react";
-import type { ReactNode } from "react";
+import { useRef, useEffect, type ReactNode, type CSSProperties } from "react";
 
 type Direction = "up" | "down" | "left" | "right" | "none";
 
@@ -13,12 +12,12 @@ interface RevealOnScrollProps {
   amount?: number;
 }
 
-const offsets: Record<Direction, { x?: number; y?: number }> = {
-  up: { y: 40 },
-  down: { y: -40 },
-  left: { x: 40 },
-  right: { x: -40 },
-  none: {},
+const translateMap: Record<Direction, string> = {
+  up: "translateY(40px)",
+  down: "translateY(-40px)",
+  left: "translateX(40px)",
+  right: "translateX(-40px)",
+  none: "none",
 };
 
 export function RevealOnScroll({
@@ -30,33 +29,35 @@ export function RevealOnScroll({
   once = true,
   amount = 0.2,
 }: RevealOnScrollProps) {
-  const offset = offsets[direction];
+  const ref = useRef<HTMLDivElement>(null);
 
-  const hidden: Variant = {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.style.opacity = "1";
+          el.style.transform = "none";
+          if (once) observer.unobserve(el);
+        }
+      },
+      { threshold: amount },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [once, amount]);
+
+  const style: CSSProperties = {
     opacity: 0,
-    ...(offset.x !== undefined && { x: offset.x }),
-    ...(offset.y !== undefined && { y: offset.y }),
-  };
-
-  const visible: Variant = {
-    opacity: 1,
-    x: 0,
-    y: 0,
-    transition: {
-      duration,
-      delay,
-      ease: [0.25, 0.1, 0.25, 1],
-    },
+    transform: translateMap[direction],
+    transition: `opacity ${duration}s cubic-bezier(0.25,0.1,0.25,1) ${delay}s, transform ${duration}s cubic-bezier(0.25,0.1,0.25,1) ${delay}s`,
+    willChange: "opacity, transform",
   };
 
   return (
-    <motion.div
-      initial={hidden}
-      whileInView={visible}
-      viewport={{ once, amount }}
-      className={className}
-    >
+    <div ref={ref} className={className} style={style}>
       {children}
-    </motion.div>
+    </div>
   );
 }

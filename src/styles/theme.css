@@ -1,5 +1,15 @@
 @custom-variant dark (&:is(.dark *));
 
+/* Hero entrance animation */
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+.hero-fade-in {
+  opacity: 0;
+  animation: heroFadeIn 0.8s cubic-bezier(0.25,0.1,0.25,1) forwards;
+}
+
 /* Font family utility classes */
 .font-serif {
   font-family: 'Playfair Display', serif;

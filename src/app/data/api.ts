@@ -560,8 +560,8 @@ export async function getUserInvoices(projectId: string) {
 }
 
 // FAQ
-export async function getFaqs() {
-  return api("/faqs", { auth: false });
+export function getFaqs() {
+  return dedupeRequest("faqs", () => api("/faqs", { auth: false }));
 }
 
 export async function updateAdminFaqs(faqs: { id: string; question: string; answer: string }[]) {
@@ -569,8 +569,8 @@ export async function updateAdminFaqs(faqs: { id: string; question: string; answ
 }
 
 // BOOKS
-export async function getBooks() {
-  return api("/books", { auth: false });
+export function getBooks() {
+  return dedupeRequest("books", () => api("/books", { auth: false }));
 }
 
 export async function getBookBySlug(slug: string) {
@@ -595,8 +595,8 @@ export async function deleteAdminBook(id: number) {
 }
 
 // PLANS
-export async function getPlans() {
-  return api("/plans", { auth: false });
+export function getPlans() {
+  return dedupeRequest("plans", () => api("/plans", { auth: false }));
 }
 
 export interface ServicesCard {
@@ -636,8 +636,8 @@ export interface VideoSection {
   text: string;
 }
 
-export async function getAuthors() {
-  return api("/authors", { auth: false });
+export function getAuthors() {
+  return dedupeRequest("authors", () => api("/authors", { auth: false }));
 }
 
 export async function updateAdminAuthors(
@@ -648,8 +648,8 @@ export async function updateAdminAuthors(
 }
 
 // TESTIMONIALS
-export async function getTestimonials() {
-  return api("/testimonials", { auth: false });
+export function getTestimonials() {
+  return dedupeRequest("testimonials", () => api("/testimonials", { auth: false }));
 }
 
 export async function updateAdminTestimonials(testimonials: { id: number; name: string; role: string; image: string; quote: string; rating: number; featured: boolean }[]) {
@@ -696,8 +696,8 @@ export async function updateAdminLogoKey(key: "navbar" | "footer" | "favicon", l
 }
 
 // ABOUT STATS
-export async function getAbout() {
-  return api("/about", { auth: false });
+export function getAbout() {
+  return dedupeRequest("about", () => api("/about", { auth: false }));
 }
 
 export async function updateAdminAbout(about: { yearsOfHistory: number; stats: { key: string; value: number; suffix: string; label: string }[] }) {

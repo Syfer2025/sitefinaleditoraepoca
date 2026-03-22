@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X, LogIn, LogOut } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { motion, AnimatePresence } from "motion/react";
 import { useUserAuth } from "./UserAuthContext";
 import { getLogos } from "../data/api";
 
@@ -180,25 +179,23 @@ export function Navbar() {
       />
     )}
 
-    {/* Mobile dropdown — wrapper div holds position:fixed, motion.div is non-fixed (iOS Safari fix) */}
+    {/* Mobile dropdown — wrapper div holds position:fixed, CSS transitions replace motion for performance */}
     <div
       className="fixed left-0 right-0 z-[45] md:hidden"
       style={{ top: 64, pointerEvents: isOpen ? "auto" : "none" }}
     >
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.15, ease: "easeOut" }}
-          style={{
-            backgroundColor: "rgba(247, 244, 238, 0.98)",
-            backdropFilter: "blur(16px)",
-            borderBottom: "1px solid rgba(133,108,66,0.14)",
-            boxShadow: "0 8px 24px rgba(5,36,19,0.10)",
-          }}
-        >
+      <div
+        style={{
+          opacity: isOpen ? 1 : 0,
+          transform: isOpen ? "none" : "translateY(-6px)",
+          transition: "opacity 0.15s ease-out, transform 0.15s ease-out",
+          visibility: isOpen ? "visible" : "hidden",
+          backgroundColor: "rgba(247, 244, 238, 0.98)",
+          backdropFilter: "blur(16px)",
+          borderBottom: "1px solid rgba(133,108,66,0.14)",
+          boxShadow: "0 8px 24px rgba(5,36,19,0.10)",
+        }}
+      >
           {/* Links */}
           <div className="px-3 pt-2 pb-1">
             {navLinks.map((link) => {
@@ -279,9 +276,7 @@ export function Navbar() {
               Publicar meu livro
             </a>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </div>
     </div>
     </>
   );
