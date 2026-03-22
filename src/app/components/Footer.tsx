@@ -93,7 +93,7 @@ export function Footer() {
                 {[
                   { label: "Sobre nós", href: "/#sobre" },
                   { label: "Autores", href: "/#autores" },
-                  { label: "Planos", href: "/#planos" },
+                  { label: "Serviços Editoriais", href: "/#planos" },
                   { label: "Contato", href: "/#contato" },
                 ].map((link) => (
                   <li key={link.label}>
@@ -122,7 +122,7 @@ export function Footer() {
                 {[
                   { label: "Catálogo", href: "/catalogo" },
                   { label: "Lançamentos", href: "/catalogo" },
-                  { label: "Mais vendidos", href: "/catalogo" },
+                  { label: "Publicar seu livro", href: "/nova-solicitacao" },
                   { label: "Depoimentos", href: "/#depoimentos" },
                 ].map((link) => (
                   <li key={link.label}>
