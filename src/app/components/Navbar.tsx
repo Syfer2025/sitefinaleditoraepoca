@@ -23,7 +23,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [logoImg, setLogoImg] = useState<string>(() => {
-    try { return sessionStorage.getItem("epoca_logo_navbar") || ""; } catch { return ""; }
+    try { return localStorage.getItem("epoca_logo_navbar") || ""; } catch { return ""; }
   });
   const { user } = useUserAuth();
   const location = useLocation();
@@ -33,7 +33,7 @@ export function Navbar() {
     getLogos().then((logos) => {
       if (logos.logo_navbar) {
         setLogoImg(logos.logo_navbar);
-        try { sessionStorage.setItem("epoca_logo_navbar", logos.logo_navbar); } catch {}
+        try { localStorage.setItem("epoca_logo_navbar", logos.logo_navbar); } catch {}
       }
     });
   }, []);
