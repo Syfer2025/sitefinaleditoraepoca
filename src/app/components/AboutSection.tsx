@@ -2,7 +2,16 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { BookOpen, Award, Users, Globe } from "lucide-react";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { useEffect, useRef, useState } from "react";
-import { getAbout } from "../data/api";
+import { getAbout, getAboutContent, type AboutContent } from "../data/api";
+
+const ABOUT_TEXT_DEFAULTS: AboutContent = {
+  sectionLabel: "Nossa História",
+  heading: "Cultivando a literatura",
+  headingHighlight: "brasileira",
+  paragraph1: "Fundada em 1987, a Época Editora nasceu do amor pela palavra escrita. Ao longo de quase quatro décadas, construímos um catálogo diversificado que abrange ficção contemporânea, poesia, ensaios e literatura infantil.",
+  paragraph2: "Nossa missão é dar voz a novos talentos e manter viva a chama da literatura de qualidade, conectando autores e leitores em uma experiência transformadora.",
+  imageUrl: "https://images.unsplash.com/photo-1642057714794-22dc5f0f6323?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvcGVuJTIwYm9vayUyMHJlYWRpbmclMjBhZXN0aGV0aWN8ZW58MXx8fHwxNzcyNDU3MzE3fDA&ixlib=rb-4.1.0&q=70&w=800",
+};
 
 const ICON_MAP: Record<string, any> = {
   titulos: BookOpen,
@@ -69,10 +78,14 @@ function AnimatedCounter({
 
 export function AboutSection() {
   const [about, setAbout] = useState(DEFAULT_ABOUT);
+  const [content, setContent] = useState<AboutContent>(ABOUT_TEXT_DEFAULTS);
 
   useEffect(() => {
     getAbout()
       .then((data) => { if (data?.about) setAbout(data.about); })
+      .catch(() => {});
+    getAboutContent()
+      .then((data) => { if (data) setContent({ ...ABOUT_TEXT_DEFAULTS, ...data }); })
       .catch(() => {});
   }, []);
 
@@ -87,7 +100,7 @@ export function AboutSection() {
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-xl">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1642057714794-22dc5f0f6323?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvcGVuJTIwYm9vayUyMHJlYWRpbmclMjBhZXN0aGV0aWN8ZW58MXx8fHwxNzcyNDU3MzE3fDA&ixlib=rb-4.1.0&q=70&w=800"
+                  src={content.imageUrl || ABOUT_TEXT_DEFAULTS.imageUrl}
                   alt="Livro aberto"
                   className="w-full h-[420px] object-cover"
                 />
@@ -118,13 +131,13 @@ export function AboutSection() {
               <p
                 className="text-[0.75rem] tracking-[0.3em] uppercase text-primary mb-3 font-sans"
               >
-                Nossa História
+                {content.sectionLabel}
               </p>
               <h2
                 className="text-[2.5rem] md:text-[3rem] text-foreground mb-4 font-serif leading-[1.15]"
               >
-                Cultivando a literatura{" "}
-                <span className="italic">brasileira</span>
+                {content.heading}{" "}
+                <span className="italic">{content.headingHighlight}</span>
               </h2>
             </RevealOnScroll>
 
@@ -132,17 +145,12 @@ export function AboutSection() {
               <p
                 className="text-muted-foreground mb-4 font-sans leading-[1.8]"
               >
-                Fundada em 1987, a Época Editora nasceu do amor pela palavra
-                escrita. Ao longo de quase quatro décadas, construímos um
-                catálogo diversificado que abrange ficção contemporânea, poesia,
-                ensaios e literatura infantil.
+                {content.paragraph1}
               </p>
               <p
                 className="text-muted-foreground mb-8 font-sans leading-[1.8]"
               >
-                Nossa missão é dar voz a novos talentos e manter viva a chama da
-                literatura de qualidade, conectando autores e leitores em uma
-                experiência transformadora.
+                {content.paragraph2}
               </p>
             </RevealOnScroll>
 

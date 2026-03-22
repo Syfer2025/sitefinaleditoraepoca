@@ -10,7 +10,7 @@ import { WhatsAppButton } from "./WhatsAppButton";
 import { motion, AnimatePresence } from "motion/react";
 import { allBooks } from "../data/books";
 import { getBooks, getLogos } from "../data/api";
-import { buildWhatsAppUrl } from "../data/constants";
+import { buildWhatsAppUrl, useWhatsAppNumber } from "../data/constants";
 
 const sortOptions = [
   { label: "Mais recentes", value: "recent" },
@@ -19,6 +19,7 @@ const sortOptions = [
 ];
 
 export function CatalogPage() {
+  const whatsappNumber = useWhatsAppNumber();
   const [activeGenre, setActiveGenre] = useState("Todos");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("recent");
@@ -349,7 +350,7 @@ export function CatalogPage() {
                       className="w-full py-2.5 block"
                       {...(book.slug
                         ? { to: `/livros/${book.slug}` }
-                        : { href: buildWhatsAppUrl(`Olá! Gostaria de saber mais sobre o livro "${book.title}".`), target: "_blank" }
+                        : { href: buildWhatsAppUrl(`Olá! Gostaria de saber mais sobre o livro "${book.title}".`, whatsappNumber), target: "_blank" }
                       )}
                     >
                       Ver detalhes

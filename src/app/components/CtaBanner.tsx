@@ -1,8 +1,28 @@
+import { useState, useEffect } from "react";
 import { GoldButton } from "./GoldButton";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { Feather } from "lucide-react";
+import { getCtaBanner, type CtaBannerContent } from "../data/api";
+
+const CTA_DEFAULTS: CtaBannerContent = {
+  title: "Tem um manuscrito esperando",
+  titleHighlight: "para nascer?",
+  subtitle: "Conheça nosso plano Profissional — o mais escolhido pelos autores que buscam excelência editorial, distribuição nacional e suporte completo de marketing.",
+  ctaPrimary: "Conhecer planos",
+  ctaPrimaryLink: "#planos",
+  ctaSecondary: "Enviar manuscrito",
+  ctaSecondaryLink: "#contato",
+};
 
 export function CtaBanner() {
+  const [cta, setCta] = useState<CtaBannerContent>(CTA_DEFAULTS);
+
+  useEffect(() => {
+    getCtaBanner().then((data) => {
+      if (data) setCta({ ...CTA_DEFAULTS, ...data });
+    }).catch(() => {});
+  }, []);
+
   return (
     <section className="py-14 px-6 bg-[#165B36] relative overflow-hidden">
       {/* Decorative pattern */}
@@ -22,26 +42,24 @@ export function CtaBanner() {
             <h2
               className="text-[2rem] md:text-[2.75rem] text-white mb-3 font-serif leading-[1.2]"
             >
-              Tem um manuscrito esperando{" "}
-              <span className="italic text-[#EBBF74]">para nascer?</span>
+              {cta.title}{" "}
+              <span className="italic text-[#EBBF74]">{cta.titleHighlight}</span>
             </h2>
             <p
               className="text-white/70 max-w-xl mx-auto mb-6 text-[1.05rem]"
               style={{ lineHeight: 1.7 }}
             >
-              Conheça nosso plano Profissional — o mais escolhido pelos autores
-              que buscam excelência editorial, distribuição nacional e suporte
-              completo de marketing.
+              {cta.subtitle}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <GoldButton href="#planos" className="px-8 py-3.5">
-                Conhecer planos
+              <GoldButton href={cta.ctaPrimaryLink} className="px-8 py-3.5">
+                {cta.ctaPrimary}
               </GoldButton>
               <a
-                href="#contato"
+                href={cta.ctaSecondaryLink}
                 className="border border-white/30 text-white px-8 py-3.5 rounded-full hover:bg-white/10 hover:border-white/50 transition-all duration-300"
               >
-                Enviar manuscrito
+                {cta.ctaSecondary}
               </a>
             </div>
           </div>

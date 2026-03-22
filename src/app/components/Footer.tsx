@@ -6,9 +6,15 @@ import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import footerLogoFallback from "/assets/36074aebf24684a213a02f0250350012b7c049a7.png";
 import { projectId, publicAnonKey } from "/utils/supabase/info";
-import { getLogos } from "../data/api";
+import { getLogos, getFooterContent, type FooterContent } from "../data/api";
 
 const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-e413165d`;
+
+const FOOTER_DEFAULTS: FooterContent = {
+  brandText: "Publicando histórias que transformam vidas desde 1987.",
+  newsletterText: "Receba novidades e lançamentos diretamente no seu email.",
+  copyrightText: "Época Editora de Livros. Todos os direitos reservados.",
+};
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -16,9 +22,11 @@ export function Footer() {
   const [subscribed, setSubscribed] = useState(false);
   const [consentNewsletter, setConsentNewsletter] = useState(false);
   const [footerLogoImg, setFooterLogoImg] = useState<string>(footerLogoFallback);
+  const [footer, setFooter] = useState<FooterContent>(FOOTER_DEFAULTS);
 
   useEffect(() => {
     getLogos().then((logos) => { if (logos.logo_footer) setFooterLogoImg(logos.logo_footer); });
+    getFooterContent().then((data) => { if (data) setFooter({ ...FOOTER_DEFAULTS, ...data }); }).catch(() => {});
   }, []);
 
   async function handleNewsletter() {
@@ -67,7 +75,7 @@ export function Footer() {
                 className="text-[0.875rem]"
                 style={{ lineHeight: 1.7 }}
               >
-                Publicando histórias que transformam vidas desde 1987.
+                {footer.brandText}
               </p>
             </div>
 
@@ -140,7 +148,7 @@ export function Footer() {
                 className="text-[0.875rem] mb-4"
                 style={{ lineHeight: 1.6 }}
               >
-                Receba novidades e lançamentos diretamente no seu email.
+                {footer.newsletterText}
               </p>
               {subscribed ? (
                 <div className="space-y-1">
@@ -193,7 +201,7 @@ export function Footer() {
               <p
                 className="text-[0.8rem]"
               >
-                &copy; {new Date().getFullYear()} Época Editora de Livros. Todos os direitos reservados.
+                &copy; {new Date().getFullYear()} {footer.copyrightText}
               </p>
               <p className="text-[0.7rem] text-white/30">
                 Encarregado de dados (DPO):{" "}

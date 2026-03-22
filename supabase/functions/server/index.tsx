@@ -2582,4 +2582,92 @@ app.post(`${P}/admin/logo/:key`, async (c) => {
   } catch (e) { return err(c, `Erro ao salvar logo: ${e}`); }
 });
 
+// ============================================
+// Hero Section
+// ============================================
+app.get(`${P}/hero`, async (c) => {
+  try {
+    const hero = await kv.get("hero_section");
+    c.header("Cache-Control", "public, max-age=300");
+    return c.json({ hero: hero || null });
+  } catch (e) { return err(c, `Erro ao buscar hero: ${e}`); }
+});
+
+app.put(`${P}/admin/hero`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { hero } = await c.req.json();
+    if (!hero) return err(c, "Dados obrigatórios", 400);
+    await kv.set("hero_section", hero);
+    return c.json({ success: true, hero });
+  } catch (e) { return err(c, `Erro ao salvar hero: ${e}`); }
+});
+
+// ============================================
+// About Section (text and image — stats already in /about)
+// ============================================
+app.get(`${P}/about-content`, async (c) => {
+  try {
+    const content = await kv.get("about_content");
+    c.header("Cache-Control", "public, max-age=300");
+    return c.json({ content: content || null });
+  } catch (e) { return err(c, `Erro ao buscar conteúdo sobre: ${e}`); }
+});
+
+app.put(`${P}/admin/about-content`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { content } = await c.req.json();
+    if (!content) return err(c, "Dados obrigatórios", 400);
+    await kv.set("about_content", content);
+    return c.json({ success: true, content });
+  } catch (e) { return err(c, `Erro ao salvar conteúdo sobre: ${e}`); }
+});
+
+// ============================================
+// CTA Banner
+// ============================================
+app.get(`${P}/cta-banner`, async (c) => {
+  try {
+    const cta = await kv.get("cta_banner");
+    c.header("Cache-Control", "public, max-age=300");
+    return c.json({ cta: cta || null });
+  } catch (e) { return err(c, `Erro ao buscar CTA: ${e}`); }
+});
+
+app.put(`${P}/admin/cta-banner`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { cta } = await c.req.json();
+    if (!cta) return err(c, "Dados obrigatórios", 400);
+    await kv.set("cta_banner", cta);
+    return c.json({ success: true, cta });
+  } catch (e) { return err(c, `Erro ao salvar CTA: ${e}`); }
+});
+
+// ============================================
+// Footer Content
+// ============================================
+app.get(`${P}/footer`, async (c) => {
+  try {
+    const footer = await kv.get("footer_content");
+    c.header("Cache-Control", "public, max-age=300");
+    return c.json({ footer: footer || null });
+  } catch (e) { return err(c, `Erro ao buscar footer: ${e}`); }
+});
+
+app.put(`${P}/admin/footer`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { footer } = await c.req.json();
+    if (!footer) return err(c, "Dados obrigatórios", 400);
+    await kv.set("footer_content", footer);
+    return c.json({ success: true, footer });
+  } catch (e) { return err(c, `Erro ao salvar footer: ${e}`); }
+});
+
 Deno.serve(app.fetch);

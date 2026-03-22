@@ -3,7 +3,7 @@ import { GoldButton } from "./GoldButton";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { useState, useEffect } from "react";
 import { getPlans, type ServicesCard } from "../data/api";
-import { buildWhatsAppUrl } from "../data/constants";
+import { buildWhatsAppUrl, useWhatsAppNumber } from "../data/constants";
 
 const PRICING_CACHE_KEY = "epoca_pricing_v1";
 
@@ -39,13 +39,15 @@ const DEFAULT_PLANS = [
   { id: "premium", name: "Premium", description: "Experiência completa para projetos editoriais ambiciosos.", price: "9.490", featured: false, features: ["Tudo do plano Profissional", "Editor dedicado ao projeto", "Capa ilustrada sob medida", "100 exemplares impressos", "Campanha de marketing completa", "Presença em feiras literárias", "Book trailer promocional", "Audiobook (narração profissional)", "Consultoria de carreira autoral"] },
 ];
 
-function planWhatsAppUrl(planName: string) {
+function planWhatsAppUrl(planName: string, number?: string) {
   return buildWhatsAppUrl(
-    `Olá! Tenho interesse no plano *${planName}* e gostaria de saber mais informações.`
+    `Olá! Tenho interesse no plano *${planName}* e gostaria de saber mais informações.`,
+    number
   );
 }
 
 export function PricingSection() {
+  const whatsappNumber = useWhatsAppNumber();
   const [plans, setPlans] = useState(DEFAULT_PLANS);
   const [servicesCard, setServicesCard] = useState<ServicesCard | null>(null);
   const [ready, setReady] = useState(false);
@@ -189,7 +191,7 @@ export function PricingSection() {
                   )}
 
                   <GoldButton
-                    href={planWhatsAppUrl(plan.name)}
+                    href={planWhatsAppUrl(plan.name, whatsappNumber)}
                     target="_blank"
                     className="w-full py-3 mb-6"
                   >

@@ -7,9 +7,10 @@ import { RevealOnScroll } from "./RevealOnScroll";
 import { motion, AnimatePresence } from "motion/react";
 import { featuredBooks } from "../data/books";
 import { getBooks } from "../data/api";
-import { buildWhatsAppUrl } from "../data/constants";
+import { buildWhatsAppUrl, useWhatsAppNumber } from "../data/constants";
 
 export function CatalogSection() {
+  const whatsappNumber = useWhatsAppNumber();
   const [activeGenre, setActiveGenre] = useState("Todos");
   const [allBooks, setAllBooks] = useState(featuredBooks);
   const [loading, setLoading] = useState(true);
@@ -179,7 +180,7 @@ export function CatalogSection() {
                       className="w-full py-2.5 block"
                       {...(book.slug
                         ? { to: `/livros/${book.slug}` }
-                        : { href: buildWhatsAppUrl(`Olá! Gostaria de saber mais sobre o livro "${book.title}".`), target: "_blank" }
+                        : { href: buildWhatsAppUrl(`Olá! Gostaria de saber mais sobre o livro "${book.title}".`, whatsappNumber), target: "_blank" }
                       )}
                     >
                       Ver detalhes

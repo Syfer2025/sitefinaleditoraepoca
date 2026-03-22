@@ -726,6 +726,96 @@ export async function updateAdminContactInfo(info: Partial<ContactInfo>): Promis
   await api("/admin/contact-info", { method: "PUT", body: info });
 }
 
+// ── HERO SECTION ───────────────────────────────────────────────────────────────
+export interface HeroContent {
+  title: string;
+  titleHighlight: string;
+  subtitle: string;
+  ctaPrimary: string;
+  ctaSecondary: string;
+  imageUrl: string;
+}
+
+export function getHero(): Promise<HeroContent | null> {
+  return dedupeRequest("hero", async () => {
+    try {
+      const data = await api("/hero", { auth: false });
+      return data.hero || null;
+    } catch { return null; }
+  });
+}
+
+export async function updateAdminHero(hero: HeroContent): Promise<void> {
+  await api("/admin/hero", { method: "PUT", body: { hero } });
+}
+
+// ── ABOUT CONTENT (text + image) ───────────────────────────────────────────────
+export interface AboutContent {
+  paragraph1: string;
+  paragraph2: string;
+  imageUrl: string;
+  sectionLabel: string;
+  heading: string;
+  headingHighlight: string;
+}
+
+export function getAboutContent(): Promise<AboutContent | null> {
+  return dedupeRequest("about-content", async () => {
+    try {
+      const data = await api("/about-content", { auth: false });
+      return data.content || null;
+    } catch { return null; }
+  });
+}
+
+export async function updateAdminAboutContent(content: AboutContent): Promise<void> {
+  await api("/admin/about-content", { method: "PUT", body: { content } });
+}
+
+// ── CTA BANNER ─────────────────────────────────────────────────────────────────
+export interface CtaBannerContent {
+  title: string;
+  titleHighlight: string;
+  subtitle: string;
+  ctaPrimary: string;
+  ctaPrimaryLink: string;
+  ctaSecondary: string;
+  ctaSecondaryLink: string;
+}
+
+export function getCtaBanner(): Promise<CtaBannerContent | null> {
+  return dedupeRequest("cta-banner", async () => {
+    try {
+      const data = await api("/cta-banner", { auth: false });
+      return data.cta || null;
+    } catch { return null; }
+  });
+}
+
+export async function updateAdminCtaBanner(cta: CtaBannerContent): Promise<void> {
+  await api("/admin/cta-banner", { method: "PUT", body: { cta } });
+}
+
+// ── FOOTER CONTENT ─────────────────────────────────────────────────────────────
+export interface FooterContent {
+  brandText: string;
+  newsletterText: string;
+  copyrightText: string;
+}
+
+export function getFooterContent(): Promise<FooterContent | null> {
+  return dedupeRequest("footer-content", async () => {
+    try {
+      const data = await api("/footer", { auth: false });
+      return data.footer || null;
+    } catch { return null; }
+  });
+}
+
+export async function updateAdminFooterContent(footer: FooterContent): Promise<void> {
+  await api("/admin/footer", { method: "PUT", body: { footer } });
+}
+
 export async function submitDataRightsRequest(body: { name: string; email: string; requestType: string; details?: string }): Promise<void> {
   const res = await fetch(`${BASE_URL}/user/data-rights`, {
     method: "POST",

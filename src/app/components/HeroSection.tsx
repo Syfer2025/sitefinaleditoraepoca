@@ -1,10 +1,27 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { GoldButton } from "./GoldButton";
 import { motion } from "motion/react";
+import { getHero, type HeroContent } from "../data/api";
+
+const HERO_DEFAULTS: HeroContent = {
+  title: "Histórias que transformam,",
+  titleHighlight: "palavras que ficam",
+  subtitle: "Publicamos obras que desafiam, encantam e inspiram leitores ao redor do mundo. Descubra nosso catálogo com mais de 500 títulos.",
+  ctaPrimary: "Explorar Catálogo",
+  ctaSecondary: "Conheça a Editora",
+  imageUrl: "https://images.unsplash.com/photo-1722977735215-d28f2ac6efba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rc3RvcmUlMjBsaWJyYXJ5JTIwc2hlbHZlcyUyMHdhcm18ZW58MXx8fHwxNzcyNDU3MzE2fDA&ixlib=rb-4.1.0&q=70&w=1400",
+};
 
 export function HeroSection() {
   const bgRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const [hero, setHero] = useState<HeroContent>(HERO_DEFAULTS);
+
+  useEffect(() => {
+    getHero().then((data) => {
+      if (data) setHero({ ...HERO_DEFAULTS, ...data });
+    }).catch(() => {});
+  }, []);
 
   const onScroll = useCallback(() => {
     const y = window.scrollY;
@@ -48,8 +65,8 @@ export function HeroSection() {
           }}
         >
           <img
-            src="https://images.unsplash.com/photo-1722977735215-d28f2ac6efba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rc3RvcmUlMjBsaWJyYXJ5JTIwc2hlbHZlcyUyMHdhcm18ZW58MXx8fHwxNzcyNDU3MzE2fDA&ixlib=rb-4.1.0&q=70&w=1400"
-            srcSet="https://images.unsplash.com/photo-1722977735215-d28f2ac6efba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rc3RvcmUlMjBsaWJyYXJ5JTIwc2hlbHZlcyUyMHdhcm18ZW58MXx8fHwxNzcyNDU3MzE2fDA&ixlib=rb-4.1.0&q=65&w=800 800w, https://images.unsplash.com/photo-1722977735215-d28f2ac6efba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rc3RvcmUlMjBsaWJyYXJ5JTIwc2hlbHZlcyUyMHdhcm18ZW58MXx8fHwxNzcyNDU3MzE2fDA&ixlib=rb-4.1.0&q=70&w=1400 1400w"
+            src={hero.imageUrl || HERO_DEFAULTS.imageUrl}
+            srcSet={`${hero.imageUrl || HERO_DEFAULTS.imageUrl} 800w, ${hero.imageUrl || HERO_DEFAULTS.imageUrl} 1400w`}
             sizes="100vw"
             alt="Biblioteca"
             className="w-full h-full object-cover"
@@ -80,10 +97,9 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-[3rem] md:text-[4.5rem] text-white mb-4 font-serif leading-[1.1]"
-        >
-          Histórias que transformam,
+        >{hero.title}
           <br />
-          <span className="italic text-[#EBBF74]">palavras que ficam</span>
+          <span className="italic text-[#EBBF74]">{hero.titleHighlight}</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -91,8 +107,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-[1.125rem] text-white/80 mb-8 max-w-2xl mx-auto font-sans leading-[1.7]"
         >
-          Publicamos obras que desafiam, encantam e inspiram leitores ao redor
-          do mundo. Descubra nosso catálogo com mais de 500 títulos.
+          {hero.subtitle}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -101,13 +116,13 @@ export function HeroSection() {
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
           <GoldButton href="#catalogo" className="px-8 py-3.5">
-            Explorar Catálogo
+            {hero.ctaPrimary}
           </GoldButton>
           <a
             href="#sobre"
             className="border border-white/30 text-white px-8 py-3.5 rounded-full hover:bg-white/10 hover:border-white/50 transition-all duration-300 font-sans"
           >
-            Conheça a Editora
+            {hero.ctaSecondary}
           </a>
         </motion.div>
       </div>

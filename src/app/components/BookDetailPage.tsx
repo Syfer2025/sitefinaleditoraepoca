@@ -11,9 +11,10 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { motion, AnimatePresence } from "motion/react";
 import { getBookBySlug } from "../data/api";
 import { allBooks, Book } from "../data/books";
-import { buildWhatsAppUrl } from "../data/constants";
+import { buildWhatsAppUrl, useWhatsAppNumber } from "../data/constants";
 
 export function BookDetailPage() {
+  const whatsappNumber = useWhatsAppNumber();
   const { slug } = useParams<{ slug: string }>();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
@@ -218,7 +219,7 @@ export function BookDetailPage() {
                 )}
 
                 <GoldButton
-                  href={buildWhatsAppUrl(`Olá! Gostaria de saber mais sobre o livro "${book.title}".`)}
+                  href={buildWhatsAppUrl(`Olá! Gostaria de saber mais sobre o livro "${book.title}".`, whatsappNumber)}
                   target="_blank"
                   className="inline-flex items-center gap-2 px-8 py-3.5"
                 >

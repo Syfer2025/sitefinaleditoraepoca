@@ -24,6 +24,9 @@ import {
   Settings2,
   Megaphone,
   Youtube,
+  Sparkles,
+  FileText,
+  PanelBottom,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { api, clearToken, getAdminToken, getAdminRefreshToken } from "../../data/api";
@@ -49,6 +52,10 @@ const navItems = [
   { path: "/admin/integracoes", label: "Integrações", icon: Plug },
   { path: "/admin/email-config", label: "Config. SMTP", icon: Settings2 },
   { path: "/admin/email-marketing", label: "Email Marketing", icon: Megaphone },
+  { path: "/admin/hero", label: "Hero (Banner)", icon: Sparkles },
+  { path: "/admin/sobre-texto", label: "Sobre (Texto)", icon: FileText },
+  { path: "/admin/cta-banner", label: "CTA Banner", icon: Megaphone },
+  { path: "/admin/rodape", label: "Rodapé", icon: PanelBottom },
 ];
 
 export function AdminLayout() {
