@@ -849,6 +849,18 @@ export async function adminSendEmail(payload: { to: string[]; subject: string; b
   return api("/admin/compose-email", { method: "POST", body: payload });
 }
 
+export async function getAdminInbox(page = 1) {
+  return api(`/admin/inbox?page=${page}`);
+}
+
+export async function getAdminEmail(uid: number) {
+  return api(`/admin/inbox/${uid}`);
+}
+
+export async function deleteAdminEmail(uid: number) {
+  return api(`/admin/inbox/${uid}`, { method: "DELETE" });
+}
+
 // ── EMAIL MARKETING ────────────────────────────────────────────────────────────
 export interface EmailCampaign {
   id: string;

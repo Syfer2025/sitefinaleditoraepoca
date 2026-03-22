@@ -3040,6 +3040,118 @@ app.post(`${P}/admin/email-config/test-template`, async (c) => {
   } catch (e) { return err(c, `Erro ao enviar modelo de teste: ${e}`); }
 });
 
+// ── Admin: IMAP Inbox ─────────────────────────────────────────────────────────
+async function withImap<T>(cfg: any, fn: (client: any) => Promise<T>): Promise<T> {
+  const { ImapFlow } = await import("npm:imapflow");
+  const decryptedPassword = await decryptPassword(cfg.password);
+  const imapHost = cfg.imap_host || cfg.host;
+  const imapPort = parseInt(cfg.imap_port || "993");
+  const imapSecure = imapPort === 993 || cfg.imap_encryption === "ssl" || !cfg.imap_port;
+  const client = new ImapFlow({
+    host: imapHost,
+    port: imapPort,
+    secure: imapSecure,
+    auth: { user: cfg.user, pass: decryptedPassword },
+    logger: false,
+    tls: { rejectUnauthorized: false },
+  });
+  await client.connect();
+  try { return await fn(client); }
+  finally { try { await client.logout(); } catch { /* ignore */ } }
+}
+
+app.get(`${P}/admin/inbox`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const cfg: any = await kv.get("email_config") || {};
+    if (!cfg.host || !cfg.user || !cfg.password) return err(c, "SMTP não configurado.", 400);
+    const folder = c.req.query("folder") || "INBOX";
+    const page = Math.max(1, parseInt(c.req.query("page") || "1"));
+    const perPage = 30;
+
+    const result = await withImap(cfg, async (client) => {
+      const lock = await client.getMailboxLock(folder);
+      try {
+        const status = await client.status(folder, { messages: true, unseen: true });
+        const total = status.messages || 0;
+        if (total === 0) return { messages: [], total: 0, unseen: 0, page: 1, pages: 1 };
+        // Newest first: seq range for page
+        const end = Math.max(1, total - (page - 1) * perPage);
+        const start = Math.max(1, end - perPage + 1);
+        const msgs: any[] = [];
+        for await (const msg of client.fetch(`${start}:${end}`, { envelope: true, uid: true, flags: true })) {
+          msgs.push({
+            uid: msg.uid,
+            subject: msg.envelope?.subject || "(sem assunto)",
+            from: msg.envelope?.from?.[0]
+              ? { name: msg.envelope.from[0].name || "", address: `${msg.envelope.from[0].mailbox}@${msg.envelope.from[0].host}` }
+              : { name: "", address: "" },
+            date: msg.envelope?.date?.toISOString(),
+            seen: msg.flags?.has("\\Seen") ?? false,
+            answered: msg.flags?.has("\\Answered") ?? false,
+          });
+        }
+        msgs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        return { messages: msgs, total, unseen: status.unseen || 0, page, pages: Math.ceil(total / perPage) };
+      } finally { lock.release(); }
+    });
+    return c.json(result);
+  } catch (e) { return err(c, `Erro ao acessar caixa de entrada: ${e}`); }
+});
+
+app.get(`${P}/admin/inbox/:uid`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const cfg: any = await kv.get("email_config") || {};
+    if (!cfg.host) return err(c, "SMTP não configurado.", 400);
+    const uid = c.req.param("uid");
+    const folder = c.req.query("folder") || "INBOX";
+
+    const result = await withImap(cfg, async (client) => {
+      const lock = await client.getMailboxLock(folder);
+      try {
+        const msg = await client.fetchOne(uid, { source: true, uid: true, flags: true, envelope: true }, { uid: true });
+        if (!msg) return null;
+        await client.messageFlagsAdd(uid, ["\\Seen"], { uid: true });
+        const { simpleParser } = await import("npm:mailparser");
+        const parsed = await simpleParser(msg.source);
+        return {
+          uid: Number(uid),
+          subject: parsed.subject || "(sem assunto)",
+          from: parsed.from?.value?.[0] ? { name: parsed.from.value[0].name, address: parsed.from.value[0].address } : null,
+          to: (parsed.to as any)?.value?.map((a: any) => ({ name: a.name, address: a.address })) || [],
+          cc: (parsed.cc as any)?.value?.map((a: any) => ({ name: a.name, address: a.address })) || [],
+          date: parsed.date?.toISOString(),
+          text: parsed.text || "",
+          html: parsed.html || "",
+          attachments: parsed.attachments?.map((a: any) => ({ filename: a.filename, contentType: a.contentType, size: a.size })) || [],
+        };
+      } finally { lock.release(); }
+    });
+    if (!result) return err(c, "Mensagem não encontrada.", 404);
+    return c.json(result);
+  } catch (e) { return err(c, `Erro ao ler mensagem: ${e}`); }
+});
+
+app.delete(`${P}/admin/inbox/:uid`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const cfg: any = await kv.get("email_config") || {};
+    const uid = c.req.param("uid");
+    const folder = c.req.query("folder") || "INBOX";
+    await withImap(cfg, async (client) => {
+      const lock = await client.getMailboxLock(folder);
+      try { await client.messageDelete(uid, { uid: true }); }
+      finally { lock.release(); }
+    });
+    auditLog("inbox_delete", { by: auth?.email, uid });
+    return c.json({ ok: true });
+  } catch (e) { return err(c, `Erro ao excluir: ${e}`); }
+});
+
 // ── Admin: Email Marketing Campaign endpoints ─────────────────────────────────
 app.get(`${P}/admin/email-campaigns`, async (c) => {
   try {

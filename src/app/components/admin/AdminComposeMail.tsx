@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useSearchParams } from "react-router";
 import {
   Send, Loader2, CheckCircle, XCircle, Plus, X,
   Bold, Italic, AlignLeft, Link2, Eye, Pencil,
@@ -79,8 +80,12 @@ function fmt(cmd: string, value?: string) {
 }
 
 export function AdminComposeMail() {
-  const [to, setTo] = useState<string[]>([]);
-  const [subject, setSubject] = useState("");
+  const [searchParams] = useSearchParams();
+  const [to, setTo] = useState<string[]>(() => {
+    const t = searchParams.get("to");
+    return t ? [t] : [];
+  });
+  const [subject, setSubject] = useState(() => searchParams.get("subject") || "");
   const [replyTo, setReplyTo] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<"ok" | "fail" | null>(null);

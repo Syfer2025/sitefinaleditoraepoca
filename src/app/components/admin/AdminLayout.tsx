@@ -27,6 +27,7 @@ import {
   Sparkles,
   FileText,
   PanelBottom,
+  Inbox,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { api, clearToken, getAdminToken, getAdminRefreshToken } from "../../data/api";
@@ -53,6 +54,7 @@ const navItems = [
   { path: "/admin/email-config", label: "Config. SMTP", icon: Settings2 },
   { path: "/admin/email-marketing", label: "Email Marketing", icon: Megaphone },
   { path: "/admin/compor-email", label: "Compor E-mail", icon: Mail },
+  { path: "/admin/inbox", label: "Caixa de Entrada", icon: Inbox },
   { path: "/admin/hero", label: "Hero (Banner)", icon: Sparkles },
   { path: "/admin/sobre-texto", label: "Sobre (Texto)", icon: FileText },
   { path: "/admin/cta-banner", label: "CTA Banner", icon: Megaphone },
