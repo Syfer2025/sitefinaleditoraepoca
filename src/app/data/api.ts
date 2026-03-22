@@ -745,3 +745,48 @@ export async function submitDataRightsRequest(body: { name: string; email: strin
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Erro ao enviar solicitação");
 }
+
+// ── EMAIL CONFIG ───────────────────────────────────────────────────────────────
+export async function getAdminEmailConfig() {
+  return api("/admin/email-config");
+}
+export async function updateAdminEmailConfig(data: {
+  host?: string; port?: string; encryption?: string;
+  user?: string; password?: string;
+  from_name?: string; from_email?: string; reply_to?: string;
+}) {
+  return api("/admin/email-config", { method: "PUT", body: data });
+}
+export async function testAdminEmailConfig(to?: string) {
+  return api("/admin/email-config/test", { method: "POST", body: { to } });
+}
+
+// ── EMAIL MARKETING ────────────────────────────────────────────────────────────
+export interface EmailCampaign {
+  id: string;
+  name: string;
+  subject: string;
+  html: string;
+  text: string;
+  status: "draft" | "sent";
+  sentCount: number;
+  sentAt?: string;
+  lastErrors?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+export async function getAdminEmailCampaigns(): Promise<{ campaigns: EmailCampaign[] }> {
+  return api("/admin/email-campaigns");
+}
+export async function createAdminEmailCampaign(data: { name: string; subject: string; html: string; text?: string }) {
+  return api("/admin/email-campaigns", { method: "POST", body: data });
+}
+export async function updateAdminEmailCampaign(id: string, data: Partial<EmailCampaign>) {
+  return api(`/admin/email-campaigns/${id}`, { method: "PUT", body: data });
+}
+export async function deleteAdminEmailCampaign(id: string) {
+  return api(`/admin/email-campaigns/${id}`, { method: "DELETE" });
+}
+export async function sendAdminEmailCampaign(id: string) {
+  return api(`/admin/email-campaigns/${id}/send`, { method: "POST", body: {} });
+}

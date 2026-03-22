@@ -21,6 +21,8 @@ import {
   CreditCard,
   Phone,
   Plug,
+  Settings2,
+  Megaphone,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { api, clearToken, getAdminToken, getAdminRefreshToken } from "../../data/api";
@@ -43,6 +45,8 @@ const navItems = [
   { path: "/admin/pagamentos", label: "Pagamentos", icon: CreditCard },
   { path: "/admin/contato", label: "Contato", icon: Phone },
   { path: "/admin/integracoes", label: "Integrações", icon: Plug },
+  { path: "/admin/email-config", label: "Config. SMTP", icon: Settings2 },
+  { path: "/admin/email-marketing", label: "Email Marketing", icon: Megaphone },
 ];
 
 export function AdminLayout() {

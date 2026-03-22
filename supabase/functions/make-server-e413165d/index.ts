@@ -2568,6 +2568,195 @@ app.get(`${P}/admin/data-rights`, async (c) => {
   } catch (e) { return err(c, `Erro ao listar solicitações: ${e}`); }
 });
 
+// ── SMTP helpers ──────────────────────────────────────────────────────────────
+async function getEmailConfig(): Promise<any> {
+  const cfg: any = await kv.get("email_config") || {};
+  if (cfg.password) cfg.password = await decryptSecret(cfg.password);
+  return cfg;
+}
+
+async function sendEmail(to: string | string[], subject: string, html: string, text?: string): Promise<void> {
+  const cfg = await getEmailConfig();
+  if (!cfg.host || !cfg.user || !cfg.password) throw new Error("SMTP não configurado.");
+  const nodemailer = (await import("npm:nodemailer")).default;
+  const port = parseInt(cfg.port || "587");
+  const ssl = cfg.encryption === "ssl";
+  const transporter = nodemailer.createTransport({
+    host: cfg.host,
+    port,
+    secure: ssl,
+    auth: { user: cfg.user, pass: cfg.password },
+    tls: { rejectUnauthorized: false },
+  });
+  await transporter.sendMail({
+    from: `"${cfg.from_name || "Época Editora"}" <${cfg.from_email || cfg.user}>`,
+    replyTo: cfg.reply_to || undefined,
+    to: Array.isArray(to) ? to.join(", ") : to,
+    subject,
+    html,
+    text: text || html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim(),
+  });
+}
+
+// ── Admin: Email Config endpoints ──────────────────────────────────────────────
+app.get(`${P}/admin/email-config`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const cfg: any = await kv.get("email_config") || {};
+    const safe = {
+      host: cfg.host || "",
+      port: cfg.port || "587",
+      encryption: cfg.encryption || "tls",
+      user: cfg.user || "",
+      password: cfg.password ? "•".repeat(16) : "",
+      from_name: cfg.from_name || "",
+      from_email: cfg.from_email || "",
+      reply_to: cfg.reply_to || "",
+      configured: !!(cfg.host && cfg.user && cfg.password),
+    };
+    return c.json({ config: safe });
+  } catch (e) { return err(c, `Erro: ${e}`); }
+});
+
+app.put(`${P}/admin/email-config`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const body = await c.req.json();
+    const existing: any = await kv.get("email_config") || {};
+    const updated: any = {
+      host: body.host ?? existing.host ?? "",
+      port: body.port ?? existing.port ?? "587",
+      encryption: body.encryption ?? existing.encryption ?? "tls",
+      user: body.user ?? existing.user ?? "",
+      from_name: body.from_name ?? existing.from_name ?? "",
+      from_email: body.from_email ?? existing.from_email ?? "",
+      reply_to: body.reply_to ?? existing.reply_to ?? "",
+    };
+    if (body.password && body.password.trim() && !body.password.includes("•")) {
+      updated.password = await encryptSecret(body.password.trim());
+    } else {
+      updated.password = existing.password || "";
+    }
+    await kv.set("email_config", updated);
+    auditLog("email_config_updated", { by: auth.email });
+    return c.json({ success: true });
+  } catch (e) { return err(c, `Erro: ${e}`); }
+});
+
+app.post(`${P}/admin/email-config/test`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { to } = await c.req.json();
+    const cfg: any = await kv.get("email_config") || {};
+    if (!cfg.host || !cfg.user || !cfg.password) return err(c, "SMTP não configurado.", 400);
+    await sendEmail(
+      to || auth.email,
+      "✅ Teste SMTP — Época Editora",
+      `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px">
+        <h2 style="color:#165B36;margin-bottom:8px">Configuração SMTP funcionando!</h2>
+        <p style="color:#374151">Se você recebeu este e-mail, as configurações estão corretas.</p>
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0"/>
+        <p style="font-size:12px;color:#9ca3af">Servidor: <strong>${cfg.host}:${cfg.port}</strong> · Usuário: <strong>${cfg.user}</strong></p>
+      </div>`,
+    );
+    return c.json({ ok: true });
+  } catch (e) { return err(c, `Erro ao enviar e-mail de teste: ${e}`); }
+});
+
+// ── Admin: Email Marketing Campaign endpoints ─────────────────────────────────
+app.get(`${P}/admin/email-campaigns`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const campaigns = await kv.getByPrefix("email_campaign:");
+    return c.json({ campaigns: campaigns.sort((a: any, b: any) => b.createdAt.localeCompare(a.createdAt)) });
+  } catch (e) { return err(c, `Erro: ${e}`); }
+});
+
+app.post(`${P}/admin/email-campaigns`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { name, subject, html, text } = await c.req.json();
+    if (!name?.trim() || !subject?.trim() || !html?.trim()) return err(c, "Nome, assunto e conteúdo HTML são obrigatórios.", 400);
+    const id = crypto.randomUUID();
+    const campaign = {
+      id, name: name.trim(), subject: subject.trim(), html: html.trim(),
+      text: text?.trim() || "", status: "draft", sentCount: 0,
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+    };
+    await kv.set(`email_campaign:${id}`, campaign);
+    auditLog("email_campaign_created", { by: auth.email, id, name });
+    return c.json({ success: true, campaign });
+  } catch (e) { return err(c, `Erro: ${e}`); }
+});
+
+app.put(`${P}/admin/email-campaigns/:id`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const id = c.req.param("id");
+    const existing: any = await kv.get(`email_campaign:${id}`);
+    if (!existing) return err(c, "Campanha não encontrada.", 404);
+    const body = await c.req.json();
+    const updated = { ...existing, ...body, id, updatedAt: new Date().toISOString() };
+    await kv.set(`email_campaign:${id}`, updated);
+    return c.json({ success: true, campaign: updated });
+  } catch (e) { return err(c, `Erro: ${e}`); }
+});
+
+app.delete(`${P}/admin/email-campaigns/:id`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const id = c.req.param("id");
+    await kv.del(`email_campaign:${id}`);
+    auditLog("email_campaign_deleted", { by: auth.email, id });
+    return c.json({ success: true });
+  } catch (e) { return err(c, `Erro: ${e}`); }
+});
+
+app.post(`${P}/admin/email-campaigns/:id/send`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const id = c.req.param("id");
+    const campaign: any = await kv.get(`email_campaign:${id}`);
+    if (!campaign) return err(c, "Campanha não encontrada.", 404);
+    if (campaign.status === "sent") return err(c, "Esta campanha já foi enviada.", 400);
+    const emailCfg: any = await kv.get("email_config") || {};
+    if (!emailCfg.host || !emailCfg.user || !emailCfg.password) {
+      return err(c, "Configure o servidor SMTP antes de enviar campanhas.", 400);
+    }
+    const subscribers: any[] = await kv.getByPrefix("newsletter:");
+    const active = subscribers.filter((s) => s.email && !s.unsubscribed);
+    if (active.length === 0) return err(c, "Nenhum inscrito ativo encontrado.", 400);
+    let sentCount = 0;
+    const errors: string[] = [];
+    // Cap at 500 per send to avoid edge-function timeout
+    const batch = active.slice(0, 500);
+    for (const sub of batch) {
+      try {
+        await sendEmail(sub.email, campaign.subject, campaign.html, campaign.text || undefined);
+        sentCount++;
+      } catch (e: any) {
+        errors.push(`${sub.email}: ${String(e.message || e).slice(0, 80)}`);
+      }
+    }
+    const updatedCampaign = {
+      ...campaign, status: "sent", sentCount,
+      sentAt: new Date().toISOString(), lastErrors: errors.slice(0, 20),
+      updatedAt: new Date().toISOString(),
+    };
+    await kv.set(`email_campaign:${id}`, updatedCampaign);
+    auditLog("email_campaign_sent", { by: auth.email, id, sentCount, errorCount: errors.length });
+    return c.json({ success: true, sentCount, errorCount: errors.length, errors: errors.slice(0, 5) });
+  } catch (e) { return err(c, `Erro ao enviar campanha: ${e}`); }
+});
+
 // New: save individual logo by key (navbar | footer | favicon)
 app.post(`${P}/admin/logo/:key`, async (c) => {
   try {

@@ -47,6 +47,8 @@ export const router = createBrowserRouter([
       { path: "pagamentos", lazy: () => import("./components/admin/AdminPaymentConfig").then(m => ({ Component: m.AdminPaymentConfig })) },
       { path: "contato", lazy: () => import("./components/admin/AdminContactInfo").then(m => ({ Component: m.AdminContactInfo })) },
       { path: "integracoes", lazy: () => import("./components/admin/AdminTracking").then(m => ({ Component: m.AdminTracking })) },
+      { path: "email-config", lazy: () => import("./components/admin/AdminEmailConfig").then(m => ({ Component: m.AdminEmailConfig })) },
+      { path: "email-marketing", lazy: () => import("./components/admin/AdminEmailMarketing").then(m => ({ Component: m.AdminEmailMarketing })) },
     ],
   },
 ]);
