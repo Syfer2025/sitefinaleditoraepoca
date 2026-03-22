@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { GoldButton } from "./GoldButton";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { Link } from "react-router";
-import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import footerLogoFallback from "/assets/36074aebf24684a213a02f0250350012b7c049a7.png";
 import { projectId, publicAnonKey } from "/utils/supabase/info";
@@ -226,14 +225,7 @@ export function Footer() {
                   {item.label}
                 </Link>
               ))}
-              <Link
-                to="/admin"
-                className="flex items-center gap-1 text-[0.7rem] text-white/20 hover:text-white/50 transition-colors duration-300"
-                title="Painel Administrativo"
-              >
-                <Lock className="w-3 h-3" />
-                Admin
-              </Link>
+
             </div>
           </div>
         </RevealOnScroll>
