@@ -9,10 +9,12 @@ import {
   Menu,
   X,
   ChevronRight,
+  ChevronDown,
   FolderKanban,
   ScrollText,
   HelpCircle,
   Mail,
+  MailPlus,
   DollarSign,
   UserRound,
   Quote,
@@ -28,38 +30,94 @@ import {
   FileText,
   PanelBottom,
   Inbox,
+  Briefcase,
+  Library,
+  AtSign,
+  Palette,
+  SlidersHorizontal,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { api, clearToken, getAdminToken, getAdminRefreshToken } from "../../data/api";
 import { Toaster } from "sonner";
 
-const navItems = [
-  { path: "/admin/dashboard", label: "Visão Geral", icon: LayoutDashboard },
-  { path: "/admin/projetos", label: "Projetos", icon: FolderKanban },
-  { path: "/admin/contratos", label: "Contratos", icon: ScrollText },
-  { path: "/admin/mensagens", label: "Mensagens", icon: MessageSquare },
-  { path: "/admin/usuarios", label: "Usuários", icon: Users },
-  { path: "/admin/livros", label: "Livros", icon: BookOpen },
-  { path: "/admin/planos", label: "Planos", icon: DollarSign },
-  { path: "/admin/newsletter", label: "Newsletter", icon: Mail },
-  { path: "/admin/video", label: "Vídeo da Home", icon: Youtube },
-  { path: "/admin/autores", label: "Autores", icon: UserRound },
-  { path: "/admin/depoimentos", label: "Depoimentos", icon: Quote },
-  { path: "/admin/sobre", label: "Sobre", icon: BarChart2 },
-  { path: "/admin/faq", label: "FAQ", icon: HelpCircle },
-  { path: "/admin/logo", label: "Logo", icon: ImageIcon },
-  { path: "/admin/pagamentos", label: "Pagamentos", icon: CreditCard },
-  { path: "/admin/contato", label: "Contato", icon: Phone },
-  { path: "/admin/integracoes", label: "Integrações", icon: Plug },
-  { path: "/admin/email-config", label: "Config. SMTP", icon: Settings2 },
-  { path: "/admin/email-marketing", label: "Email Marketing", icon: Megaphone },
-  { path: "/admin/compor-email", label: "Compor E-mail", icon: Mail },
-  { path: "/admin/inbox", label: "Caixa de Entrada", icon: Inbox },
-  { path: "/admin/hero", label: "Hero (Banner)", icon: Sparkles },
-  { path: "/admin/sobre-texto", label: "Sobre (Texto)", icon: FileText },
-  { path: "/admin/cta-banner", label: "CTA Banner", icon: Megaphone },
-  { path: "/admin/rodape", label: "Rodapé", icon: PanelBottom },
+const navGroups = [
+  {
+    id: "principal",
+    label: null as string | null,
+    icon: null as any,
+    items: [
+      { path: "/admin/dashboard", label: "Visão Geral", icon: LayoutDashboard },
+    ],
+  },
+  {
+    id: "negocio",
+    label: "Negócio" as string | null,
+    icon: Briefcase as any,
+    items: [
+      { path: "/admin/projetos", label: "Projetos", icon: FolderKanban },
+      { path: "/admin/contratos", label: "Contratos", icon: ScrollText },
+      { path: "/admin/mensagens", label: "Mensagens", icon: MessageSquare },
+      { path: "/admin/usuarios", label: "Usuários", icon: Users },
+    ],
+  },
+  {
+    id: "catalogo",
+    label: "Catálogo" as string | null,
+    icon: Library as any,
+    items: [
+      { path: "/admin/livros", label: "Livros", icon: BookOpen },
+      { path: "/admin/planos", label: "Planos", icon: DollarSign },
+      { path: "/admin/autores", label: "Autores", icon: UserRound },
+      { path: "/admin/depoimentos", label: "Depoimentos", icon: Quote },
+      { path: "/admin/faq", label: "FAQ", icon: HelpCircle },
+      { path: "/admin/newsletter", label: "Newsletter", icon: Mail },
+    ],
+  },
+  {
+    id: "email",
+    label: "E-mail" as string | null,
+    icon: AtSign as any,
+    items: [
+      { path: "/admin/inbox", label: "Caixa de Entrada", icon: Inbox },
+      { path: "/admin/compor-email", label: "Compor E-mail", icon: MailPlus },
+      { path: "/admin/email-marketing", label: "Campanhas", icon: Megaphone },
+      { path: "/admin/email-config", label: "Config. SMTP", icon: Settings2 },
+    ],
+  },
+  {
+    id: "conteudo",
+    label: "Conteúdo do Site" as string | null,
+    icon: Palette as any,
+    items: [
+      { path: "/admin/hero", label: "Hero (Banner)", icon: Sparkles },
+      { path: "/admin/sobre-texto", label: "Sobre (Texto)", icon: FileText },
+      { path: "/admin/sobre", label: "Sobre (Números)", icon: BarChart2 },
+      { path: "/admin/video", label: "Vídeo da Home", icon: Youtube },
+      { path: "/admin/cta-banner", label: "CTA Banner", icon: Megaphone },
+      { path: "/admin/rodape", label: "Rodapé", icon: PanelBottom },
+      { path: "/admin/logo", label: "Logo", icon: ImageIcon },
+    ],
+  },
+  {
+    id: "config",
+    label: "Configurações" as string | null,
+    icon: SlidersHorizontal as any,
+    items: [
+      { path: "/admin/pagamentos", label: "Pagamentos", icon: CreditCard },
+      { path: "/admin/contato", label: "Contato", icon: Phone },
+      { path: "/admin/integracoes", label: "Integrações", icon: Plug },
+    ],
+  },
 ];
+
+const allNavItems = navGroups.flatMap((g) => g.items);
+
+function getActiveGroupId(pathname: string): string | null {
+  for (const group of navGroups) {
+    if (group.items.some((item) => item.path === pathname)) return group.id;
+  }
+  return null;
+}
 
 export function AdminLayout() {
   const navigate = useNavigate();
@@ -67,6 +125,32 @@ export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState("");
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
+    const activeId = getActiveGroupId(location.pathname);
+    return new Set(activeId ? [activeId] : []);
+  });
+
+  const toggleGroup = (id: string) => {
+    setOpenGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  // Auto-expand group when navigating to a new route
+  useEffect(() => {
+    const activeId = getActiveGroupId(location.pathname);
+    if (activeId) {
+      setOpenGroups((prev) => {
+        if (prev.has(activeId)) return prev;
+        const next = new Set(prev);
+        next.add(activeId);
+        return next;
+      });
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const token = getAdminToken();
@@ -173,31 +257,82 @@ export function AdminLayout() {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
-            const active = location.pathname === item.path;
+        <nav className="flex-1 p-3 overflow-y-auto">
+          {navGroups.map((group, gi) => {
+            const isLabeled = !!group.label;
+            const isOpen = !isLabeled || openGroups.has(group.id);
+            const hasActiveItem = group.items.some((i) => i.path === location.pathname);
+            const GroupIcon = group.icon;
+
+            const renderItems = (items: typeof group.items, indented = false) =>
+              items.map((item) => {
+                const active = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
+                      active
+                        ? "text-[#052413]"
+                        : "text-white/60 hover:text-white hover:bg-white/5"
+                    }`}
+                    style={active ? { background: "linear-gradient(135deg, #EBBF74, #D4AF5A)" } : {}}
+                  >
+                    <item.icon className="w-4 h-4 shrink-0" />
+                    <span className="flex-1">{item.label}</span>
+                    {active && <ChevronRight className="w-3 h-3" />}
+                  </Link>
+                );
+              });
+
             return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group ${
-                  active
-                    ? "text-[#052413]"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
-                }`}
-                style={{
-                  ...(active
-                    ? {
-                        background: "linear-gradient(135deg, #EBBF74, #D4AF5A)",
-                      }
-                    : {}),
-                }}
-              >
-                <item.icon className="w-4 h-4" />
-                {item.label}
-                {active && <ChevronRight className="w-3 h-3 ml-auto" />}
-              </Link>
+              <div key={group.id} className={isLabeled ? "mb-1" : "mb-3"}>
+                {/* Group header button */}
+                {isLabeled && (
+                  <button
+                    onClick={() => toggleGroup(group.id)}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[0.68rem] font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                      hasActiveItem ? "text-[#EBBF74]" : "text-white/30 hover:text-white/55"
+                    }`}
+                  >
+                    {GroupIcon && <GroupIcon className="w-3.5 h-3.5 shrink-0" />}
+                    <span className="flex-1 text-left">{group.label}</span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${
+                        isOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                )}
+
+                {/* Items — animated for labeled groups, static for unlabeled */}
+                {isLabeled ? (
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        key="items"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.18, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pt-0.5 pb-1 space-y-0.5">
+                          {renderItems(group.items)}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                ) : (
+                  <div className="space-y-0.5">{renderItems(group.items)}</div>
+                )}
+
+                {/* Divider after each labeled group except the last */}
+                {isLabeled && gi < navGroups.length - 1 && (
+                  <div className="mt-1.5 border-t border-white/5" />
+                )}
+              </div>
             );
           })}
         </nav>
@@ -255,7 +390,7 @@ export function AdminLayout() {
           <h2
             className="text-lg text-[#052413] font-serif"
           >
-            {navItems.find((i) => i.path === location.pathname)?.label || "Painel"}
+            {allNavItems.find((i) => i.path === location.pathname)?.label || "Painel"}
           </h2>
           <div className="ml-auto">
             <a
