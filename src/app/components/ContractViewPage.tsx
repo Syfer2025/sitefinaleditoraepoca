@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router";
 import { ArrowLeft, Download, Loader2, Printer, AlertTriangle } from "lucide-react";
-import { getPaymentInfo, getPublicContractTemplate, getContractPdfUrl, getLogo } from "../data/api";
+import { getPaymentInfo, getPublicContractTemplate, getContractPdfUrl, getLogos } from "../data/api";
 import { toast, Toaster } from "sonner";
 import logoImg from "/assets/logo.png";
 
@@ -27,28 +27,10 @@ export function ContractViewPage() {
 
   // Load logo for print (prefer dynamic logo from API, fallback to static asset)
   useEffect(() => {
-    getLogo().then((logo) => {
-      if (logo) {
-        setLogoBase64(logo);
-      } else {
-        // Fallback: convert static asset to base64 via canvas
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-          try {
-            const canvas = document.createElement("canvas");
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-              ctx.drawImage(img, 0, 0);
-              setLogoBase64(canvas.toDataURL("image/png"));
-            }
-          } catch { /* leave empty */ }
-        };
-        img.src = logoImg;
-      }
-    });
+    getLogos().then((logos) => {
+      const src = logos.logo_navbar || logoImg;
+      setLogoBase64(src);
+    }).catch(() => { setLogoBase64(logoImg); });
   }, []);
 
   // Fetch data
@@ -307,7 +289,7 @@ export function ContractViewPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
         {/* Header */}
         <div className="text-center mb-8 pb-5 border-b-2" style={{ borderColor: "#EBBF74" }}>
-          <img src={logoImg} alt={COMPANY_NAME} className="h-12 mx-auto mb-3" />
+          <img src={logoBase64 || logoImg} alt={COMPANY_NAME} className="h-12 mx-auto mb-3" />
           <h1 className="text-base font-bold tracking-wide text-[#052413]" style={{ fontFamily: f.play }}>
             CONTRATO DE PRESTACAO DE SERVICOS EDITORIAIS
           </h1>

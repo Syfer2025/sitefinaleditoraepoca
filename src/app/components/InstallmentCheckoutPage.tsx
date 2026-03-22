@@ -11,7 +11,8 @@ import { GoldButton } from "./GoldButton";
 import { getInstallmentCheckout, generateInstallmentPayoff, regenerateInstallmentPix, regeneratePayoffPix, acceptContract, getPublicContractTemplate } from "../data/api";
 import { useUserAuth } from "./UserAuthContext";
 import { toast, Toaster } from "sonner";
-import logoImg from "/assets/logo.png";
+import logoFallback from "/assets/logo.png";
+import { getLogos } from "../data/api";
 
 // ============================================
 // Types
@@ -111,6 +112,7 @@ function formatDateTime(iso: string): string {
 export function InstallmentCheckoutPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const { user } = useUserAuth();
+  const [logoImg, setLogoImg] = useState<string>(logoFallback);
   const [data, setData] = useState<CheckoutData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -146,6 +148,10 @@ export function InstallmentCheckoutPage() {
   }, [projectId]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  useEffect(() => {
+    getLogos().then((l) => { if (l.logo_navbar) setLogoImg(l.logo_navbar); }).catch(() => {});
+  }, []);
 
   // Sync contract accepted state from server data
   useEffect(() => {

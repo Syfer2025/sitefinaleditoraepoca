@@ -8,9 +8,9 @@ import { Footer } from "./Footer";
 import { BackToTop } from "./BackToTop";
 import { WhatsAppButton } from "./WhatsAppButton";
 import { motion, AnimatePresence } from "motion/react";
-import logoImg from "/assets/logo.png";
+import logoFallback from "/assets/logo.png";
 import { allBooks } from "../data/books";
-import { getBooks } from "../data/api";
+import { getBooks, getLogos } from "../data/api";
 import { buildWhatsAppUrl } from "../data/constants";
 
 const sortOptions = [
@@ -25,6 +25,7 @@ export function CatalogPage() {
   const [sortBy, setSortBy] = useState("recent");
   const [showFilters, setShowFilters] = useState(false);
   const [books, setBooks] = useState(allBooks);
+  const [logoImg, setLogoImg] = useState<string>(logoFallback);
 
   useSEO({
     title: "Catálogo de Livros",
@@ -37,6 +38,9 @@ export function CatalogPage() {
     getBooks()
       .then((data) => { if (Array.isArray(data?.books) && data.books.length > 0) setBooks(data.books); })
       .catch(() => {/* silently use defaults */});
+    getLogos()
+      .then((l) => { if (l.logo_navbar) setLogoImg(l.logo_navbar); })
+      .catch(() => {});
   }, []);
 
   const genres = useMemo(

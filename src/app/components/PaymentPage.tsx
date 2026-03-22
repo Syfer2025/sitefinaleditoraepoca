@@ -9,8 +9,8 @@ import {
 import { GoldButton } from "./GoldButton";
 import { getPaymentInfo, processPayment, acceptContract, getContractPdfUrl, getPublicContractTemplate, checkPaymentStatus } from "../data/api";
 import { toast, Toaster } from "sonner";
-import footerLogoImg from "/assets/36074aebf24684a213a02f0250350012b7c049a7.png";
-import logoImg from "/assets/logo.png";
+import logoFallback from "/assets/logo.png";
+import { getLogos } from "../data/api";
 
 // ============================================
 // Types
@@ -956,6 +956,7 @@ export function PaymentPage() {
 
   // Contract template from admin
   const [contractTemplate, setContractTemplate] = useState<any>(null);
+  const [logoImg, setLogoImg] = useState<string>(logoFallback);
   const [logoBase64, setLogoBase64] = useState<string>("");
   const CONTRACT_VERSION = contractTemplate?.version || "1.0";
   const COMPANY_NAME = contractTemplate?.companyName || "Epoca Editora de Livros";
@@ -968,23 +969,27 @@ export function PaymentPage() {
     return contractTemplate.clauses.find((c: any) => c.number === num) || null;
   }, [contractTemplate]);
 
-  // Convert logo to base64 for print/download (new window can't access figma:asset URLs)
+  // Load dynamic logo from API, then convert to base64 for print/download
   useEffect(() => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(img, 0, 0);
-          setLogoBase64(canvas.toDataURL("image/png"));
-        }
-      } catch { /* CORS or tainted canvas — fallback stays empty */ }
-    };
-    img.src = logoImg;
+    getLogos().then((logos) => {
+      const src = logos.logo_navbar || logoFallback;
+      setLogoImg(src);
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0);
+            setLogoBase64(canvas.toDataURL("image/png"));
+          }
+        } catch { /* CORS or tainted canvas — fallback stays empty */ }
+      };
+      img.src = src;
+    }).catch(() => {});
   }, []);
 
   // SEO
@@ -1276,7 +1281,7 @@ export function PaymentPage() {
         </Link>
         <div className="flex items-center justify-center gap-3 mb-2">
           <img
-            src={footerLogoImg}
+            src={logoImg}
             alt="Época Editora"
             className="h-12"
             style={{ filter: "brightness(10) saturate(0)" }}
