@@ -570,7 +570,42 @@ app.post(`${P}/messages`, async (c) => {
     const { name, email, subject, message } = await c.req.json();
     if (!name || !email || !message) return err(c, "Nome, e-mail e mensagem são obrigatórios.", 400);
     const id = crypto.randomUUID();
-    await kv.set(`message:${id}`, { id, name, email, subject, message, read: false, createdAt: new Date().toISOString() });
+    const createdAt = new Date().toISOString();
+    await kv.set(`message:${id}`, { id, name, email, subject, message, read: false, createdAt });
+    // Notify admin via email (best-effort, non-blocking)
+    const siteUrl = Deno.env.get("SITE_URL") || "https://editoraepoca.com.br";
+    const emailCfg: any = await kv.get("email_config") || {};
+    if (emailCfg.host && emailCfg.user && emailCfg.password) {
+      sendEmail(
+        emailCfg.from_email || emailCfg.user,
+        `📬 Nova mensagem de ${name} — Época Editora`,
+        `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:0;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+          <div style="background:linear-gradient(135deg,#165B36,#052413);padding:24px;text-align:center">
+            <h1 style="color:#EBBF74;font-size:20px;margin:0;font-family:Georgia,serif;font-style:italic">Época Editora</h1>
+            <p style="color:rgba(255,255,255,0.7);font-size:12px;margin:6px 0 0">Nova mensagem recebida pelo site</p>
+          </div>
+          <div style="padding:28px 24px">
+            <table style="width:100%;border-collapse:collapse;font-size:14px;color:#374151">
+              <tr><td style="padding:8px 0;border-bottom:1px solid #f0e8d4;width:100px"><strong style="color:#052413">De:</strong></td><td style="padding:8px 0;border-bottom:1px solid #f0e8d4">${name}</td></tr>
+              <tr><td style="padding:8px 0;border-bottom:1px solid #f0e8d4"><strong style="color:#052413">E-mail:</strong></td><td style="padding:8px 0;border-bottom:1px solid #f0e8d4"><a href="mailto:${email}" style="color:#165B36">${email}</a></td></tr>
+              ${subject ? `<tr><td style="padding:8px 0;border-bottom:1px solid #f0e8d4"><strong style="color:#052413">Assunto:</strong></td><td style="padding:8px 0;border-bottom:1px solid #f0e8d4">${subject}</td></tr>` : ""}
+              <tr><td style="padding:8px 0;border-bottom:1px solid #f0e8d4"><strong style="color:#052413">Data:</strong></td><td style="padding:8px 0;border-bottom:1px solid #f0e8d4">${new Date(createdAt).toLocaleString("pt-BR")}</td></tr>
+            </table>
+            <div style="margin-top:20px;padding:16px;background:#F7F4EE;border-radius:8px;border-left:3px solid #165B36">
+              <p style="color:#052413;font-size:14px;line-height:1.7;margin:0;white-space:pre-wrap">${message}</p>
+            </div>
+            <div style="text-align:center;margin:24px 0">
+              <a href="${siteUrl}/admin/mensagens" style="background:linear-gradient(135deg,#165B36,#052413);color:#EBBF74;text-decoration:none;padding:12px 28px;border-radius:50px;font-size:13px;font-weight:bold;display:inline-block">
+                Ver no painel
+              </a>
+            </div>
+          </div>
+          <div style="background:#F0E8D4;padding:12px 24px;text-align:center;border-top:1px solid #e5e7eb">
+            <p style="color:#9ca3af;font-size:10px;margin:0">Época Editora de Livros · Notificação automática</p>
+          </div>
+        </div>`,
+      ).catch(() => { /* non-blocking */ });
+    }
     return c.json({ success: true, id });
   } catch (e) { return err(c, `Erro ao enviar mensagem: ${e}`); }
 });
@@ -695,9 +730,46 @@ app.post(`${P}/newsletter`, async (c) => {
       email,
       subscribedAt: new Date().toISOString(),
       consent: true,
-      pendingConfirmation: true,
+      pendingConfirmation: false,
     });
-    return c.json({ success: true, pendingConfirmation: true });
+    // Send welcome email (best-effort, non-blocking)
+    const siteUrl = Deno.env.get("SITE_URL") || "https://editoraepoca.com.br";
+    sendEmail(
+      email,
+      "Bem-vindo à newsletter da Época Editora!",
+      `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:0;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+        <div style="background:linear-gradient(135deg,#165B36,#052413);padding:32px 24px;text-align:center">
+          <h1 style="color:#EBBF74;font-size:22px;margin:0;font-family:Georgia,serif;font-style:italic">Época Editora de Livros</h1>
+          <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:8px 0 0">Histórias que transformam</p>
+        </div>
+        <div style="padding:32px 24px">
+          <h2 style="color:#052413;font-size:18px;margin:0 0 12px">Você está inscrito! 🎉</h2>
+          <p style="color:#374151;font-size:14px;line-height:1.7;margin:0 0 20px">
+            Obrigado por se inscrever na nossa newsletter. A partir de agora você receberá em primeira mão:
+          </p>
+          <ul style="color:#374151;font-size:14px;line-height:2;margin:0 0 24px;padding-left:20px">
+            <li>Lançamentos e novidades do catálogo</li>
+            <li>Artigos e dicas para autores</li>
+            <li>Ofertas exclusivas de publicação</li>
+            <li>Eventos e encontros literários</li>
+          </ul>
+          <div style="text-align:center;margin:28px 0">
+            <a href="${siteUrl}/catalogo" style="background:linear-gradient(135deg,#165B36,#052413);color:#EBBF74;text-decoration:none;padding:14px 32px;border-radius:50px;font-size:14px;font-weight:bold;display:inline-block">
+              Explorar catálogo
+            </a>
+          </div>
+        </div>
+        <div style="background:#F0E8D4;padding:16px 24px;text-align:center;border-top:1px solid #e5e7eb">
+          <p style="color:#856C42;font-size:11px;margin:0">
+            Época Editora de Livros · <a href="${siteUrl}" style="color:#165B36;text-decoration:none">${siteUrl.replace("https://","")}</a>
+          </p>
+          <p style="color:#9ca3af;font-size:10px;margin:6px 0 0">
+            Você recebeu este e-mail por se inscrever em nossa newsletter. Para cancelar, entre em contato conosco.
+          </p>
+        </div>
+      </div>`,
+    ).catch(() => { /* non-blocking */ });
+    return c.json({ success: true, pendingConfirmation: false });
   } catch (e) { return err(c, `Erro ao inscrever: ${e}`); }
 });
 
@@ -2721,8 +2793,10 @@ app.post(`${P}/admin/email-config/test`, async (c) => {
     const { to } = await c.req.json();
     const cfg: any = await kv.get("email_config") || {};
     if (!cfg.host || !cfg.user || !cfg.password) return err(c, "SMTP não configurado.", 400);
+    // Use from_email/user as fallback — cPanel rejects cross-domain from/to mismatch
+    const recipient = to || cfg.from_email || cfg.user;
     await sendEmail(
-      to || auth.email,
+      recipient,
       "✅ Teste SMTP — Época Editora",
       `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px">
         <h2 style="color:#165B36;margin-bottom:8px">Configuração SMTP funcionando!</h2>

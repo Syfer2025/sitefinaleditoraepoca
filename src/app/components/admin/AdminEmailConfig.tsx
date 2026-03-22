@@ -354,14 +354,17 @@ export function AdminEmailConfig() {
           </h2>
         </div>
         <p className="text-xs text-[#856C42]">
-          Salve as configurações antes de testar. Um e-mail será enviado para o endereço abaixo.
+          Salve as configurações antes de testar. Se vazio, o e-mail é enviado para o próprio endereço remetente configurado.
+        </p>
+        <p className="text-[0.7rem] text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+          ⚠️ <strong>cPanel/Hosting:</strong> o destino do teste deve ser do mesmo domínio do remetente (ex.: outro e-mail do seu domínio). Servidores cPanel bloqueiam envios para e-mails externos.
         </p>
         <div className="flex gap-3">
           <input
             type="email"
             value={testTo}
             onChange={(e) => setTestTo(e.target.value)}
-            placeholder="seuemail@teste.com (opcional — usa o e-mail admin)"
+            placeholder={`Deixe vazio para usar ${cfg.from_email || cfg.user || 'o endereço remetente'}`}
             className="flex-1 px-3 py-2.5 rounded-lg border text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
             style={{ backgroundColor: "#F0E8D4", borderColor: "rgba(133,108,66,0.2)" }}
           />
