@@ -23,7 +23,7 @@ export function Footer() {
 
   async function handleNewsletter() {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error("Informe um e-mail valido.");
+      toast.error("Informe um e-mail válido.");
       return;
     }
     if (!consentNewsletter) {
@@ -150,10 +150,10 @@ export function Footer() {
               {subscribed ? (
                 <div className="space-y-1">
                   <p className="text-[0.875rem] text-[#EBBF74]" style={{ fontFamily: "Inter, sans-serif" }}>
-                    ✓ Quase la! Confirme em sua caixa de entrada.
+                    ✓ Quase lá! Confirme em sua caixa de entrada.
                   </p>
                   <p className="text-[0.75rem] text-white/40" style={{ fontFamily: "Inter, sans-serif" }}>
-                    Enviamos um e-mail de confirmacao. Verifique sua caixa de entrada (e o spam).
+                    Enviamos um e-mail de confirmação. Verifique sua caixa de entrada (e o spam).
                   </p>
                 </div>
               ) : (
@@ -185,7 +185,7 @@ export function Footer() {
                       className="w-3.5 h-3.5 rounded accent-[#EBBF74] mt-0.5 flex-shrink-0"
                     />
                     <span className="text-[0.7rem] text-white/40 leading-relaxed" style={{ fontFamily: "Inter, sans-serif" }}>
-                      Concordo em receber comunicacoes da Epoca Editora por e-mail e posso cancelar a qualquer momento.
+                      Concordo em receber comunicações da Época Editora por e-mail e posso cancelar a qualquer momento.
                     </span>
                   </label>
                 </div>
@@ -200,7 +200,7 @@ export function Footer() {
                 className="text-[0.8rem]"
                 style={{ fontFamily: "Inter, sans-serif" }}
               >
-                &copy; {new Date().getFullYear()} Epoca Editora de Livros. Todos os direitos reservados.
+                &copy; {new Date().getFullYear()} Época Editora de Livros. Todos os direitos reservados.
               </p>
               <p className="text-[0.7rem] text-white/30" style={{ fontFamily: "Inter, sans-serif" }}>
                 Encarregado de dados (DPO):{" "}

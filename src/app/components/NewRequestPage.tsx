@@ -160,7 +160,7 @@ function InlineAuth({ onSuccess }: { onSuccess: () => void }) {
           </GoldButton>
 
           <p className="text-center text-xs text-[#856C42]" style={{ fontFamily: F }}>
-            {mode === "login" ? "Nao tem conta? " : "Ja tem conta? "}
+            {mode === "login" ? "Não tem conta? " : "Já tem conta? "}
             <button type="button" onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); }} className="text-[#165B36] font-medium hover:underline cursor-pointer">
               {mode === "login" ? "Criar conta" : "Fazer login"}
             </button>
@@ -198,8 +198,8 @@ export function NewRequestPage() {
   const totalSteps = WIZARD_STEPS.length;
 
   useEffect(() => {
-    document.title = "Nova Solicitacao — Epoca Editora de Livros";
-    return () => { document.title = "Epoca Editora de Livros — Historias que transformam"; };
+    document.title = "Nova Solicitação — Época Editora de Livros";
+    return () => { document.title = "Época Editora de Livros — Histórias que transformam"; };
   }, []);
 
   const toggleService = (key: string) => {
@@ -230,7 +230,7 @@ export function NewRequestPage() {
     return true;
   };
 
-  const handleNext = () => { setError(""); if (step === 0 && !title.trim()) { setError("O titulo da obra e obrigatorio."); return; } if (step < totalSteps - 1) setStep(step + 1); };
+  const handleNext = () => { setError(""); if (step === 0 && !title.trim()) { setError("O título da obra é obrigatório."); return; } if (step < totalSteps - 1) setStep(step + 1); };
   const handleBack = () => { setError(""); if (step > 0) setStep(step - 1); };
 
   const handleSubmit = async () => {
@@ -254,7 +254,7 @@ export function NewRequestPage() {
         }
       }
       setSubmitted(true);
-      toast.success("Solicitacao enviada com sucesso!");
+      toast.success("Solicitação enviada com sucesso!");
     } catch (err: any) {
       setError(err.message || "Erro ao enviar solicitação");
     } finally {
@@ -328,7 +328,7 @@ export function NewRequestPage() {
             <span className="text-xs font-medium text-[#165B36]" style={{ fontFamily: F }}>Formulário de nova solicitação</span>
           </div>
           <h1 className="text-3xl sm:text-4xl text-[#052413] mb-2" style={{ fontFamily: PF }}>
-            Solicite sua <span className="italic text-[#165B36]">diagramacao</span>
+            Solicite sua <span className="italic text-[#165B36]">diagramação</span>
           </h1>
           <p className="text-sm text-[#856C42] max-w-md mx-auto leading-relaxed" style={{ fontFamily: F }}>
             Preencha os dados do seu projeto editorial. Nossa equipe irá preparar um orçamento personalizado para você.

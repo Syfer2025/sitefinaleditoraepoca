@@ -55,10 +55,10 @@ export function CookieBanner() {
                 <Shield className="w-5 h-5 text-[#EBBF74] flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm text-white/90 leading-relaxed" style={{ fontFamily: F }}>
-                    Utilizamos cookies essenciais para o funcionamento do site e cookies analiticos para melhorar sua experiencia.
-                    Ao continuar navegando, voce concorda com nossa{" "}
+                    Utilizamos cookies essenciais para o funcionamento do site e cookies analíticos para melhorar sua experiência.
+                    Ao continuar navegando, você concorda com nossa{" "}
                     <Link to="/privacidade" className="text-[#EBBF74] hover:underline">
-                      Politica de Privacidade
+                      Política de Privacidade
                     </Link>{" "}
                     e{" "}
                     <Link to="/termos" className="text-[#EBBF74] hover:underline">
@@ -73,7 +73,7 @@ export function CookieBanner() {
                     style={{ fontFamily: F }}
                   >
                     {managing ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                    Gerenciar preferencias
+                    Gerenciar preferências
                   </button>
                 </div>
               </div>
@@ -122,7 +122,7 @@ export function CookieBanner() {
                           Cookies essenciais
                         </p>
                         <p className="text-[0.65rem] text-white/40 mt-0.5" style={{ fontFamily: F }}>
-                          Necessarios para autenticacao, sessao e seguranca. Nao podem ser desativados.
+                          Necessários para autenticação, sessão e segurança. Não podem ser desativados.
                         </p>
                       </div>
                       <div
@@ -136,10 +136,10 @@ export function CookieBanner() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs font-semibold text-white/90" style={{ fontFamily: F }}>
-                          Cookies analiticos
+                          Cookies analíticos
                         </p>
                         <p className="text-[0.65rem] text-white/40 mt-0.5" style={{ fontFamily: F }}>
-                          Nos ajudam a entender como voce usa o site para melhorar a experiencia.
+                          Nos ajudam a entender como você usa o site para melhorar a experiência.
                         </p>
                       </div>
                       <button
@@ -147,7 +147,7 @@ export function CookieBanner() {
                         onClick={() => setAnalyticsEnabled((v) => !v)}
                         className={`relative w-10 h-5 rounded-full transition-colors cursor-pointer flex-shrink-0 ${analyticsEnabled ? "" : "bg-white/20"}`}
                         style={analyticsEnabled ? { background: "linear-gradient(135deg, #EBBF74, #D4AF5A)" } : {}}
-                        aria-label={analyticsEnabled ? "Desativar cookies analiticos" : "Ativar cookies analiticos"}
+                        aria-label={analyticsEnabled ? "Desativar cookies analíticos" : "Ativar cookies analíticos"}
                       >
                         <span
                           className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${analyticsEnabled ? "translate-x-5" : "translate-x-0.5"}`}
@@ -163,7 +163,7 @@ export function CookieBanner() {
                         background: "linear-gradient(135deg, #EBBF74, #D4AF5A)",
                       }}
                     >
-                      Salvar preferencias
+                      Salvar preferências
                     </button>
                   </div>
                 </motion.div>

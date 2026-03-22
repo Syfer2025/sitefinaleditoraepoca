@@ -19,7 +19,7 @@ function getPasswordStrength(pw: string): { score: number; label: string; color:
   if (/\d/.test(pw)) score++;
   if (/[^a-zA-Z0-9]/.test(pw)) score++;
   if (score <= 1) return { score, label: "Fraca", color: "#dc2626" };
-  if (score <= 2) return { score, label: "Razoavel", color: "#f59e0b" };
+  if (score <= 2) return { score, label: "Razoável", color: "#f59e0b" };
   if (score <= 3) return { score, label: "Boa", color: "#EBBF74" };
   return { score, label: "Forte", color: "#0a7c3e" };
 }
@@ -36,8 +36,8 @@ export function PasswordResetPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    document.title = "Recuperar senha - Epoca Editora de Livros";
-    return () => { document.title = "Epoca Editora de Livros - Historias que transformam"; };
+    document.title = "Recuperar senha — Época Editora de Livros";
+    return () => { document.title = "Época Editora de Livros — Histórias que transformam"; };
   }, []);
 
   // Detect Supabase PASSWORD_RECOVERY event (triggered when user clicks the link in the email)
@@ -54,7 +54,7 @@ export function PasswordResetPage() {
     e.preventDefault();
     setError("");
     if (!email.trim() || !email.includes("@")) {
-      setError("Informe um e-mail valido.");
+      setError("Informe um e-mail válido.");
       return;
     }
     setLoading(true);
@@ -65,7 +65,7 @@ export function PasswordResetPage() {
       if (resetError) throw resetError;
       setDone(true);
     } catch (e: any) {
-      setError(e.message || "Erro ao enviar e-mail de recuperacao. Tente novamente.");
+      setError(e.message || "Erro ao enviar e-mail de recuperação. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -74,10 +74,10 @@ export function PasswordResetPage() {
   const handleSetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (password.length < 8) { setError("A senha deve ter no minimo 8 caracteres."); return; }
-    if (password !== confirmPassword) { setError("As senhas nao coincidem."); return; }
+    if (password.length < 8) { setError("A senha deve ter no mínimo 8 caracteres."); return; }
+    if (password !== confirmPassword) { setError("As senhas não coincidem."); return; }
     const pwStrength = getPasswordStrength(password);
-    if (pwStrength.score < 2) { setError("Senha muito fraca. Use letras maiusculas, minusculas, numeros e simbolos."); return; }
+    if (pwStrength.score < 2) { setError("Senha muito fraca. Use letras maiúsculas, minúsculas, números e símbolos."); return; }
     setLoading(true);
     try {
       const { error: updateError } = await supabase.auth.updateUser({ password });
@@ -184,7 +184,7 @@ export function PasswordResetPage() {
                     />
                   </div>
                   <GoldButton type="submit" className="w-full py-3.5 mt-2" disabled={loading}>
-                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Mail className="w-4 h-4" /> Enviar link de recuperacao</>}
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Mail className="w-4 h-4" /> Enviar link de recuperação</>}
                   </GoldButton>
                   <p className="text-center text-xs text-[#856C42]/60 mt-2" style={{ fontFamily: F }}>
                     Lembrou a senha?{" "}
@@ -204,7 +204,7 @@ export function PasswordResetPage() {
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Minimo 8 caracteres"
+                        placeholder="Mínimo 8 caracteres"
                         required
                         minLength={8}
                         className={inputClasses + " pr-12"}
@@ -222,7 +222,7 @@ export function PasswordResetPage() {
                           ))}
                         </div>
                         <p className="text-[0.65rem] font-medium" style={{ fontFamily: F, color: pwStrength.color }}>
-                          Forca: {pwStrength.label}
+                          Força: {pwStrength.label}
                         </p>
                       </div>
                     )}
@@ -238,7 +238,7 @@ export function PasswordResetPage() {
                       style={{ ...inputStyle, borderColor: confirmPassword && !passwordsMatch ? "rgba(212,24,61,0.4)" : inputStyle.borderColor }}
                     />
                     {confirmPassword && !passwordsMatch && (
-                      <p className="text-xs text-red-500 mt-1" style={{ fontFamily: F }}>As senhas nao coincidem.</p>
+                      <p className="text-xs text-red-500 mt-1" style={{ fontFamily: F }}>As senhas não coincidem.</p>
                     )}
                   </div>
                   <GoldButton type="submit" className="w-full py-3.5 mt-2" disabled={loading}>

@@ -228,7 +228,7 @@ function ProfileEditModal({ onClose }: { onClose: () => void }) {
               style={inputSt}
             />
             <p className="text-[0.6rem] text-[#856C42]/50 mt-1" style={{ fontFamily: f.inter }}>
-              Alterar o e-mail requer confirmacao pelo novo endereco.
+              Alterar o e-mail requer confirmação pelo novo endereço.
             </p>
           </div>
           <div>
@@ -1106,8 +1106,8 @@ function TabFinancial({ project }: { project: Project }) {
     return (
       <div className="flex flex-col items-center py-8 text-center">
         <Wallet className="w-10 h-10 text-[#856C42]/20 mb-3" />
-        <p className="text-sm text-[#856C42]/60" style={{ fontFamily: f.inter }}>Orcamento ainda nao disponivel</p>
-        <p className="text-xs text-[#856C42]/40 mt-1" style={{ fontFamily: f.inter }}>O orcamento sera enviado apos a analise do projeto</p>
+        <p className="text-sm text-[#856C42]/60" style={{ fontFamily: f.inter }}>Orçamento ainda não disponível</p>
+        <p className="text-xs text-[#856C42]/40 mt-1" style={{ fontFamily: f.inter }}>O orçamento será enviado após a análise do projeto</p>
       </div>
     );
   }
@@ -1251,8 +1251,8 @@ function TabFinancial({ project }: { project: Project }) {
             {isRemainderPending && !budget.remainderPaymentUrl && !budget.installmentPlan?.enabled && (
               <div className="p-2.5 rounded-lg" style={{ backgroundColor: "rgba(235,191,116,0.1)", borderWidth: 1, borderColor: "rgba(235,191,116,0.2)" }}>
                 <p className="text-[0.7rem] text-[#856C42] leading-relaxed" style={{ fontFamily: f.inter }}>
-                  O valor restante de <strong className="text-[#052413]">{formatCurrency(remainingAmount)}</strong> sera cobrado na entrega do projeto finalizado.
-                  Voce sera notificado quando o projeto estiver pronto.
+                  O valor restante de <strong className="text-[#052413]">{formatCurrency(remainingAmount)}</strong> será cobrado na entrega do projeto finalizado.
+                  Você será notificado quando o projeto estiver pronto.
                 </p>
               </div>
             )}

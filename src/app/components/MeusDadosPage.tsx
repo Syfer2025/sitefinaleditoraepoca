@@ -11,12 +11,12 @@ const F = "Inter, sans-serif";
 const PF = "'Playfair Display', serif";
 
 const REQUEST_TYPES = [
-  { value: "acesso", label: "Acesso aos meus dados", desc: "Quero saber quais dados pessoais voces possuem sobre mim." },
-  { value: "correcao", label: "Correcao de dados", desc: "Quero corrigir dados incompletos, inexatos ou desatualizados." },
-  { value: "exclusao", label: "Exclusao de dados", desc: "Quero solicitar a eliminacao dos meus dados pessoais." },
-  { value: "portabilidade", label: "Portabilidade", desc: "Quero receber meus dados em formato estruturado para transferencia." },
-  { value: "revogacao", label: "Revogacao de consentimento", desc: "Quero revogar o consentimento dado para uso dos meus dados." },
-  { value: "informacao", label: "Informacao sobre compartilhamento", desc: "Quero saber com quais entidades meus dados foram compartilhados." },
+  { value: "acesso", label: "Acesso aos meus dados", desc: "Quero saber quais dados pessoais vocês possuem sobre mim." },
+  { value: "correcao", label: "Correção de dados", desc: "Quero corrigir dados incompletos, inexatos ou desatualizados." },
+  { value: "exclusao", label: "Exclusão de dados", desc: "Quero solicitar a eliminação dos meus dados pessoais." },
+  { value: "portabilidade", label: "Portabilidade", desc: "Quero receber meus dados em formato estruturado para transferência." },
+  { value: "revogacao", label: "Revogação de consentimento", desc: "Quero revogar o consentimento dado para uso dos meus dados." },
+  { value: "informacao", label: "Informação sobre compartilhamento", desc: "Quero saber com quais entidades meus dados foram compartilhados." },
 ];
 
 export function MeusDadosPage() {
@@ -29,7 +29,7 @@ export function MeusDadosPage() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    document.title = "Meus Dados — Epoca Editora de Livros";
+    document.title = "Meus Dados — Época Editora de Livros";
     window.scrollTo(0, 0);
   }, []);
 
@@ -44,7 +44,7 @@ export function MeusDadosPage() {
       await submitDataRightsRequest({ name: name.trim(), email: email.trim(), requestType, details: details.trim() });
       setSubmitted(true);
     } catch (err: any) {
-      toast.error(err?.message || "Erro ao enviar solicitacao. Tente novamente.");
+      toast.error(err?.message || "Erro ao enviar solicitação. Tente novamente.");
     } finally {
       setSending(false);
     }
@@ -76,8 +76,8 @@ export function MeusDadosPage() {
           </div>
 
           <p className="text-sm text-[#052413]/70 mb-8 leading-relaxed" style={{ fontFamily: F }}>
-            Voce pode solicitar acesso, correcao, exclusao ou portabilidade dos seus dados pessoais,
-            bem como revogar consentimentos dados anteriormente. Responderemos em ate <strong>15 dias uteis</strong>.
+            Você pode solicitar acesso, correção, exclusão ou portabilidade dos seus dados pessoais,
+            bem como revogar consentimentos dados anteriormente. Responderemos em até <strong>15 dias úteis</strong>.
           </p>
 
           {submitted ? (
@@ -89,11 +89,11 @@ export function MeusDadosPage() {
                 <CheckCircle className="w-7 h-7 text-[#165B36]" />
               </div>
               <h2 className="text-xl font-semibold text-[#052413] mb-2" style={{ fontFamily: PF }}>
-                Solicitacao enviada!
+                Solicitação enviada!
               </h2>
               <p className="text-sm text-[#052413]/70 leading-relaxed" style={{ fontFamily: F }}>
-                Recebemos sua solicitacao e entraremos em contato pelo e-mail informado em ate{" "}
-                <strong>15 dias uteis</strong>. Voce tambem pode contatar nosso DPO diretamente
+                Recebemos sua solicitação e entraremos em contato pelo e-mail informado em até{" "}
+                <strong>15 dias úteis</strong>. Você também pode contatar nosso DPO diretamente
                 em{" "}
                 <a href="mailto:privacidade@epocaeditora.com.br" className="text-[#165B36] hover:underline">
                   privacidade@epocaeditora.com.br
@@ -140,7 +140,7 @@ export function MeusDadosPage() {
 
               <div>
                 <label className="block text-xs font-medium text-[#052413] mb-2" style={{ fontFamily: F }}>
-                  Tipo de solicitacao <span className="text-red-500">*</span>
+                  Tipo de solicitação <span className="text-red-500">*</span>
                 </label>
                 <div className="space-y-2">
                   {REQUEST_TYPES.map((rt) => (
@@ -177,7 +177,7 @@ export function MeusDadosPage() {
                   value={details}
                   onChange={(e) => setDetails(e.target.value)}
                   rows={3}
-                  placeholder="Descreva sua solicitacao com mais detalhes, se necessario..."
+                  placeholder="Descreva sua solicitação com mais detalhes, se necessário..."
                   className="w-full px-3.5 py-2.5 rounded-lg text-sm text-[#052413] placeholder:text-[#856C42]/40 focus:outline-none focus:ring-2 transition-all resize-none"
                   style={{ fontFamily: F, backgroundColor: "#FFFDF8", border: "1px solid rgba(133,108,66,0.2)" }}
                 />
@@ -189,13 +189,13 @@ export function MeusDadosPage() {
               >
                 <Shield className="w-3.5 h-3.5 text-[#165B36] flex-shrink-0 mt-0.5" />
                 <span className="text-[#052413]/70" style={{ fontFamily: F }}>
-                  Sua solicitacao sera tratada de forma confidencial e respondida em ate 15 dias uteis.
+                  Sua solicitação será tratada de forma confidencial e respondida em até 15 dias úteis.
                 </span>
               </div>
 
               <GoldButton type="submit" className="w-full py-3" disabled={sending}>
                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                {sending ? "Enviando..." : "Enviar solicitacao"}
+                {sending ? "Enviando..." : "Enviar solicitação"}
               </GoldButton>
             </form>
           )}
