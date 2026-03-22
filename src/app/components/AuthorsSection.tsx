@@ -62,6 +62,8 @@ export function AuthorsSection() {
                   title={video.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  loading="lazy"
                   className="absolute inset-0 w-full h-full"
                   style={{ border: "none" }}
                 />
