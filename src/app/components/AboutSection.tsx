@@ -10,7 +10,7 @@ const ABOUT_TEXT_DEFAULTS: AboutContent = {
   headingHighlight: "brasileira",
   paragraph1: "Fundada em 1987, a Época Editora nasceu do amor pela palavra escrita. Ao longo de quase quatro décadas, construímos um catálogo diversificado que abrange ficção contemporânea, poesia, ensaios e literatura infantil.",
   paragraph2: "Nossa missão é dar voz a novos talentos e manter viva a chama da literatura de qualidade, conectando autores e leitores em uma experiência transformadora.",
-  imageUrl: "https://images.unsplash.com/photo-1642057714794-22dc5f0f6323?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvcGVuJTIwYm9vayUyMHJlYWRpbmclMjBhZXN0aGV0aWN8ZW58MXx8fHwxNzcyNDU3MzE3fDA&ixlib=rb-4.1.0&q=70&w=800",
+  imageUrl: "https://images.unsplash.com/photo-1642057714794-22dc5f0f6323?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvcGVuJTIwYm9vayUyMHJlYWRpbmclMjBhZXN0aGV0aWN8ZW58MXx8fHwxNzcyNDU3MzE3fDA&ixlib=rb-4.1.0&q=70&w=640",
 };
 
 const ICON_MAP: Record<string, any> = {

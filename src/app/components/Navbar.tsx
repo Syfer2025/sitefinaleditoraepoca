@@ -81,6 +81,8 @@ export function Navbar() {
             src={logoImg || LOGO_PLACEHOLDER}
             alt="Época Editora"
             className="h-10"
+            width={172}
+            height={40}
           />
         </Link>
 

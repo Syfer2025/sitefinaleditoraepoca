@@ -68,6 +68,9 @@ export function Footer() {
                     src={footerLogoImg}
                     alt="Época Editora"
                     className="h-8"
+                    width={138}
+                    height={32}
+                    loading="lazy"
                   />
                 </Link>
               </div>

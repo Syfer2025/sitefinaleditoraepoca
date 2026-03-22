@@ -3,13 +3,15 @@ import { GoldButton } from "./GoldButton";
 import { motion } from "motion/react";
 import { getHero, type HeroContent } from "../data/api";
 
+const HERO_IMG_BASE = "https://images.unsplash.com/photo-1722977735215-d28f2ac6efba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rc3RvcmUlMjBsaWJyYXJ5JTIwc2hlbHZlcyUyMHdhcm18ZW58MXx8fHwxNzcyNDU3MzE2fDA&ixlib=rb-4.1.0";
+
 const HERO_DEFAULTS: HeroContent = {
   title: "Histórias que transformam,",
   titleHighlight: "palavras que ficam",
   subtitle: "Publicamos obras que desafiam, encantam e inspiram leitores ao redor do mundo. Descubra nosso catálogo com mais de 500 títulos.",
   ctaPrimary: "Explorar Catálogo",
   ctaSecondary: "Conheça a Editora",
-  imageUrl: "https://images.unsplash.com/photo-1722977735215-d28f2ac6efba?crop=entropy&cs=tinysrgb&fit=max&fm=webp&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rc3RvcmUlMjBsaWJyYXJ5JTIwc2hlbHZlcyUyMHdhcm18ZW58MXx8fHwxNzcyNDU3MzE2fDA&ixlib=rb-4.1.0&q=70&w=1400",
+  imageUrl: `${HERO_IMG_BASE}&q=65&w=1200`,
 };
 
 export function HeroSection() {
@@ -66,10 +68,12 @@ export function HeroSection() {
         >
           <img
             src={hero.imageUrl || HERO_DEFAULTS.imageUrl}
-            srcSet={`${hero.imageUrl || HERO_DEFAULTS.imageUrl} 800w, ${hero.imageUrl || HERO_DEFAULTS.imageUrl} 1400w`}
+            srcSet={hero.imageUrl ? `${hero.imageUrl} 1200w` : `${HERO_IMG_BASE}&q=65&w=800 800w, ${HERO_IMG_BASE}&q=65&w=1200 1200w`}
             sizes="100vw"
             alt="Biblioteca"
             className="w-full h-full object-cover"
+            width={1200}
+            height={1680}
             fetchPriority="high"
           />
         </div>
