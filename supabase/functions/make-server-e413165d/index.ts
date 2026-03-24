@@ -3467,6 +3467,26 @@ app.post(`${P}/projects/:id/chat`, async (c) => {
   } catch (e) { return err(c, `Erro ao enviar mensagem: ${e}`); }
 });
 
+// ── ADMIN: R2 STORAGE TEST ────────────────────────────────────────────────────
+app.get(`${P}/admin/r2-test`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const results: Record<string, unknown> = { r2Configured: useR2, timestamp: new Date().toISOString() };
+    if (!useR2) return c.json({ ...results, message: "R2 não configurado — usando Supabase Storage como fallback" });
+    // Test upload
+    const testKey = `_test/${Date.now()}.txt`;
+    const testData = new TextEncoder().encode("R2 test file - " + new Date().toISOString());
+    try { await r2Upload(testKey, testData.buffer as ArrayBuffer, "text/plain"); results.upload = "OK"; } catch (e) { results.upload = `ERRO: ${e}`; return c.json(results); }
+    // Test signed URL
+    try { const url = await r2SignedUrl(testKey, 60); results.signedUrl = url ? "OK" : "ERRO: URL vazia"; } catch (e) { results.signedUrl = `ERRO: ${e}`; }
+    // Test delete
+    try { await r2Delete([testKey]); results.delete = "OK"; } catch (e) { results.delete = `ERRO: ${e}`; }
+    results.message = results.upload === "OK" && results.delete === "OK" ? "R2 funcionando perfeitamente!" : "Há erros — veja os detalhes acima";
+    return c.json(results);
+  } catch (e) { return err(c, `Erro no teste R2: ${e}`); }
+});
+
 // ── ADMIN: FINANCIAL STATS ────────────────────────────────────────────────────
 app.get(`${P}/admin/financial-stats`, async (c) => {
   try {
