@@ -367,14 +367,28 @@ app.get(`${P}/user/cep/:cep`, async (c) => {
 });
 
 // Check if e-mail already exists in the system
+// ── Cached user list for duplicate checks (avoids hammering DB on every keystroke) ──
+let _cachedUsers: any[] | null = null;
+let _cachedUsersAt = 0;
+const USERS_CACHE_TTL = 30_000; // 30 seconds
+
+async function getCachedUsers(): Promise<any[]> {
+  if (_cachedUsers && Date.now() - _cachedUsersAt < USERS_CACHE_TTL) return _cachedUsers;
+  const sb = getAdminClient();
+  const { data } = await sb.auth.admin.listUsers();
+  _cachedUsers = data?.users || [];
+  _cachedUsersAt = Date.now();
+  return _cachedUsers;
+}
+
+function invalidateUsersCache() { _cachedUsers = null; }
+
 app.post(`${P}/user/check-email`, async (c) => {
   try {
     const { email } = await c.req.json();
     if (!email || !email.includes("@")) return err(c, "E-mail inválido", 400);
-    const sb = getAdminClient();
-    const { data: usersData } = await sb.auth.admin.listUsers();
-    if (!usersData?.users) return c.json({ exists: false });
-    const found = usersData.users.find((u: any) => u.email?.toLowerCase() === email.trim().toLowerCase());
+    const users = await getCachedUsers();
+    const found = users.find((u: any) => u.email?.toLowerCase() === email.trim().toLowerCase());
     return c.json({ exists: !!found });
   } catch (e) { return err(c, `Erro ao verificar e-mail: ${e}`); }
 });
@@ -386,17 +400,12 @@ app.post(`${P}/user/check-phone`, async (c) => {
     if (!phone) return err(c, "Telefone não informado", 400);
     const cleanPhone = (phone as string).replace(/\D/g, "");
     if (cleanPhone.length < 10) return c.json({ exists: false });
-    const sb = getAdminClient();
-    const { data: usersData } = await sb.auth.admin.listUsers();
-    if (!usersData?.users) return c.json({ exists: false });
-    const found = usersData.users.find((u: any) => {
+    const users = await getCachedUsers();
+    const found = users.find((u: any) => {
       const storedPhone = (u.user_metadata?.phone || "").replace(/\D/g, "");
       return storedPhone === cleanPhone;
     });
-    if (found) {
-      return c.json({ exists: true });
-    }
-    return c.json({ exists: false });
+    return c.json({ exists: !!found });
   } catch (e) { return err(c, `Erro ao verificar telefone: ${e}`); }
 });
 
@@ -407,10 +416,8 @@ app.post(`${P}/user/check-document`, async (c) => {
     if (!document) return err(c, "Documento não informado", 400);
     const cleanDoc = document.replace(/\D/g, "");
     if (cleanDoc.length !== 11 && cleanDoc.length !== 14) return err(c, "CPF (11 dígitos) ou CNPJ (14 dígitos) inválido", 400);
-    const sb = getAdminClient();
-    const { data: usersData } = await sb.auth.admin.listUsers();
-    if (!usersData?.users) return c.json({ exists: false });
-    const found = usersData.users.find((u: any) => {
+    const users = await getCachedUsers();
+    const found = users.find((u: any) => {
       const meta = u.user_metadata || {};
       const storedDoc = (meta.document || meta.cpf || "").replace(/\D/g, "");
       return storedDoc === cleanDoc;
@@ -438,33 +445,30 @@ app.post(`${P}/user/signup`, async (c) => {
     if (documentType === "cnpj" && cleanDoc.length !== 14) return err(c, "CNPJ inválido (14 dígitos)", 400);
     if (documentType === "cpf" && cleanDoc.length !== 11) return err(c, "CPF inválido (11 dígitos)", 400);
 
-    // Check document + phone duplicates in one pass
+    // Check document + phone duplicates using cached user list
     {
-      const sb = getAdminClient();
-      const { data: usersData } = await sb.auth.admin.listUsers();
-      if (usersData?.users) {
-        const cleanPhone = phone?.replace(/\D/g, "") || "";
-        for (const u of usersData.users) {
-          const meta = u.user_metadata || {};
-          // Document check
-          if (cleanDoc.length >= 11) {
-            const storedDoc = (meta.document || meta.cpf || "").replace(/\D/g, "");
-            if (storedDoc === cleanDoc) {
-              const dupEmail = u.email || "";
-              const [local, domain] = dupEmail.split("@");
-              const masked = local ? local[0] + "***@" + (domain || "") : "***";
-              return err(c, `Já existe uma conta cadastrada com este ${documentType === "cnpj" ? "CNPJ" : "CPF"} (${masked}). Use a opção "Entrar" ou "Recuperar conta".`, 409);
-            }
+      const cachedUsers = await getCachedUsers();
+      const cleanPhone = phone?.replace(/\D/g, "") || "";
+      for (const u of cachedUsers) {
+        const meta = u.user_metadata || {};
+        // Document check
+        if (cleanDoc.length >= 11) {
+          const storedDoc = (meta.document || meta.cpf || "").replace(/\D/g, "");
+          if (storedDoc === cleanDoc) {
+            const dupEmail = u.email || "";
+            const [local, domain] = dupEmail.split("@");
+            const masked = local ? local[0] + "***@" + (domain || "") : "***";
+            return err(c, `Já existe uma conta cadastrada com este ${documentType === "cnpj" ? "CNPJ" : "CPF"} (${masked}). Use a opção "Entrar" ou "Recuperar conta".`, 409);
           }
-          // Phone check
-          if (cleanPhone.length >= 10) {
-            const storedPhone = (meta.phone || "").replace(/\D/g, "");
-            if (storedPhone === cleanPhone) {
-              const dupEmail = u.email || "";
-              const [local, domain] = dupEmail.split("@");
-              const masked = local ? local[0] + "***@" + (domain || "") : "***";
-              return err(c, `Já existe uma conta cadastrada com este telefone (${masked}). Use a opção "Entrar" ou "Recuperar conta".`, 409);
-            }
+        }
+        // Phone check
+        if (cleanPhone.length >= 10) {
+          const storedPhone = (meta.phone || "").replace(/\D/g, "");
+          if (storedPhone === cleanPhone) {
+            const dupEmail = u.email || "";
+            const [local, domain] = dupEmail.split("@");
+            const masked = local ? local[0] + "***@" + (domain || "") : "***";
+            return err(c, `Já existe uma conta cadastrada com este telefone (${masked}). Use a opção "Entrar" ou "Recuperar conta".`, 409);
           }
         }
       }
@@ -484,6 +488,7 @@ app.post(`${P}/user/signup`, async (c) => {
       if (em.includes("password")) return err(c, "A senha informada não atende aos requisitos mínimos.", 400);
       return err(c, `Erro ao criar conta: ${error.message}`, 400);
     }
+    invalidateUsersCache(); // New user created — bust the cache
     const { data: si, error: se } = await getAnonClient().auth.signInWithPassword({ email, password });
     if (se) return err(c, "Conta criada com sucesso, porém houve um erro ao iniciar sessão. Tente fazer login.", 500);
     return c.json({ access_token: si.session?.access_token, user: { id: data.user?.id, email, name, role: "user", documentType: metadata.documentType, document: cleanDoc, companyName: metadata.companyName || null } });
@@ -719,6 +724,7 @@ app.post(`${P}/admin/users`, async (c) => {
       if (!admins.includes(email)) { admins.push(email); await kv.set("admin_users", admins); }
       auditLog("admin_granted", { targetEmail: email, grantedBy: auth.email });
     }
+    invalidateUsersCache();
     return c.json({ success: true, user: { id: data.user?.id, email, name, role: role || "user" } });
   } catch (e) { return err(c, `Erro ao criar usuário: ${e}`); }
 });
@@ -761,6 +767,7 @@ app.delete(`${P}/admin/users/:id`, async (c) => {
       if (admins.includes(ue)) { await kv.set("admin_users", admins); }
       return err(c, `Erro ao excluir usuário: ${error.message}`, 400);
     }
+    invalidateUsersCache();
     auditLog("user_deleted", { targetEmail: ue, deletedBy: auth.email });
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao excluir usuário: ${e}`); }
@@ -771,11 +778,11 @@ app.get(`${P}/admin/stats`, async (c) => {
   try {
     const auth = await verifyAdmin(c.req.raw);
     if (!auth) return err(c, "Não autorizado", 401);
-    const { data: usersData } = await getAdminClient().auth.admin.listUsers();
+    const cachedUsers = await getCachedUsers();
     const messages = await kv.getByPrefix("message:");
     const projects = await kv.getByPrefix("project:");
     const subscribers = await kv.getByPrefix("newsletter:");
-    return c.json({ totalUsers: usersData?.users?.length || 0, totalMessages: messages.length, unreadMessages: messages.filter((m: any) => !m.read).length, totalSubscribers: subscribers.length, totalProjects: projects.length, activeProjects: projects.filter((p: any) => p.status !== "concluido").length });
+    return c.json({ totalUsers: cachedUsers.length, totalMessages: messages.length, unreadMessages: messages.filter((m: any) => !m.read).length, totalSubscribers: subscribers.length, totalProjects: projects.length, activeProjects: projects.filter((p: any) => p.status !== "concluido").length });
   } catch (e) { return err(c, `Erro ao buscar estatísticas: ${e}`); }
 });
 
