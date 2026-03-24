@@ -11,7 +11,7 @@ import { supabase } from "../data/supabaseClient";
 import { GoldButton } from "./GoldButton";
 import { Footer } from "./Footer";
 import { useUserAuth } from "./UserAuthContext";
-import { getUserProjects, userConfirmPayment, getReviewFiles, getUserProject, approveReview, getUserInvoices, getContractPdfUrl, getUserInstallments, getProjectChat, sendProjectChatMessage, submitProjectSurvey, getProjectSurvey } from "../data/api";
+import { getUserProjects, userConfirmPayment, getReviewFiles, getUserProject, approveReview, getUserInvoices, getContractPdfUrl, getUserInstallments, getProjectChat, sendProjectChatMessage, submitProjectSurvey, getProjectSurvey, uploadProjectFile } from "../data/api";
 import { NewRequestForm } from "./NewRequestForm";
 import { toast } from "sonner";
 import { FileViewer, isViewableFile } from "./account/FileViewer";
@@ -694,12 +694,17 @@ function InfoChip({ label, value }: { label: string; value: string }) {
 function TabFiles({
   project,
   onViewFile,
+  onFileUploaded,
 }: {
   project: Project;
   onViewFile: (file: { name: string; url: string }) => void;
+  onFileUploaded?: () => void;
 }) {
   const [reviewFiles, setReviewFiles] = useState<{ name: string; size: number; url: string | null; uploadedAt: string }[]>([]);
   const [loadingReview, setLoadingReview] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const showReview = ["revisao", "ajustes", "concluido"].includes(project.status);
 
@@ -720,22 +725,58 @@ function TabFiles({
     return () => { cancelled = true; };
   }, [project.id, showReview]);
 
-  const uploaded = project.uploadedFiles || [];
-  const hasContent = uploaded.length > 0 || (showReview && (loadingReview || reviewFiles.length > 0));
+  const handleUpload = async (fileList: FileList) => {
+    setUploadError("");
+    const files = Array.from(fileList);
+    if (files.length === 0) return;
+    setUploading(true);
+    try {
+      for (const file of files) {
+        if (file.size > 50 * 1024 * 1024) {
+          setUploadError(`"${file.name}" excede o limite de 50 MB.`);
+          continue;
+        }
+        await uploadProjectFile(project.id, file);
+      }
+      onFileUploaded?.();
+    } catch (err: any) {
+      setUploadError(err.message || "Erro ao enviar arquivo");
+    } finally {
+      setUploading(false);
+    }
+  };
 
-  if (!hasContent) {
-    return (
-      <div className="flex flex-col items-center py-8 text-center">
-        <Folder className="w-10 h-10 text-[#856C42]/20 mb-3" />
-        <p className="text-sm text-[#856C42]/60">Nenhum arquivo neste projeto</p>
-      </div>
-    );
-  }
+  const uploaded = project.uploadedFiles || [];
+  const canUpload = ["analise", "orcamento"].includes(project.status);
 
   return (
     <div className="space-y-5">
+      {/* Upload button for early-stage projects */}
+      {canUpload && (
+        <div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept=".doc,.docx,.pdf,.txt,.rtf,.odt,.epub,.indd,.idml,.psd,.ai,.jpg,.jpeg,.png,.tiff,.tif,.svg,.zip,.rar,.7z"
+            onChange={(e) => { if (e.target.files) handleUpload(e.target.files); e.target.value = ""; }}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium text-[#165B36] border border-[#165B36]/20 hover:bg-[#165B36]/5 transition-colors cursor-pointer disabled:opacity-50"
+          >
+            {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+            {uploading ? "Enviando..." : "Enviar arquivos"}
+          </button>
+          {uploadError && <p className="text-xs text-[#d4183d] mt-2">{uploadError}</p>}
+        </div>
+      )}
+
       {/* Uploaded files */}
-      {uploaded.length > 0 && (
+      {uploaded.length > 0 ? (
         <FileGroup
           title="Seus arquivos"
           icon={<Upload className="w-4 h-4 text-[#856C42]" />}
@@ -743,7 +784,12 @@ function TabFiles({
           files={uploaded.map((f) => ({ name: f.name, size: f.size, uploadedAt: f.uploadedAt, url: f.url || null }))}
           onView={onViewFile}
         />
-      )}
+      ) : !canUpload ? (
+        <div className="flex flex-col items-center py-6 text-center">
+          <Folder className="w-8 h-8 text-[#856C42]/20 mb-2" />
+          <p className="text-xs text-[#856C42]/50">Nenhum arquivo enviado</p>
+        </div>
+      ) : null}
 
       {/* Review files */}
       {showReview && (
@@ -1840,7 +1886,10 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
               transition={{ duration: 0.15 }}
             >
               {activeTab === "overview" && <TabOverview project={liveProject} />}
-              {activeTab === "files" && <TabFiles project={liveProject} onViewFile={setViewingFile} />}
+              {activeTab === "files" && <TabFiles project={liveProject} onViewFile={setViewingFile} onFileUploaded={() => {
+                const controller = new AbortController();
+                getUserProject(project.id, controller.signal).then(data => { if (data.project) setLiveProject(data.project); }).catch(() => {});
+              }} />}
               {activeTab === "financial" && <TabFinancial project={liveProject} />}
               {activeTab === "chat" && <TabChat project={liveProject} />}
               {activeTab === "historico" && <TabHistorico project={liveProject} />}

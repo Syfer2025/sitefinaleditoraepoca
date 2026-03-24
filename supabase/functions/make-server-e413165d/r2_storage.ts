@@ -58,13 +58,17 @@ interface SignedRequestOptions {
   contentType?: string;
 }
 
+function s3EncodeUri(path: string): string {
+  return path.split("/").map(seg => encodeURIComponent(seg).replace(/%20/g, "%20")).join("/");
+}
+
 async function signRequest(opts: SignedRequestOptions): Promise<{ url: string; headers: Record<string, string> }> {
   const cfg = getR2Config();
   const region = "auto";
   const service = "s3";
   const { amzDate, dateStamp } = getAmzDate();
   const host = `${cfg.accountId}.r2.cloudflarestorage.com`;
-  const canonicalUri = "/" + cfg.bucket + "/" + opts.path.replace(/^\//, "");
+  const canonicalUri = "/" + cfg.bucket + "/" + s3EncodeUri(opts.path.replace(/^\//, ""));
 
   // Query string
   const qp = opts.queryParams || {};
@@ -106,7 +110,7 @@ async function generatePresignedUrl(key: string, expiresInSeconds: number, metho
   const service = "s3";
   const { amzDate, dateStamp } = getAmzDate();
   const host = `${cfg.accountId}.r2.cloudflarestorage.com`;
-  const canonicalUri = "/" + cfg.bucket + "/" + key.replace(/^\//, "");
+  const canonicalUri = "/" + cfg.bucket + "/" + s3EncodeUri(key.replace(/^\//, ""));
   const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
 
   const qp: Record<string, string> = {

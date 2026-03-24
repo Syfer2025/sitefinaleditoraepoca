@@ -166,6 +166,7 @@ export function NewRequestForm({
       });
 
       if (files.length > 0 && res.project?.id) {
+        const failedFiles: string[] = [];
         for (let i = 0; i < files.length; i++) {
           setUploadProgress(
             `Enviando arquivo ${i + 1} de ${files.length}...`
@@ -174,7 +175,15 @@ export function NewRequestForm({
             await uploadProjectFile(res.project.id, files[i]);
           } catch (uploadErr: any) {
             console.error(`Upload error for ${files[i].name}:`, uploadErr);
+            failedFiles.push(files[i].name);
           }
+        }
+        if (failedFiles.length > 0) {
+          setError(`Falha ao enviar: ${failedFiles.join(", ")}. Você pode reenviar pela aba Arquivos do projeto.`);
+          setSubmitting(false);
+          setUploadProgress("");
+          onCreated();
+          return;
         }
       }
 

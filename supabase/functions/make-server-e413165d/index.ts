@@ -857,7 +857,8 @@ app.post(`${P}/projects/:id/upload`, async (c) => {
     if (file.size > 50 * 1024 * 1024) return err(c, "O arquivo excede o limite de 50 MB", 400);
     const ext = "." + file.name.toLowerCase().split(".").pop();
     if (!ALLOWED_EXT.includes(ext)) return err(c, `Tipo de arquivo não permitido: ${ext}`, 400);
-    const sp = `${auth.userId}/${pid}/${Date.now()}_${file.name}`;
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const sp = `${auth.userId}/${pid}/${Date.now()}_${safeName}`;
     const ab = await file.arrayBuffer();
     const { storagePath, error: ue } = await storageUpload(sp, ab, file.type || "application/octet-stream");
     if (ue) return err(c, `Erro ao enviar arquivo: ${ue}`);
