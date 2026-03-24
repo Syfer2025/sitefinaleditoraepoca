@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { Plus, Trash2, Loader2, X, Check, Image as ImageIcon, Edit3, MessageSquare, Star } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Plus, Trash2, Loader2, X, Check, Image as ImageIcon, Edit3, MessageSquare, Star, Upload, Link as LinkIcon } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { getTestimonials, updateAdminTestimonials } from "../../data/api";
+import { getTestimonials, updateAdminTestimonials, uploadFile } from "../../data/api";
 import { toast } from "sonner";
 
 
@@ -25,6 +25,24 @@ function TestimonialModal({
 }) {
   const [d, setD] = useState({ name: "", role: "", image: "", quote: "", rating: 5, featured: false, ...initial });
   const set = (k: keyof typeof d, v: any) => setD((prev) => ({ ...prev, [k]: v }));
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadFile(file, "misc");
+      set("image", url);
+      toast.success("Imagem enviada!");
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao enviar imagem");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -51,8 +69,8 @@ function TestimonialModal({
           <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition-colors cursor-pointer"><X className="w-4 h-4" /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Photo preview */}
-          <div className="flex gap-4 items-center">
+          {/* Photo preview + upload */}
+          <div className="flex gap-4 items-start">
             <div className="w-14 h-14 rounded-full border border-gray-200 overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
               {d.image ? (
                 <img src={d.image} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
@@ -60,9 +78,22 @@ function TestimonialModal({
                 <ImageIcon className="w-5 h-5 text-gray-300" />
               )}
             </div>
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-500 mb-1 block">URL da foto</label>
-              <input value={d.image} onChange={(e) => set("image", e.target.value)} placeholder="https://..." className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40" />
+            <div className="flex-1 space-y-1.5">
+              <label className="text-xs font-medium text-gray-500 mb-1 block">Foto</label>
+              <div className="relative flex items-center">
+                <LinkIcon className="absolute left-3 w-3.5 h-3.5 text-gray-400" />
+                <input value={d.image} onChange={(e) => set("image", e.target.value)} placeholder="https://... ou envie uma imagem" className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 focus:border-[#165B36]/40" />
+              </div>
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer disabled:opacity-60"
+              >
+                {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                {uploading ? "Enviando..." : "Enviar arquivo"}
+              </button>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
             </div>
           </div>
           <div>

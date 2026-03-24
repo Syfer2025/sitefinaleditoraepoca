@@ -16,7 +16,6 @@ import {
   Mail,
   MailPlus,
   DollarSign,
-  UserRound,
   Quote,
   BarChart2,
   ImageIcon,
@@ -67,7 +66,6 @@ const navGroups = [
     items: [
       { path: "/admin/livros", label: "Livros", icon: BookOpen },
       { path: "/admin/planos", label: "Planos", icon: DollarSign },
-      { path: "/admin/autores", label: "Autores", icon: UserRound },
       { path: "/admin/depoimentos", label: "Depoimentos", icon: Quote },
       { path: "/admin/faq", label: "FAQ", icon: HelpCircle },
       { path: "/admin/newsletter", label: "Newsletter", icon: Mail },

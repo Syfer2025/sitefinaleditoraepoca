@@ -200,52 +200,58 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
       throw new Error("Sessão não disponível após login.");
     }
 
-    // Fetch profile from our backend with 3s timeout — fallback to auth data if slow/down
+    // Set fallback user immediately for instant UI response
     const fallbackUser: UserInfo = {
       id: data.user.id,
       email: data.user.email || "",
       name: data.user.user_metadata?.name || data.user.email || "",
       role: data.user.user_metadata?.role || "user",
     };
+    setUser(fallbackUser);
+    setUserData(fallbackUser);
 
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 3000);
-      const profileRes = await fetch(`${BASE_URL}/user/me`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${publicAnonKey}`,
-          "X-Access-Token": data.session.access_token,
-        },
-        signal: controller.signal,
-      });
-      clearTimeout(timeout);
-
-      if (profileRes.ok) {
-        const profileData = await profileRes.json();
-        setUser(profileData.user);
-        setUserData(profileData.user);
-      } else {
-        setUser(fallbackUser);
-        setUserData(fallbackUser);
-      }
-    } catch {
-      // Timeout or network error — login still succeeds with auth data
-      setUser(fallbackUser);
-      setUserData(fallbackUser);
-    }
-  }, []);
-
-  const signup = useCallback(async (email: string, password: string, name: string, extra?: { documentType?: string; document?: string; companyName?: string; phone?: string; address?: any }) => {
-    // Signup still goes through the server (needs admin.createUser for email_confirm: true)
-    const res = await fetch(`${BASE_URL}/user/signup`, {
-      method: "POST",
+    // Fetch full profile in background — updates silently when ready
+    fetch(`${BASE_URL}/user/me`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${publicAnonKey}`,
+        "X-Access-Token": data.session.access_token,
       },
-      body: JSON.stringify({ email, password, name, documentType: extra?.documentType || "cpf", document: extra?.document || "", companyName: extra?.companyName || "", phone: extra?.phone || "", address: extra?.address || null }),
-    });
+    })
+      .then((res) => res.ok ? res.json() : null)
+      .then((profileData) => {
+        if (profileData?.user) {
+          setUser(profileData.user);
+          setUserData(profileData.user);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const signup = useCallback(async (email: string, password: string, name: string, extra?: { documentType?: string; document?: string; companyName?: string; phone?: string; address?: any }) => {
+    // Signup goes through the server (needs admin.createUser for email_confirm: true)
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    let res: Response;
+    try {
+      res = await fetch(`${BASE_URL}/user/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${publicAnonKey}`,
+        },
+        body: JSON.stringify({ email, password, name, documentType: extra?.documentType || "cpf", document: extra?.document || "", companyName: extra?.companyName || "", phone: extra?.phone || "", address: extra?.address || null }),
+        signal: controller.signal,
+      });
+    } catch (err: any) {
+      clearTimeout(timeout);
+      if (err.name === "AbortError") {
+        throw new Error("O servidor demorou muito para responder. Verifique sua conexão e tente novamente.");
+      }
+      throw new Error("Erro de conexão. Verifique sua internet e tente novamente.");
+    }
+    clearTimeout(timeout);
 
     const responseData = await res.json();
     if (!res.ok) {
@@ -260,25 +266,26 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
       password,
     });
 
-    if (signInError || !signInData.session) {
-      throw new Error("Conta criada, mas erro ao iniciar sessão. Tente fazer login.");
-    }
-
     const u: UserInfo = {
-      id: responseData.user?.id || signInData.user.id,
+      id: responseData.user?.id || signInData?.user?.id || "",
       email,
       name,
       role: "user",
     };
     setUser(u);
     setUserData(u);
+
+    if (signInError || !signInData?.session) {
+      toast.warning("Conta criada com sucesso! Faça login para continuar.");
+    }
   }, []);
 
-  const logout = useCallback(async () => {
-    // scope: 'global' revokes all sessions/refresh tokens on the server
-    await supabase.auth.signOut({ scope: "global" });
+  const logout = useCallback(() => {
+    // Clear local state immediately for instant UI feedback
     clearUserData();
     setUser(null);
+    // Sign out from Supabase in the background (local scope = fast, no server round-trip)
+    supabase.auth.signOut({ scope: "local" }).catch(() => {});
   }, []);
 
   const updateProfile = useCallback(async (fields: { name?: string; email?: string; phone?: string }) => {

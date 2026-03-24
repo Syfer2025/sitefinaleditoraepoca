@@ -21,6 +21,14 @@ export function TestimonialsSection() {
   }, []);
   return (
     <section className="py-16 px-6 bg-[#052413] relative overflow-hidden">
+      {/* Custom scrollbar for testimonial cards */}
+      <style>{`
+        .testimonial-scroll::-webkit-scrollbar { width: 4px; }
+        .testimonial-scroll::-webkit-scrollbar-track { background: transparent; }
+        .testimonial-scroll::-webkit-scrollbar-thumb { background: rgba(235,191,116,0.2); border-radius: 4px; }
+        .testimonial-scroll::-webkit-scrollbar-thumb:hover { background: rgba(235,191,116,0.4); }
+        .testimonial-scroll { scrollbar-width: thin; scrollbar-color: rgba(235,191,116,0.2) transparent; }
+      `}</style>
       {/* Decorative glows */}
       <div
         className="absolute top-1/2 left-1/2 w-[600px] h-[600px] rounded-full opacity-[0.04] -translate-x-1/2 -translate-y-1/2"
@@ -81,16 +89,21 @@ export function TestimonialsSection() {
                   style={{ color: "rgba(235, 191, 116, 0.2)" }}
                 />
 
-                {/* Quote text */}
-                <p
-                  className="text-white/80 mb-6 flex-1 font-serif leading-[1.75]"
-                  style={{
-                    fontStyle: "italic",
-                    fontSize: "0.95rem",
-                  }}
+                {/* Quote text — scrollable to keep cards uniform */}
+                <div
+                  className="mb-6 flex-1 overflow-y-auto pr-1 testimonial-scroll"
+                  style={{ maxHeight: "140px" }}
                 >
-                  &ldquo;{t.quote}&rdquo;
-                </p>
+                  <p
+                    className="text-white/80 font-serif leading-[1.75]"
+                    style={{
+                      fontStyle: "italic",
+                      fontSize: "0.95rem",
+                    }}
+                  >
+                    &ldquo;{t.quote}&rdquo;
+                  </p>
+                </div>
 
                 {/* Stars */}
                 <div className="flex gap-0.5 mb-4">

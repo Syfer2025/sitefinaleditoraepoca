@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { getBooks, createAdminBook, updateAdminBook, deleteAdminBook, uploadFile } from "../../data/api";
 import { toast } from "sonner";
 
-const GENRES = ["Romance", "Ficção", "Contos", "Poesia", "Ensaios", "Suspense", "Crônicas"];
+const DEFAULT_GENRES = ["Romance", "Ficção", "Contos", "Poesia", "Ensaios", "Suspense", "Crônicas"];
 
 interface Book {
   id: number;
@@ -186,18 +186,36 @@ function BookFormModal({
   onSave,
   onClose,
   saving,
+  genres,
+  onAddGenre,
 }: {
   initial: Omit<Book, "id"> & { id?: number };
   onSave: (data: Omit<Book, "id">) => void;
   onClose: () => void;
   saving: boolean;
+  genres: string[];
+  onAddGenre: (genre: string) => void;
 }) {
   const [draft, setDraft] = useState<Omit<Book, "id"> & { id?: number }>({
     ...initial,
     photos: initial.photos || [],
   });
+  const [newGenre, setNewGenre] = useState("");
 
   const set = (k: keyof typeof draft, v: any) => setDraft((d) => ({ ...d, [k]: v }));
+
+  function handleAddGenre() {
+    const g = newGenre.trim();
+    if (!g) return;
+    if (genres.some((existing) => existing.toLowerCase() === g.toLowerCase())) {
+      toast.error("Este gênero já existe.");
+      return;
+    }
+    onAddGenre(g);
+    set("genre", g);
+    setNewGenre("");
+    toast.success(`Gênero "${g}" adicionado!`);
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -284,8 +302,25 @@ function BookFormModal({
                 onChange={(e) => set("genre", e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 cursor-pointer"
               >
-                {GENRES.map((g) => <option key={g} value={g}>{g}</option>)}
+                {genres.map((g) => <option key={g} value={g}>{g}</option>)}
               </select>
+              <div className="flex gap-1 mt-1.5">
+                <input
+                  value={newGenre}
+                  onChange={(e) => setNewGenre(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddGenre(); } }}
+                  placeholder="Novo gênero"
+                  className="flex-1 px-2 py-1 rounded border border-gray-200 text-xs text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#165B36]/20"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddGenre}
+                  disabled={!newGenre.trim()}
+                  className="px-2 py-1 rounded text-xs text-white bg-[#165B36] hover:bg-[#0d4227] transition-colors cursor-pointer disabled:opacity-40"
+                >
+                  <Plus className="w-3 h-3" />
+                </button>
+              </div>
             </div>
             <div>
               <label className="text-xs font-medium text-gray-500 mb-1 block">Ano</label>
@@ -361,10 +396,21 @@ export function AdminBooks() {
   const [modal, setModal] = useState<"new" | Book | null>(null);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [genres, setGenres] = useState<string[]>(DEFAULT_GENRES);
 
   useEffect(() => {
     getBooks()
-      .then((data) => { if (Array.isArray(data?.books)) setBooks(data.books); })
+      .then((data) => {
+        if (Array.isArray(data?.books)) {
+          setBooks(data.books);
+          // Merge any existing genres from books into the list
+          const bookGenres = data.books.map((b: Book) => b.genre).filter(Boolean);
+          setGenres((prev) => {
+            const merged = new Set([...prev, ...bookGenres]);
+            return Array.from(merged);
+          });
+        }
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -454,7 +500,7 @@ export function AdminBooks() {
           className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20 cursor-pointer"
         >
           <option value="Todos">Todos os gêneros</option>
-          {GENRES.map((g) => <option key={g} value={g}>{g}</option>)}
+          {genres.map((g) => <option key={g} value={g}>{g}</option>)}
         </select>
       </div>
 
@@ -577,6 +623,8 @@ export function AdminBooks() {
             onSave={handleSave}
             onClose={() => setModal(null)}
             saving={saving}
+            genres={genres}
+            onAddGenre={(g) => setGenres((prev) => [...prev, g])}
           />
         )}
       </AnimatePresence>
