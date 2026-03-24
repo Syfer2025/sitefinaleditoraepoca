@@ -73,32 +73,6 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchProfileWithRetry(accessToken: string, retries = 3, delayMs = 800): Promise<Response | null> {
-      for (let attempt = 1; attempt <= retries; attempt++) {
-        if (cancelled) return null;
-        try {
-          const res = await fetch(`${BASE_URL}/user/me`, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${publicAnonKey}`,
-              "X-Access-Token": accessToken,
-            },
-          });
-          return res;
-        } catch (fetchErr) {
-          if (attempt < retries) {
-            console.log(`[Auth] Profile fetch attempt ${attempt}/${retries} failed, retrying in ${delayMs}ms...`);
-            await new Promise(r => setTimeout(r, delayMs));
-            delayMs = Math.min(delayMs * 2, 8000);
-          } else {
-            console.log(`[Auth] Profile fetch failed after ${retries} attempts (edge function may be starting up)`);
-            return null;
-          }
-        }
-      }
-      return null;
-    }
-
     function buildFallbackUser(session: any) {
       return {
         id: session.user.id,
@@ -109,7 +83,34 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
       };
     }
 
+    async function fetchProfile(accessToken: string): Promise<Response | null> {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4000);
+      try {
+        const res = await fetch(`${BASE_URL}/user/me`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${publicAnonKey}`,
+            "X-Access-Token": accessToken,
+          },
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        return res;
+      } catch {
+        clearTimeout(timeout);
+        return null;
+      }
+    }
+
     async function init() {
+      // Show cached data immediately — avoids loading flash for returning users
+      const cached = getUserData();
+      if (cached) {
+        setUser(cached);
+        setLoading(false);
+      }
+
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (cancelled) return;
@@ -121,8 +122,8 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        // Verify with our backend and get user profile (with retry for cold starts)
-        const res = await fetchProfileWithRetry(session.access_token);
+        // Validate session with backend (4s timeout, no retries — fallback is fast)
+        const res = await fetchProfile(session.access_token);
         if (cancelled) return;
 
         if (res && res.ok) {
@@ -134,22 +135,15 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
           clearUserData();
           setUser(null);
         } else {
-          // Server unreachable or non-auth error — use cached/fallback data
-          const cached = getUserData();
-          if (cached) {
-            setUser(cached);
-          } else {
+          // Server unreachable — use cached/fallback data
+          if (!cached) {
             const u = buildFallbackUser(session);
             setUser(u);
             setUserData(u);
           }
         }
       } catch {
-        // Network/unexpected error — preserve cached session if available
-        const cached = getUserData();
-        if (cached) {
-          setUser(cached);
-        } else {
+        if (!cached) {
           clearUserData();
           setUser(null);
         }
@@ -206,53 +200,39 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
       throw new Error("Sessão não disponível após login.");
     }
 
-    // Fetch profile from our backend (resilient — login succeeds even if edge function is down)
-    try {
-      let profileRes: Response | null = null;
-      for (let attempt = 1; attempt <= 2; attempt++) {
-        try {
-          profileRes = await fetch(`${BASE_URL}/user/me`, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${publicAnonKey}`,
-              "X-Access-Token": data.session.access_token,
-            },
-          });
-          break;
-        } catch {
-          if (attempt < 2) {
-            console.log(`[Auth] Login profile fetch attempt ${attempt}/2 failed, retrying...`);
-            await new Promise(r => setTimeout(r, 1500));
-          }
-        }
-      }
+    // Fetch profile from our backend with 3s timeout — fallback to auth data if slow/down
+    const fallbackUser: UserInfo = {
+      id: data.user.id,
+      email: data.user.email || "",
+      name: data.user.user_metadata?.name || data.user.email || "",
+      role: data.user.user_metadata?.role || "user",
+    };
 
-      if (profileRes && profileRes.ok) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
+      const profileRes = await fetch(`${BASE_URL}/user/me`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${publicAnonKey}`,
+          "X-Access-Token": data.session.access_token,
+        },
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      if (profileRes.ok) {
         const profileData = await profileRes.json();
         setUser(profileData.user);
         setUserData(profileData.user);
       } else {
-        // Server responded with error or unreachable — use auth data as fallback
-        const u: UserInfo = {
-          id: data.user.id,
-          email: data.user.email || "",
-          name: data.user.user_metadata?.name || data.user.email || "",
-          role: data.user.user_metadata?.role || "user",
-        };
-        setUser(u);
-        setUserData(u);
+        setUser(fallbackUser);
+        setUserData(fallbackUser);
       }
-    } catch (fetchErr) {
-      // Network error (edge function unreachable) — still allow login with auth data
-      console.log("[Auth] Profile fetch failed during login, using auth fallback");
-      const u: UserInfo = {
-        id: data.user.id,
-        email: data.user.email || "",
-        name: data.user.user_metadata?.name || data.user.email || "",
-        role: data.user.user_metadata?.role || "user",
-      };
-      setUser(u);
-      setUserData(u);
+    } catch {
+      // Timeout or network error — login still succeeds with auth data
+      setUser(fallbackUser);
+      setUserData(fallbackUser);
     }
   }, []);
 
