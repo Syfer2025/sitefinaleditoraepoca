@@ -200,6 +200,10 @@ function getAccessToken(r: Request): string | null {
 async function verifyAuth(r: Request): Promise<{ userId: string } | null> {
   const t = getAccessToken(r);
   if (!t) return null;
+  // Try local JWT validation first (avoids Supabase API call)
+  const jwt = await verifyJWTLocally(t);
+  if (jwt?.sub) return { userId: jwt.sub };
+  // Fallback to Supabase getUser (covers edge cases like token revocation)
   const { data, error } = await getAdminClient().auth.getUser(t);
   if (error || !data?.user?.id) return null;
   return { userId: data.user.id };
@@ -383,6 +387,58 @@ async function getCachedUsers(): Promise<any[]> {
 
 function invalidateUsersCache() { _cachedUsers = null; }
 
+// ── Generic in-memory content cache (avoids KV reads on every page load) ─────
+const _contentCache = new Map<string, { data: any; at: number }>();
+const CONTENT_CACHE_TTL = 60_000; // 60 seconds
+
+function getCached(key: string): any | undefined {
+  const e = _contentCache.get(key);
+  if (e && Date.now() - e.at < CONTENT_CACHE_TTL) return e.data;
+  return undefined;
+}
+function setCache(key: string, data: any) { _contentCache.set(key, { data, at: Date.now() }); }
+function invalidateCache(key: string) { _contentCache.delete(key); }
+
+// ── Cached getUserById (avoids DB hit on every /user/me) ─────────────────────
+const _userByIdCache = new Map<string, { data: any; at: number }>();
+const USER_BY_ID_TTL = 60_000; // 60 seconds
+
+async function getCachedUserById(userId: string): Promise<any | null> {
+  const cached = _userByIdCache.get(userId);
+  if (cached && Date.now() - cached.at < USER_BY_ID_TTL) return cached.data;
+  const sb = getAdminClient();
+  const { data, error } = await sb.auth.admin.getUserById(userId);
+  if (error || !data?.user) return null;
+  _userByIdCache.set(userId, { data: data.user, at: Date.now() });
+  return data.user;
+}
+
+// ── Cached admin stats (messages, projects, newsletter) ──────────────────────
+let _statsCache: { data: any; at: number } | null = null;
+const STATS_CACHE_TTL = 30_000; // 30 seconds
+
+// ── Local JWT validation (avoids calling Supabase getUser on every request) ──
+async function verifyJWTLocally(token: string): Promise<{ sub: string } | null> {
+  try {
+    const secret = Deno.env.get("SUPABASE_JWT_SECRET");
+    if (!secret) return null;
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const [headerB64, payloadB64, sigB64] = parts;
+    const key = await crypto.subtle.importKey(
+      "raw", new TextEncoder().encode(secret),
+      { name: "HMAC", hash: "SHA-256" }, false, ["verify"]
+    );
+    const data = new TextEncoder().encode(`${headerB64}.${payloadB64}`);
+    const sig = Uint8Array.from(atob(sigB64.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+    const valid = await crypto.subtle.verify("HMAC", key, sig, data);
+    if (!valid) return null;
+    const payload = JSON.parse(atob(payloadB64.replace(/-/g, "+").replace(/_/g, "/")));
+    if (payload.exp && Date.now() / 1000 > payload.exp) return null;
+    return { sub: payload.sub };
+  } catch { return null; }
+}
+
 app.post(`${P}/user/check-email`, async (c) => {
   try {
     const { email } = await c.req.json();
@@ -520,10 +576,10 @@ app.get(`${P}/user/me`, async (c) => {
   try {
     const auth = await verifyAuth(c.req.raw);
     if (!auth) return err(c, "Não autenticado", 401);
-    const { data, error } = await getAdminClient().auth.admin.getUserById(auth.userId);
-    if (error || !data?.user) return err(c, "Usuário não encontrado", 404);
+    const user = await getCachedUserById(auth.userId);
+    if (!user) return err(c, "Usuário não encontrado", 404);
     // Role is ALWAYS "user" for the user-facing endpoint — admin status is only checked via /auth/me
-    return c.json({ user: { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || "", role: "user", createdAt: data.user.created_at, phone: data.user.user_metadata?.phone || "" } });
+    return c.json({ user: { id: user.id, email: user.email, name: user.user_metadata?.name || "", role: "user", createdAt: user.created_at, phone: user.user_metadata?.phone || "" } });
   } catch (e) { return err(c, `Erro ao buscar perfil: ${e}`); }
 });
 
@@ -625,6 +681,7 @@ app.post(`${P}/messages`, async (c) => {
     const id = crypto.randomUUID();
     const createdAt = new Date().toISOString();
     await kv.set(`message:${id}`, { id, name, email, subject, message, read: false, createdAt });
+    _statsCache = null;
     // Notify admin via email (best-effort, non-blocking)
     const siteUrl = Deno.env.get("SITE_URL") || "https://editoraepoca.com.br";
     const emailCfg: any = await kv.get("email_config") || {};
@@ -677,6 +734,7 @@ app.put(`${P}/admin/messages/:id/read`, async (c) => {
     if (!msg) return err(c, "Mensagem não encontrada", 404);
     msg.read = true;
     await kv.set(`message:${c.req.param("id")}`, msg);
+    _statsCache = null;
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao atualizar mensagem: ${e}`); }
 });
@@ -686,6 +744,7 @@ app.delete(`${P}/admin/messages/:id`, async (c) => {
     const auth = await verifyAdmin(c.req.raw);
     if (!auth) return err(c, "Não autorizado", 401);
     await kv.del(`message:${c.req.param("id")}`);
+    _statsCache = null;
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao excluir mensagem: ${e}`); }
 });
@@ -778,11 +837,17 @@ app.get(`${P}/admin/stats`, async (c) => {
   try {
     const auth = await verifyAdmin(c.req.raw);
     if (!auth) return err(c, "Não autorizado", 401);
+    // Use cached stats to avoid 3 expensive getByPrefix calls
+    if (_statsCache && Date.now() - _statsCache.at < STATS_CACHE_TTL) return c.json(_statsCache.data);
     const cachedUsers = await getCachedUsers();
-    const messages = await kv.getByPrefix("message:");
-    const projects = await kv.getByPrefix("project:");
-    const subscribers = await kv.getByPrefix("newsletter:");
-    return c.json({ totalUsers: cachedUsers.length, totalMessages: messages.length, unreadMessages: messages.filter((m: any) => !m.read).length, totalSubscribers: subscribers.length, totalProjects: projects.length, activeProjects: projects.filter((p: any) => p.status !== "concluido").length });
+    const [messages, projects, subscribers] = await Promise.all([
+      kv.getByPrefix("message:"),
+      kv.getByPrefix("project:"),
+      kv.getByPrefix("newsletter:"),
+    ]);
+    const data = { totalUsers: cachedUsers.length, totalMessages: messages.length, unreadMessages: messages.filter((m: any) => !m.read).length, totalSubscribers: subscribers.length, totalProjects: projects.length, activeProjects: projects.filter((p: any) => p.status !== "concluido").length };
+    _statsCache = { data, at: Date.now() };
+    return c.json(data);
   } catch (e) { return err(c, `Erro ao buscar estatísticas: ${e}`); }
 });
 
@@ -798,6 +863,7 @@ app.post(`${P}/newsletter`, async (c) => {
       consent: true,
       pendingConfirmation: false,
     });
+    _statsCache = null;
     // Send welcome email (best-effort, non-blocking)
     const siteUrl = Deno.env.get("SITE_URL") || "https://editoraepoca.com.br";
     sendEmail(
@@ -861,6 +927,7 @@ app.post(`${P}/projects`, async (c) => {
     const now = new Date().toISOString();
     const project = { id, userId: auth.userId, userEmail, userName, title: title.trim(), author: author?.trim() || userName, description: description?.trim() || "", pageCount: pageCount || null, format: format || "A5", customFormat: customFormat?.trim() || "", services: services || ["completo"], notes: notes?.trim() || "", status: "analise", steps: [{ status: "solicitado", date: now, note: "Solicitação recebida" }, { status: "analise", date: now, note: "Em análise pela equipe" }], fileUrl: null, uploadedFiles: [] as string[], adminNotes: "", budget: null as any, reviewFiles: [] as any[], createdAt: now, updatedAt: now };
     await kv.set(`project:${id}`, project);
+    _statsCache = null;
     return c.json({ success: true, project });
   } catch (e) { return err(c, `Erro ao criar solicitação: ${e}`); }
 });
@@ -1010,6 +1077,7 @@ app.delete(`${P}/admin/projects/:id`, async (c) => {
     const auth = await verifyAdmin(c.req.raw);
     if (!auth) return err(c, "Não autorizado", 401);
     await kv.del(`project:${c.req.param("id")}`);
+    _statsCache = null;
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao excluir projeto: ${e}`); }
 });
@@ -2398,9 +2466,13 @@ const DEFAULT_BOOKS = [
 
 app.get(`${P}/books`, async (c) => {
   try {
+    const cached = getCached("books");
+    if (cached !== undefined) { c.header("Cache-Control", "public, max-age=300"); return c.json(cached); }
     const stored = await kv.get("books");
+    const result = { books: Array.isArray(stored) && stored.length > 0 ? stored : DEFAULT_BOOKS };
+    setCache("books", result);
     c.header("Cache-Control", "public, max-age=300");
-    return c.json({ books: Array.isArray(stored) && stored.length > 0 ? stored : DEFAULT_BOOKS });
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar livros: ${e}`); }
 });
 
@@ -2418,6 +2490,7 @@ app.post(`${P}/admin/books`, async (c) => {
     const book = { id: newId, title: title.trim(), author: author.trim(), genre: genre || "Ficção", rating: Number(rating) || 4.0, year: Number(year) || new Date().getFullYear(), description: description?.trim() || "", image: image?.trim() || "", slug, photos: Array.isArray(photos) ? photos : [] };
     books.push(book);
     await kv.set("books", books);
+    invalidateCache("books");
     return c.json({ success: true, book });
   } catch (e) { return err(c, `Erro ao criar livro: ${e}`); }
 });
@@ -2440,6 +2513,7 @@ app.put(`${P}/admin/books/:id`, async (c) => {
     }
     books[idx] = { ...books[idx], title: title.trim(), author: author.trim(), genre: genre || books[idx].genre, rating: Number(rating) || books[idx].rating, year: Number(year) || books[idx].year, description: description?.trim() ?? books[idx].description, image: image?.trim() ?? books[idx].image, slug, photos: Array.isArray(photos) ? photos : (books[idx].photos || []) };
     await kv.set("books", books);
+    invalidateCache("books");
     return c.json({ success: true, book: books[idx] });
   } catch (e) { return err(c, `Erro ao atualizar livro: ${e}`); }
 });
@@ -2453,6 +2527,7 @@ app.delete(`${P}/admin/books/:id`, async (c) => {
     const next = books.filter((b: any) => b.id !== id);
     if (next.length === books.length) return err(c, "Livro não encontrado", 404);
     await kv.set("books", next);
+    invalidateCache("books");
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao excluir livro: ${e}`); }
 });
@@ -2460,7 +2535,8 @@ app.delete(`${P}/admin/books/:id`, async (c) => {
 app.get(`${P}/books/slug/:slug`, async (c) => {
   try {
     const slug = c.req.param("slug");
-    const books: any[] = (await kv.get("books")) || DEFAULT_BOOKS;
+    const cached = getCached("books");
+    const books: any[] = cached ? cached.books : ((await kv.get("books")) || DEFAULT_BOOKS);
     const book = books.find((b: any) => b.slug === slug);
     if (!book) return err(c, "Livro não encontrado", 404);
     return c.json({ book });
@@ -2563,12 +2639,13 @@ const DEFAULT_PLANS = [
 
 app.get(`${P}/plans`, async (c) => {
   try {
+    const cached = getCached("plans");
+    if (cached !== undefined) { c.header("Cache-Control", "public, max-age=300"); return c.json(cached); }
     const [stored, storedServicesCard] = await Promise.all([kv.get("plans"), kv.get("services_card")]);
+    const result = { plans: Array.isArray(stored) && stored.length > 0 ? stored : DEFAULT_PLANS, servicesCard: storedServicesCard || null };
+    setCache("plans", result);
     c.header("Cache-Control", "public, max-age=300");
-    return c.json({
-      plans: Array.isArray(stored) && stored.length > 0 ? stored : DEFAULT_PLANS,
-      servicesCard: storedServicesCard || null,
-    });
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar planos: ${e}`); }
 });
 
@@ -2583,6 +2660,7 @@ app.put(`${P}/admin/plans`, async (c) => {
     }
     await kv.set("plans", plans);
     if (servicesCard !== undefined) await kv.set("services_card", servicesCard);
+    invalidateCache("plans");
     return c.json({ success: true, plans, servicesCard: servicesCard ?? null });
   } catch (e) { return err(c, `Erro ao salvar planos: ${e}`); }
 });
@@ -2596,11 +2674,12 @@ const DEFAULT_AUTHORS = [
 
 app.get(`${P}/authors`, async (c) => {
   try {
+    const cached = getCached("authors");
+    if (cached !== undefined) return c.json(cached);
     const [stored, storedVideo] = await Promise.all([kv.get("authors"), kv.get("video_section")]);
-    return c.json({
-      authors: Array.isArray(stored) && stored.length > 0 ? stored : DEFAULT_AUTHORS,
-      videoSection: storedVideo || null,
-    });
+    const result = { authors: Array.isArray(stored) && stored.length > 0 ? stored : DEFAULT_AUTHORS, videoSection: storedVideo || null };
+    setCache("authors", result);
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar autores: ${e}`); }
 });
 
@@ -2615,6 +2694,7 @@ app.put(`${P}/admin/authors`, async (c) => {
     }
     await kv.set("authors", authors);
     if (videoSection !== undefined) await kv.set("video_section", videoSection);
+    invalidateCache("authors");
     return c.json({ success: true, authors, videoSection: videoSection ?? null });
   } catch (e) { return err(c, `Erro ao salvar autores: ${e}`); }
 });
@@ -2628,9 +2708,13 @@ const DEFAULT_TESTIMONIALS = [
 
 app.get(`${P}/testimonials`, async (c) => {
   try {
+    const cached = getCached("testimonials");
+    if (cached !== undefined) { c.header("Cache-Control", "public, max-age=300"); return c.json(cached); }
     const stored = await kv.get("testimonials");
+    const result = { testimonials: Array.isArray(stored) && stored.length > 0 ? stored : DEFAULT_TESTIMONIALS };
+    setCache("testimonials", result);
     c.header("Cache-Control", "public, max-age=300");
-    return c.json({ testimonials: Array.isArray(stored) && stored.length > 0 ? stored : DEFAULT_TESTIMONIALS });
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar depoimentos: ${e}`); }
 });
 
@@ -2644,6 +2728,7 @@ app.put(`${P}/admin/testimonials`, async (c) => {
       if (!t.id || !t.name?.trim() || !t.quote?.trim()) return err(c, "Cada depoimento deve ter id, nome e texto", 400);
     }
     await kv.set("testimonials", testimonials);
+    invalidateCache("testimonials");
     return c.json({ success: true, testimonials });
   } catch (e) { return err(c, `Erro ao salvar depoimentos: ${e}`); }
 });
@@ -2661,9 +2746,13 @@ const DEFAULT_ABOUT = {
 
 app.get(`${P}/about`, async (c) => {
   try {
+    const cached = getCached("about_stats");
+    if (cached !== undefined) { c.header("Cache-Control", "public, max-age=300"); return c.json(cached); }
     const stored = await kv.get("about_stats");
+    const result = { about: stored || DEFAULT_ABOUT };
+    setCache("about_stats", result);
     c.header("Cache-Control", "public, max-age=300");
-    return c.json({ about: stored || DEFAULT_ABOUT });
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar dados de sobre: ${e}`); }
 });
 
@@ -2674,6 +2763,7 @@ app.put(`${P}/admin/about`, async (c) => {
     const { about } = await c.req.json();
     if (!about || !Array.isArray(about.stats)) return err(c, "Dados inválidos", 400);
     await kv.set("about_stats", about);
+    invalidateCache("about_stats");
     return c.json({ success: true, about });
   } catch (e) { return err(c, `Erro ao salvar dados de sobre: ${e}`); }
 });
@@ -2690,9 +2780,13 @@ const DEFAULT_FAQS = [
 
 app.get(`${P}/faqs`, async (c) => {
   try {
+    const cached = getCached("faqs");
+    if (cached !== undefined) { c.header("Cache-Control", "public, max-age=300"); return c.json(cached); }
     const stored = await kv.get("faqs");
+    const result = { faqs: Array.isArray(stored) && stored.length > 0 ? stored : DEFAULT_FAQS };
+    setCache("faqs", result);
     c.header("Cache-Control", "public, max-age=300");
-    return c.json({ faqs: Array.isArray(stored) && stored.length > 0 ? stored : DEFAULT_FAQS });
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar FAQs: ${e}`); }
 });
 
@@ -2706,6 +2800,7 @@ app.put(`${P}/admin/faqs`, async (c) => {
       if (!f.id || !f.question?.trim() || !f.answer?.trim()) return err(c, "Cada FAQ deve ter pergunta e resposta", 400);
     }
     await kv.set("faqs", faqs);
+    invalidateCache("faqs");
     return c.json({ success: true, faqs });
   } catch (e) { return err(c, `Erro ao salvar FAQs: ${e}`); }
 });
@@ -2713,9 +2808,13 @@ app.put(`${P}/admin/faqs`, async (c) => {
 // ── HERO CONTENT ──────────────────────────────────────────────────────────────
 app.get(`${P}/hero`, async (c) => {
   try {
+    const cached = getCached("hero");
+    if (cached !== undefined) { c.header("Cache-Control", "public, max-age=300"); return c.json(cached); }
     const hero = await kv.get("hero_content");
+    const result = { hero: hero || null };
+    setCache("hero", result);
     c.header("Cache-Control", "public, max-age=300");
-    return c.json({ hero: hero || null });
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar hero: ${e}`); }
 });
 
@@ -2725,6 +2824,7 @@ app.put(`${P}/admin/hero`, async (c) => {
     if (!auth) return err(c, "Não autorizado", 401);
     const { hero } = await c.req.json();
     await kv.set("hero_content", hero);
+    invalidateCache("hero");
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao salvar hero: ${e}`); }
 });
@@ -2732,9 +2832,13 @@ app.put(`${P}/admin/hero`, async (c) => {
 // ── ABOUT CONTENT ─────────────────────────────────────────────────────────────
 app.get(`${P}/about-content`, async (c) => {
   try {
+    const cached = getCached("about_content");
+    if (cached !== undefined) { c.header("Cache-Control", "public, max-age=300"); return c.json(cached); }
     const content = await kv.get("about_content");
+    const result = { content: content || null };
+    setCache("about_content", result);
     c.header("Cache-Control", "public, max-age=300");
-    return c.json({ content: content || null });
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar about content: ${e}`); }
 });
 
@@ -2744,6 +2848,7 @@ app.put(`${P}/admin/about-content`, async (c) => {
     if (!auth) return err(c, "Não autorizado", 401);
     const { content } = await c.req.json();
     await kv.set("about_content", content);
+    invalidateCache("about_content");
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao salvar about content: ${e}`); }
 });
@@ -2751,9 +2856,13 @@ app.put(`${P}/admin/about-content`, async (c) => {
 // ── FOOTER CONTENT ────────────────────────────────────────────────────────────
 app.get(`${P}/footer`, async (c) => {
   try {
+    const cached = getCached("footer");
+    if (cached !== undefined) { c.header("Cache-Control", "public, max-age=300"); return c.json(cached); }
     const footer = await kv.get("footer_content");
+    const result = { footer: footer || null };
+    setCache("footer", result);
     c.header("Cache-Control", "public, max-age=300");
-    return c.json({ footer: footer || null });
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar footer: ${e}`); }
 });
 
@@ -2763,6 +2872,7 @@ app.put(`${P}/admin/footer`, async (c) => {
     if (!auth) return err(c, "Não autorizado", 401);
     const { footer } = await c.req.json();
     await kv.set("footer_content", footer);
+    invalidateCache("footer");
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao salvar footer: ${e}`); }
 });
@@ -2770,9 +2880,13 @@ app.put(`${P}/admin/footer`, async (c) => {
 // ── CTA BANNER ────────────────────────────────────────────────────────────────
 app.get(`${P}/cta-banner`, async (c) => {
   try {
+    const cached = getCached("cta_banner");
+    if (cached !== undefined) { c.header("Cache-Control", "public, max-age=300"); return c.json(cached); }
     const cta = await kv.get("cta_banner");
+    const result = { cta: cta || null };
+    setCache("cta_banner", result);
     c.header("Cache-Control", "public, max-age=300");
-    return c.json({ cta: cta || null });
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar CTA banner: ${e}`); }
 });
 
@@ -2782,6 +2896,7 @@ app.put(`${P}/admin/cta-banner`, async (c) => {
     if (!auth) return err(c, "Não autorizado", 401);
     const { cta } = await c.req.json();
     await kv.set("cta_banner", cta);
+    invalidateCache("cta_banner");
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao salvar CTA banner: ${e}`); }
 });
@@ -2790,6 +2905,8 @@ app.put(`${P}/admin/cta-banner`, async (c) => {
 // Legacy single logo (backward compat — returns navbar logo or old logo)
 app.get(`${P}/logo`, async (c) => {
   try {
+    const cached = getCached("logos");
+    if (cached !== undefined) return c.json({ logo: cached.logo_navbar || null });
     const [navbar, legacy] = await Promise.all([kv.get("logo_navbar"), kv.get("logo")]);
     return c.json({ logo: navbar || legacy || null });
   } catch (e) { return err(c, `Erro ao buscar logo: ${e}`); }
@@ -2798,17 +2915,21 @@ app.get(`${P}/logo`, async (c) => {
 // New: get all 3 logos
 app.get(`${P}/logos`, async (c) => {
   try {
+    const cached = getCached("logos");
+    if (cached !== undefined) return c.json(cached);
     const [navbar, footer, favicon, legacy] = await Promise.all([
       kv.get("logo_navbar"),
       kv.get("logo_footer"),
       kv.get("logo_favicon"),
       kv.get("logo"),
     ]);
-    return c.json({
+    const result = {
       logo_navbar: navbar || legacy || null,
       logo_footer: footer || legacy || null,
       logo_favicon: favicon || legacy || null,
-    });
+    };
+    setCache("logos", result);
+    return c.json(result);
   } catch (e) { return err(c, `Erro ao buscar logos: ${e}`); }
 });
 
@@ -2820,6 +2941,7 @@ app.post(`${P}/admin/logo`, async (c) => {
     const { logo } = await c.req.json();
     if (!logo) return err(c, "Logo é obrigatório", 400);
     await kv.set("logo", logo);
+    invalidateCache("logos");
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao salvar logo: ${e}`); }
 });
@@ -2835,10 +2957,12 @@ const DEFAULT_CONTACT_INFO = {
 };
 app.get(`${P}/contact-info`, async (c) => {
   try {
+    const cached = getCached("contact_info");
+    if (cached !== undefined) return c.json(cached, 200, { "Cache-Control": "public, max-age=300, stale-while-revalidate=600" });
     const info = await kv.get("contact_info");
-    return c.json({ contactInfo: info || DEFAULT_CONTACT_INFO }, 200, {
-      "Cache-Control": "public, max-age=300, stale-while-revalidate=600",
-    });
+    const result = { contactInfo: info || DEFAULT_CONTACT_INFO };
+    setCache("contact_info", result);
+    return c.json(result, 200, { "Cache-Control": "public, max-age=300, stale-while-revalidate=600" });
   } catch (e) { return c.json({ contactInfo: DEFAULT_CONTACT_INFO }); }
 });
 app.put(`${P}/admin/contact-info`, async (c) => {
@@ -2849,6 +2973,7 @@ app.put(`${P}/admin/contact-info`, async (c) => {
     const allowed = ["phone", "address", "city", "email", "whatsapp", "mapUrl"];
     const safe = Object.fromEntries(Object.entries(body).filter(([k]) => allowed.includes(k)));
     await kv.set("contact_info", { ...DEFAULT_CONTACT_INFO, ...safe });
+    invalidateCache("contact_info");
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao salvar informações de contato: ${e}`); }
 });

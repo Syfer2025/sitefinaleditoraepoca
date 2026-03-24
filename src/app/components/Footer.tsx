@@ -258,7 +258,7 @@ export function Footer() {
                   {item.label}
                 </Link>
               ))}
-              <span className="text-[0.65rem] text-white/20">v3.24.26.01</span>
+              <span className="text-[0.65rem] text-white/20">v3.24.26.02</span>
             </div>
           </div>
         </RevealOnScroll>

@@ -292,7 +292,7 @@ export function UserAuthPage() {
     const formatted = personType === "pf" ? formatCPF(value) : formatCNPJ(value);
     setDocNumber(formatted); setCnpjData(null); setCnpjError(""); setDocCheckResult(null);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => checkDocumentDuplicate(formatted), 600);
+    debounceRef.current = setTimeout(() => checkDocumentDuplicate(formatted), 1500);
   }, [personType, checkDocumentDuplicate]);
 
   // Validate CNPJ via Receita Federal
@@ -599,7 +599,7 @@ export function UserAuthPage() {
                           setPhone(formatted);
                           setPhoneCheckResult(null);
                           if (phoneDebounceRef.current) clearTimeout(phoneDebounceRef.current);
-                          phoneDebounceRef.current = setTimeout(() => checkPhoneDuplicate(formatted), 700);
+                          phoneDebounceRef.current = setTimeout(() => checkPhoneDuplicate(formatted), 1500);
                         }}
                         placeholder="(00) 00000-0000"
                         className={inputClasses + " pr-10"}
@@ -680,7 +680,7 @@ export function UserAuthPage() {
                     if (mode === "signup") {
                       setEmailCheckResult(null);
                       if (emailDebounceRef.current) clearTimeout(emailDebounceRef.current);
-                      emailDebounceRef.current = setTimeout(() => checkEmailDuplicate(e.target.value), 700);
+                      emailDebounceRef.current = setTimeout(() => checkEmailDuplicate(e.target.value), 1500);
                     }
                   }}
                   placeholder="seu@email.com"
