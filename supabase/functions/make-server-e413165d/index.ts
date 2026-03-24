@@ -3,6 +3,7 @@ import { cors } from "npm:hono/cors";
 import { logger } from "npm:hono/logger";
 import { createClient } from "jsr:@supabase/supabase-js@2.49.8";
 import * as kv from "./kv_store.tsx";
+import { r2Upload, r2Delete, r2SignedUrl, isR2Configured } from "./r2_storage.ts";
 
 const app = new Hono();
 
@@ -28,6 +29,35 @@ const P = "/make-server-e413165d";
 const BUCKET = "make-e413165d-project-files";
 const MEDIA_BUCKET = "make-e413165d-media";
 const DEFAULT_ADMIN = "alexmeira@protonmail.com";
+const useR2 = isR2Configured();
+
+// ── Storage abstraction (R2 preferred, Supabase fallback) ──────────────────
+async function storageUpload(path: string, data: ArrayBuffer, contentType: string, bucket = BUCKET): Promise<{ storagePath: string; error?: string }> {
+  if (useR2 && bucket === BUCKET) {
+    try { await r2Upload(path, data, contentType); return { storagePath: `r2:${path}` }; }
+    catch (e) { return { storagePath: "", error: String(e) }; }
+  }
+  const sb = getAdminClient();
+  const { error } = await sb.storage.from(bucket).upload(path, data, { contentType, upsert: bucket === MEDIA_BUCKET });
+  if (error) return { storagePath: "", error: error.message };
+  return { storagePath: path };
+}
+
+async function storageSignedUrl(storagePath: string, expiresInSeconds: number, bucket = BUCKET): Promise<string | null> {
+  if (storagePath.startsWith("r2:")) {
+    try { return await r2SignedUrl(storagePath.slice(3), expiresInSeconds); } catch { return null; }
+  }
+  const sb = getAdminClient();
+  const { data } = await sb.storage.from(bucket).createSignedUrl(storagePath, expiresInSeconds);
+  return data?.signedUrl || null;
+}
+
+async function storageDelete(storagePaths: string[], bucket = BUCKET): Promise<void> {
+  const r2Paths = storagePaths.filter(p => p.startsWith("r2:")).map(p => p.slice(3));
+  const sbPaths = storagePaths.filter(p => !p.startsWith("r2:"));
+  if (r2Paths.length > 0) try { await r2Delete(r2Paths); } catch {}
+  if (sbPaths.length > 0) try { await getAdminClient().storage.from(bucket).remove(sbPaths); } catch {}
+}
 
 // ── Slug utilities ─────────────────────────────────────────────────────────
 function generateSlug(title: string): string {
@@ -827,17 +857,16 @@ app.post(`${P}/projects/:id/upload`, async (c) => {
     if (file.size > 50 * 1024 * 1024) return err(c, "O arquivo excede o limite de 50 MB", 400);
     const ext = "." + file.name.toLowerCase().split(".").pop();
     if (!ALLOWED_EXT.includes(ext)) return err(c, `Tipo de arquivo não permitido: ${ext}`, 400);
-    const sb = getAdminClient();
     const sp = `${auth.userId}/${pid}/${Date.now()}_${file.name}`;
     const ab = await file.arrayBuffer();
-    const { error: ue } = await sb.storage.from(BUCKET).upload(sp, ab, { contentType: file.type || "application/octet-stream", upsert: false });
-    if (ue) return err(c, `Erro ao enviar arquivo: ${ue.message}`);
-    const { data: sd } = await sb.storage.from(BUCKET).createSignedUrl(sp, 60 * 60 * 24 * 7);
+    const { storagePath, error: ue } = await storageUpload(sp, ab, file.type || "application/octet-stream");
+    if (ue) return err(c, `Erro ao enviar arquivo: ${ue}`);
+    const signedUrl = await storageSignedUrl(storagePath, 60 * 60 * 24 * 7);
     if (!project.uploadedFiles) project.uploadedFiles = [];
-    project.uploadedFiles.push({ name: file.name, size: file.size, path: sp, uploadedAt: new Date().toISOString() });
+    project.uploadedFiles.push({ name: file.name, size: file.size, path: storagePath, uploadedAt: new Date().toISOString() });
     project.updatedAt = new Date().toISOString();
     await kv.set(`project:${pid}`, project);
-    return c.json({ success: true, file: { name: file.name, size: file.size, url: sd?.signedUrl, path: sp } });
+    return c.json({ success: true, file: { name: file.name, size: file.size, url: signedUrl, path: storagePath } });
   } catch (e) { return err(c, `Erro ao enviar arquivo: ${e}`); }
 });
 
@@ -858,9 +887,8 @@ app.get(`${P}/projects/:id`, async (c) => {
     if (!project) return err(c, "Projeto não encontrado", 404);
     if (project.userId !== auth.userId) return err(c, "Acesso negado", 403);
     if (project.uploadedFiles?.length > 0) {
-      const sb = getAdminClient();
       project.uploadedFiles = await Promise.all(project.uploadedFiles.map(async (f: any) => {
-        try { const { data } = await sb.storage.from(BUCKET).createSignedUrl(f.path, 7200); return { ...f, url: data?.signedUrl || null }; }
+        try { const url = await storageSignedUrl(f.path, 7200); return { ...f, url }; }
         catch { return { ...f, url: null }; }
       }));
     }
@@ -976,7 +1004,7 @@ app.delete(`${P}/admin/projects/:id/files`, async (c) => {
     const files = project[key] || [];
     if (index < 0 || index >= files.length) return err(c, "Índice inválido", 400);
     const fp = files[index].path;
-    if (fp) { try { await getAdminClient().storage.from(BUCKET).remove([fp]); } catch {} }
+    if (fp) { try { await storageDelete([fp]); } catch {} }
     files.splice(index, 1);
     project[key] = files;
     project.updatedAt = new Date().toISOString();
@@ -1985,12 +2013,12 @@ app.post(`${P}/admin/projects/:id/contract-pdf`, async (c) => {
     }
     // Remove old contract PDF if exists
     if (project.budget.contractPdfPath) {
-      try { await getAdminClient().storage.from(BUCKET).remove([project.budget.contractPdfPath]); } catch {}
+      try { await storageDelete([project.budget.contractPdfPath]); } catch {}
     }
     const sp = `contracts/${pid}/${Date.now()}_${file.name}`;
-    const { error: ue } = await getAdminClient().storage.from(BUCKET).upload(sp, ab, { contentType: "application/pdf", upsert: false });
-    if (ue) return err(c, `Erro ao enviar contrato: ${ue.message}`);
-    project.budget.contractPdfPath = sp;
+    const { storagePath, error: ue } = await storageUpload(sp, ab, "application/pdf");
+    if (ue) return err(c, `Erro ao enviar contrato: ${ue}`);
+    project.budget.contractPdfPath = storagePath;
     project.budget.contractPdfName = file.name;
     project.budget.contractPdfSize = file.size;
     project.budget.contractPdfUploadedAt = new Date().toISOString();
@@ -2009,7 +2037,7 @@ app.delete(`${P}/admin/projects/:id/contract-pdf`, async (c) => {
     const project = await kv.get(`project:${pid}`);
     if (!project) return err(c, "Projeto não encontrado", 404);
     if (!project.budget?.contractPdfPath) return err(c, "Nenhum contrato PDF encontrado", 400);
-    try { await getAdminClient().storage.from(BUCKET).remove([project.budget.contractPdfPath]); } catch {}
+    try { await storageDelete([project.budget.contractPdfPath]); } catch {}
     delete project.budget.contractPdfPath;
     delete project.budget.contractPdfName;
     delete project.budget.contractPdfSize;
@@ -2027,10 +2055,9 @@ app.get(`${P}/payment/:id/contract-pdf`, async (c) => {
     const project = await kv.get(`project:${id}`);
     if (!project) return err(c, "Projeto não encontrado", 404);
     if (!project.budget?.contractPdfPath) return err(c, "Contrato PDF não disponível", 404);
-    const sb = getAdminClient();
-    const { data } = await sb.storage.from(BUCKET).createSignedUrl(project.budget.contractPdfPath, 3600);
-    if (!data?.signedUrl) return err(c, "Erro ao gerar URL do contrato");
-    return c.json({ url: data.signedUrl, name: project.budget.contractPdfName || "contrato.pdf" });
+    const url = await storageSignedUrl(project.budget.contractPdfPath, 3600);
+    if (!url) return err(c, "Erro ao gerar URL do contrato");
+    return c.json({ url, name: project.budget.contractPdfName || "contrato.pdf" });
   } catch (e) { return err(c, `Erro ao buscar contrato PDF: ${e}`); }
 });
 
@@ -2048,10 +2075,10 @@ app.post(`${P}/admin/projects/:id/review-upload`, async (c) => {
     if (file.size > 100 * 1024 * 1024) return err(c, "Arquivo excede 100 MB", 400);
     const sp = `review/${pid}/${Date.now()}_${file.name}`;
     const ab = await file.arrayBuffer();
-    const { error: ue } = await getAdminClient().storage.from(BUCKET).upload(sp, ab, { contentType: file.type || "application/octet-stream", upsert: false });
-    if (ue) return err(c, `Erro ao enviar arquivo: ${ue.message}`);
+    const { storagePath, error: ue } = await storageUpload(sp, ab, file.type || "application/octet-stream");
+    if (ue) return err(c, `Erro ao enviar arquivo: ${ue}`);
     if (!project.reviewFiles) project.reviewFiles = [];
-    project.reviewFiles.push({ name: file.name, size: file.size, path: sp, uploadedAt: new Date().toISOString(), uploadedBy: auth.email });
+    project.reviewFiles.push({ name: file.name, size: file.size, path: storagePath, uploadedAt: new Date().toISOString(), uploadedBy: auth.email });
     project.updatedAt = new Date().toISOString();
     await kv.set(`project:${pid}`, project);
     return c.json({ success: true });
@@ -2068,10 +2095,9 @@ app.get(`${P}/projects/:id/review-files`, async (c) => {
     if (project.userId !== auth.userId) return err(c, "Acesso negado", 403);
     const rf = project.reviewFiles || [];
     if (rf.length === 0) return c.json({ files: [] });
-    const sb = getAdminClient();
     const files = await Promise.all(rf.map(async (f: any) => {
-      const { data } = await sb.storage.from(BUCKET).createSignedUrl(f.path, 604800);
-      return { name: f.name, size: f.size, uploadedAt: f.uploadedAt, url: data?.signedUrl || null };
+      const url = await storageSignedUrl(f.path, 604800);
+      return { name: f.name, size: f.size, uploadedAt: f.uploadedAt, url };
     }));
     return c.json({ files });
   } catch (e) { return err(c, `Erro ao buscar arquivos de revisão: ${e}`); }
@@ -2121,13 +2147,13 @@ app.post(`${P}/admin/projects/:id/invoice-upload`, async (c) => {
     if (file.size > 50 * 1024 * 1024) return err(c, "Arquivo excede 50 MB", 400);
     const sp = `invoices/${pid}/${Date.now()}_${file.name}`;
     const ab = await file.arrayBuffer();
-    const { error: ue } = await getAdminClient().storage.from(BUCKET).upload(sp, ab, { contentType: file.type || "application/octet-stream", upsert: false });
-    if (ue) return err(c, `Erro ao enviar nota fiscal: ${ue.message}`);
+    const { storagePath, error: ue } = await storageUpload(sp, ab, file.type || "application/octet-stream");
+    if (ue) return err(c, `Erro ao enviar nota fiscal: ${ue}`);
     if (!project.invoices) project.invoices = [];
     project.invoices.push({
       name: file.name,
       size: file.size,
-      path: sp,
+      path: storagePath,
       description: description.trim(),
       uploadedAt: new Date().toISOString(),
       uploadedBy: auth.email,
@@ -2149,7 +2175,7 @@ app.delete(`${P}/admin/projects/:id/invoice`, async (c) => {
     const { index } = await c.req.json();
     if (typeof index !== "number" || !project.invoices?.[index]) return err(c, "Índice inválido", 400);
     const inv = project.invoices[index];
-    await getAdminClient().storage.from(BUCKET).remove([inv.path]);
+    await storageDelete([inv.path]);
     project.invoices.splice(index, 1);
     project.updatedAt = new Date().toISOString();
     await kv.set(`project:${pid}`, project);
@@ -2169,10 +2195,9 @@ app.get(`${P}/projects/:id/invoices`, async (c) => {
     if (project.userId !== auth.userId) return err(c, "Acesso negado", 403);
     const invoices = project.invoices || [];
     if (invoices.length === 0) return c.json({ invoices: [] });
-    const sb = getAdminClient();
     const result = await Promise.all(invoices.map(async (inv: any) => {
-      const { data } = await sb.storage.from(BUCKET).createSignedUrl(inv.path, 3600);
-      return { name: inv.name, size: inv.size, description: inv.description, uploadedAt: inv.uploadedAt, url: data?.signedUrl || null };
+      const url = await storageSignedUrl(inv.path, 3600);
+      return { name: inv.name, size: inv.size, description: inv.description, uploadedAt: inv.uploadedAt, url };
     }));
     return c.json({ invoices: result });
   } catch (e) { return err(c, `Erro ao buscar notas fiscais: ${e}`); }
