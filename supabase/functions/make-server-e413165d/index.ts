@@ -886,7 +886,8 @@ app.put(`${P}/admin/projects/:id`, async (c) => {
     if (!project) return err(c, "Projeto não encontrado", 404);
     const { status, note, fileUrl, adminNotes } = await c.req.json();
     const now = new Date().toISOString();
-    if (status && status !== project.status) {
+    const oldStatus = project.status;
+    if (status && status !== oldStatus) {
       // Server-side validation: block "concluido" if remainder is pending
       const hasPartialDeposit = project.budget?.depositPercent > 0 && project.budget?.depositPercent < 100;
       const isRemainderPending = hasPartialDeposit && (project.budget?.status === "paid" || project.budget?.status === "fully_paid") && project.budget?.remainderStatus !== "paid";
@@ -905,6 +906,45 @@ app.put(`${P}/admin/projects/:id`, async (c) => {
       }
       project.status = status;
       project.steps.push({ status, date: now, note: note || "" });
+
+      // ── Auto-notify client by email on status change ──
+      try {
+        if (project.userId) {
+          const { data: userData } = await getAdminClient().auth.admin.getUserById(project.userId);
+          const clientEmail = userData?.user?.email;
+          if (clientEmail) {
+            const STATUS_LABELS: Record<string, string> = {
+              solicitado: "Solicitado", analise: "Em Análise", orcamento: "Orçamento Disponível",
+              producao: "Em Produção", revisao: "Em Revisão", ajustes: "Ajustes Finais", concluido: "Concluído",
+            };
+            const siteUrl = SITE_URL;
+            const fromName = "Época Editora de Livros";
+            const statusLabel = STATUS_LABELS[status] || status;
+            const oldLabel = STATUS_LABELS[oldStatus] || oldStatus;
+            const signature = await buildSignatureHtml(siteUrl, fromName);
+            let extraMsg = "";
+            if (note) extraMsg = `<p style="color:#052413;font-size:14px;margin:16px 0 0"><strong>Observação:</strong> ${note}</p>`;
+            if (status === "orcamento") extraMsg += `<p style="color:#052413;font-size:14px;margin:12px 0 0">Acesse sua conta para visualizar e aprovar o orçamento.</p>`;
+            if (status === "concluido") extraMsg += `<p style="color:#052413;font-size:14px;margin:12px 0 0">🎉 Parabéns! Seu projeto foi concluído com sucesso.</p>`;
+            const html = `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+              ${buildEmailHeader(fromName, "Atualização de projeto")}
+              <div style="padding:24px">
+                <h2 style="color:#052413;font-size:18px;margin:0 0 8px;font-family:Georgia,serif">Projeto: ${project.title}</h2>
+                <div style="background:#F0E8D4;border-radius:8px;padding:16px;margin:16px 0">
+                  <p style="color:#856C42;font-size:12px;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.05em">Status atualizado</p>
+                  <p style="color:#052413;font-size:16px;margin:0"><s style="color:#856C42;font-size:13px">${oldLabel}</s> → <strong style="color:#165B36">${statusLabel}</strong></p>
+                </div>
+                ${extraMsg}
+                <div style="text-align:center;margin:24px 0 8px">
+                  <a href="${siteUrl}/minha-conta" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#EBBF74,#D4AF5A);color:#052413;font-weight:600;border-radius:8px;text-decoration:none;font-size:14px">Ver meu projeto</a>
+                </div>
+                ${signature}
+              </div>
+            </div>`;
+            sendEmail(clientEmail, `Projeto "${project.title}" — ${statusLabel}`, html).catch(e => console.error("Status notification email failed:", e));
+          }
+        }
+      } catch (e) { console.error("Status notification error (non-blocking):", e); }
     }
     if (fileUrl !== undefined) project.fileUrl = fileUrl;
     if (adminNotes !== undefined) project.adminNotes = adminNotes;
@@ -3309,6 +3349,215 @@ app.post(`${P}/admin/logo/:key`, async (c) => {
     await kv.set(`logo_${key}`, logo);
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao salvar logo: ${e}`); }
+});
+
+// ── PROJECT CHAT ──────────────────────────────────────────────────────────────
+app.get(`${P}/projects/:id/chat`, async (c) => {
+  try {
+    const auth = await verifyAuth(c.req.raw);
+    const admin = !auth ? await verifyAdmin(c.req.raw) : null;
+    if (!auth && !admin) return err(c, "Não autorizado", 401);
+    const id = c.req.param("id");
+    const project = await kv.get(`project:${id}`);
+    if (!project) return err(c, "Projeto não encontrado", 404);
+    if (auth && project.userId !== auth.userId) return err(c, "Sem permissão", 403);
+    const messages: any[] = await kv.get(`chat:${id}`) || [];
+    return c.json({ messages });
+  } catch (e) { return err(c, `Erro ao carregar chat: ${e}`); }
+});
+
+app.post(`${P}/projects/:id/chat`, async (c) => {
+  try {
+    const auth = await verifyAuth(c.req.raw);
+    const admin = !auth ? await verifyAdmin(c.req.raw) : null;
+    if (!auth && !admin) return err(c, "Não autorizado", 401);
+    const id = c.req.param("id");
+    const project = await kv.get(`project:${id}`);
+    if (!project) return err(c, "Projeto não encontrado", 404);
+    if (auth && project.userId !== auth.userId) return err(c, "Sem permissão", 403);
+    const { text } = await c.req.json();
+    if (!text?.trim()) return err(c, "Mensagem vazia", 400);
+    const messages: any[] = await kv.get(`chat:${id}`) || [];
+    const isAdmin = !!admin;
+    let senderName = "Equipe Editorial";
+    if (!isAdmin && auth) {
+      const { data: userData } = await getAdminClient().auth.admin.getUserById(auth.userId);
+      senderName = userData?.user?.user_metadata?.name || "Cliente";
+    }
+    const msg = { id: crypto.randomUUID(), sender: isAdmin ? "admin" : "client", senderName, text: text.trim(), createdAt: new Date().toISOString() };
+    messages.push(msg);
+    await kv.set(`chat:${id}`, messages);
+    // Notify the other party by email (non-blocking)
+    try {
+      const siteUrl = SITE_URL;
+      const fromName = "Época Editora de Livros";
+      const signature = await buildSignatureHtml(siteUrl, fromName);
+      if (isAdmin && project.userId) {
+        const { data: ud } = await getAdminClient().auth.admin.getUserById(project.userId);
+        if (ud?.user?.email) {
+          const html = `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+            ${buildEmailHeader(fromName, "Nova mensagem")}
+            <div style="padding:24px">
+              <h2 style="color:#052413;font-size:18px;margin:0 0 16px;font-family:Georgia,serif">Projeto: ${project.title}</h2>
+              <div style="background:#F0E8D4;border-radius:8px;padding:16px"><p style="color:#052413;font-size:14px;margin:0;white-space:pre-wrap">${text.trim()}</p></div>
+              <div style="text-align:center;margin:20px 0 8px"><a href="${siteUrl}/minha-conta" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#EBBF74,#D4AF5A);color:#052413;font-weight:600;border-radius:8px;text-decoration:none;font-size:14px">Responder</a></div>
+              ${signature}
+            </div></div>`;
+          sendEmail(ud.user.email, `Nova mensagem — Projeto "${project.title}"`, html).catch(() => {});
+        }
+      } else if (!isAdmin) {
+        const cfg = await getEmailConfig();
+        const adminEmail = cfg.from_email || cfg.user;
+        if (adminEmail) {
+          sendEmail(adminEmail, `Nova mensagem do cliente — Projeto "${project.title}"`,
+            `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+            ${buildEmailHeader(fromName, "Mensagem recebida")}
+            <div style="padding:24px">
+              <h2 style="color:#052413;font-size:18px;margin:0 0 8px;font-family:Georgia,serif">Projeto: ${project.title}</h2>
+              <p style="color:#856C42;font-size:12px;margin:0 0 12px">De: ${senderName}</p>
+              <div style="background:#F0E8D4;border-radius:8px;padding:16px"><p style="color:#052413;font-size:14px;margin:0;white-space:pre-wrap">${text.trim()}</p></div>
+              <div style="text-align:center;margin:20px 0 8px"><a href="${siteUrl}/admin/projetos" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#EBBF74,#D4AF5A);color:#052413;font-weight:600;border-radius:8px;text-decoration:none;font-size:14px">Ver projeto</a></div>
+            </div></div>`
+          ).catch(() => {});
+        }
+      }
+    } catch {}
+    return c.json({ success: true, message: msg });
+  } catch (e) { return err(c, `Erro ao enviar mensagem: ${e}`); }
+});
+
+// ── ADMIN: FINANCIAL STATS ────────────────────────────────────────────────────
+app.get(`${P}/admin/financial-stats`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const projects = await kv.getByPrefix("project:");
+    let totalRevenue = 0, totalPending = 0, totalOverdue = 0;
+    const monthlyRevenue: Record<string, number> = {};
+    const now = new Date();
+    for (const p of projects) {
+      const b = p.budget;
+      if (!b) continue;
+      const price = parseFloat(b.totalPrice || b.price || 0);
+      // Deposit payments
+      if (b.status === "paid" || b.status === "fully_paid") {
+        const depositAmt = b.depositPercent > 0 && b.depositPercent < 100 ? price * b.depositPercent / 100 : price;
+        totalRevenue += depositAmt;
+        const paidDate = b.paidAt || b.createdAt || p.createdAt;
+        if (paidDate) { const m = paidDate.slice(0, 7); monthlyRevenue[m] = (monthlyRevenue[m] || 0) + depositAmt; }
+      }
+      // Remainder
+      if (b.remainderStatus === "paid") {
+        const remAmt = price - (price * (b.depositPercent || 0) / 100);
+        totalRevenue += remAmt;
+        if (b.remainderPaidAt) { const m = b.remainderPaidAt.slice(0, 7); monthlyRevenue[m] = (monthlyRevenue[m] || 0) + remAmt; }
+      } else if (b.status === "paid" && b.depositPercent > 0 && b.depositPercent < 100 && b.remainderStatus !== "paid") {
+        totalPending += price - (price * b.depositPercent / 100);
+      }
+      // Installments
+      if (b.installmentPlan?.enabled && b.installmentPlan?.installments) {
+        for (const inst of b.installmentPlan.installments) {
+          if (inst.status === "paid") {
+            totalRevenue += parseFloat(inst.amount || 0);
+            if (inst.paidAt) { const m = inst.paidAt.slice(0, 7); monthlyRevenue[m] = (monthlyRevenue[m] || 0) + parseFloat(inst.amount || 0); }
+          } else {
+            const amt = parseFloat(inst.amount || 0);
+            if (inst.dueDate && new Date(inst.dueDate) < now) { totalOverdue += amt; } else { totalPending += amt; }
+          }
+        }
+      }
+      // Unpaid budget (no deposit paid at all)
+      if (!b.status || b.status === "pending") { totalPending += price; }
+    }
+    // Sort monthly by key
+    const sortedMonths = Object.entries(monthlyRevenue).sort(([a], [b]) => a.localeCompare(b)).slice(-12);
+    return c.json({ totalRevenue: Math.round(totalRevenue * 100) / 100, totalPending: Math.round(totalPending * 100) / 100, totalOverdue: Math.round(totalOverdue * 100) / 100, totalProjects: projects.length, monthlyRevenue: sortedMonths.map(([month, amount]) => ({ month, amount: Math.round(amount * 100) / 100 })) });
+  } catch (e) { return err(c, `Erro ao buscar estatísticas financeiras: ${e}`); }
+});
+
+// ── INSTALLMENT REMINDERS (callable by cron or admin) ─────────────────────────
+app.post(`${P}/admin/installment-reminders`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { daysBefore = 3 } = await c.req.json().catch(() => ({ daysBefore: 3 }));
+    const projects = await kv.getByPrefix("project:");
+    const now = new Date();
+    const targetDate = new Date(now.getTime() + daysBefore * 24 * 60 * 60 * 1000);
+    let sent = 0;
+    const siteUrl = SITE_URL;
+    const fromName = "Época Editora de Livros";
+    for (const p of projects) {
+      if (!p.budget?.installmentPlan?.enabled || !p.userId) continue;
+      const installments = p.budget.installmentPlan.installments || [];
+      for (const inst of installments) {
+        if (inst.status === "paid" || !inst.dueDate) continue;
+        const due = new Date(inst.dueDate);
+        if (due > now && due <= targetDate) {
+          try {
+            const { data: ud } = await getAdminClient().auth.admin.getUserById(p.userId);
+            if (!ud?.user?.email) continue;
+            const dueFmt = due.toLocaleDateString("pt-BR");
+            const amtFmt = parseFloat(inst.amount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+            const signature = await buildSignatureHtml(siteUrl, fromName);
+            const html = `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
+              ${buildEmailHeader(fromName, "Lembrete de parcela")}
+              <div style="padding:24px">
+                <h2 style="color:#052413;font-size:18px;margin:0 0 16px;font-family:Georgia,serif">Parcela próxima do vencimento</h2>
+                <div style="background:#F0E8D4;border-radius:8px;padding:16px;margin:0 0 16px">
+                  <p style="margin:0;color:#052413;font-size:14px"><strong>Projeto:</strong> ${p.title}</p>
+                  <p style="margin:8px 0 0;color:#052413;font-size:14px"><strong>Parcela ${inst.number}:</strong> ${amtFmt}</p>
+                  <p style="margin:8px 0 0;color:#d4183d;font-size:14px;font-weight:600">Vencimento: ${dueFmt}</p>
+                </div>
+                <div style="text-align:center;margin:16px 0 8px"><a href="${siteUrl}/minha-conta" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#EBBF74,#D4AF5A);color:#052413;font-weight:600;border-radius:8px;text-decoration:none;font-size:14px">Ver parcelas</a></div>
+                ${signature}
+              </div></div>`;
+            await sendEmail(ud.user.email, `Lembrete: parcela de "${p.title}" vence em ${dueFmt}`, html);
+            sent++;
+          } catch (e) { console.error(`Reminder email failed for ${p.id}:`, e); }
+        }
+      }
+    }
+    auditLog("installment_reminders_sent", { by: auth.email, sent, daysBefore });
+    return c.json({ success: true, sent });
+  } catch (e) { return err(c, `Erro ao enviar lembretes: ${e}`); }
+});
+
+// ── PROJECT SATISFACTION SURVEY ───────────────────────────────────────────────
+app.post(`${P}/projects/:id/survey`, async (c) => {
+  try {
+    const auth = await verifyAuth(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const id = c.req.param("id");
+    const project = await kv.get(`project:${id}`);
+    if (!project) return err(c, "Projeto não encontrado", 404);
+    if (project.userId !== auth.userId) return err(c, "Sem permissão", 403);
+    const { rating, comment, allowTestimonial } = await c.req.json();
+    if (!rating || rating < 1 || rating > 5) return err(c, "Avaliação deve ser de 1 a 5", 400);
+    const survey = { rating, comment: comment?.trim() || "", allowTestimonial: !!allowTestimonial, submittedAt: new Date().toISOString() };
+    project.survey = survey;
+    await kv.set(`project:${id}`, project);
+    // If allowed as testimonial and rating >= 4, auto-create a pending testimonial
+    if (allowTestimonial && rating >= 4) {
+      const { data: ud } = await getAdminClient().auth.admin.getUserById(auth.userId);
+      const userName = ud?.user?.user_metadata?.name || "Autor";
+      await kv.set(`testimonial_survey:${id}`, { name: userName, role: "Autor", text: comment?.trim() || `Excelente experiência com a Época Editora! Avaliação: ${rating}/5`, rating, featured: false, createdAt: new Date().toISOString(), source: "survey", projectId: id });
+    }
+    auditLog("survey_submitted", { projectId: id, rating });
+    return c.json({ success: true });
+  } catch (e) { return err(c, `Erro ao enviar avaliação: ${e}`); }
+});
+
+app.get(`${P}/projects/:id/survey`, async (c) => {
+  try {
+    const auth = await verifyAuth(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const id = c.req.param("id");
+    const project = await kv.get(`project:${id}`);
+    if (!project) return err(c, "Projeto não encontrado", 404);
+    if (project.userId !== auth.userId) return err(c, "Sem permissão", 403);
+    return c.json({ survey: project.survey || null });
+  } catch (e) { return err(c, `Erro ao buscar avaliação: ${e}`); }
 });
 
 Deno.serve(app.fetch);

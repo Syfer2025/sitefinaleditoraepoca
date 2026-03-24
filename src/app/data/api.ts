@@ -898,3 +898,35 @@ export async function deleteAdminEmailCampaign(id: string) {
 export async function sendAdminEmailCampaign(id: string) {
   return api(`/admin/email-campaigns/${id}/send`, { method: "POST", body: {} });
 }
+
+// ── PROJECT CHAT ──────────────────────────────────────────────────────────────
+export async function getProjectChat(projectId: string, signal?: AbortSignal) {
+  return userApi(`/projects/${projectId}/chat`, { signal });
+}
+export async function sendProjectChatMessage(projectId: string, text: string) {
+  return userApi(`/projects/${projectId}/chat`, { method: "POST", body: { text } });
+}
+export async function getAdminProjectChat(projectId: string) {
+  return api(`/projects/${projectId}/chat`);
+}
+export async function sendAdminProjectChatMessage(projectId: string, text: string) {
+  return api(`/projects/${projectId}/chat`, { method: "POST", body: { text } });
+}
+
+// ── FINANCIAL STATS ───────────────────────────────────────────────────────────
+export async function getAdminFinancialStats() {
+  return api("/admin/financial-stats");
+}
+
+// ── INSTALLMENT REMINDERS ─────────────────────────────────────────────────────
+export async function sendInstallmentReminders(daysBefore = 3) {
+  return api("/admin/installment-reminders", { method: "POST", body: { daysBefore } });
+}
+
+// ── PROJECT SURVEY ────────────────────────────────────────────────────────────
+export async function submitProjectSurvey(projectId: string, data: { rating: number; comment?: string; allowTestimonial?: boolean }) {
+  return userApi(`/projects/${projectId}/survey`, { method: "POST", body: data });
+}
+export async function getProjectSurvey(projectId: string) {
+  return userApi(`/projects/${projectId}/survey`);
+}

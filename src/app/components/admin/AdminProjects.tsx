@@ -38,6 +38,7 @@ import {
   Receipt,
   Printer,
   Pencil,
+  MessageCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -62,6 +63,8 @@ import {
   deleteInstallmentPlan,
   generateInstallmentPix,
   confirmInstallment,
+  getAdminProjectChat,
+  sendAdminProjectChatMessage,
 } from "../../data/api";
 import { toast } from "sonner";
 import logoImg from "/assets/logo.png";
@@ -224,7 +227,7 @@ function AdminContractDownloadBtn({ projectId, pdfName }: { projectId: string; p
 // ============================================
 // Edit Project Modal — Tabbed Layout
 // ============================================
-type ModalTab = "projeto" | "financeiro" | "contrato" | "arquivos" | "nf";
+type ModalTab = "projeto" | "financeiro" | "contrato" | "arquivos" | "nf" | "chat";
 
 const MODAL_TABS: { key: ModalTab; label: string; icon: any }[] = [
   { key: "projeto", label: "Projeto", icon: BookOpen },
@@ -232,6 +235,7 @@ const MODAL_TABS: { key: ModalTab; label: string; icon: any }[] = [
   { key: "contrato", label: "Contrato", icon: ScrollText },
   { key: "arquivos", label: "Arquivos", icon: FolderOpen },
   { key: "nf", label: "NF", icon: Receipt },
+  { key: "chat", label: "Chat", icon: MessageCircle },
 ];
 
 // ============================================
@@ -524,6 +528,91 @@ function InstallmentPlanAdmin({ project, onUpdated }: { project: Project; onUpda
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+// ============================================
+// Admin Chat Panel
+// ============================================
+function AdminChatPanel({ projectId }: { projectId: string }) {
+  const [messages, setMessages] = useState<{ id: string; sender: string; senderName: string; text: string; createdAt: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const endRef = useRef<HTMLDivElement>(null);
+
+  const load = async () => {
+    try {
+      const data = await getAdminProjectChat(projectId);
+      setMessages(data.messages || []);
+    } catch { /* silent */ }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => { load(); const iv = setInterval(load, 8000); return () => clearInterval(iv); }, [projectId]);
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+
+  const handleSend = async () => {
+    const trimmed = text.trim();
+    if (!trimmed || sending) return;
+    setSending(true);
+    try {
+      await sendAdminProjectChatMessage(projectId, trimmed);
+      setText("");
+      await load();
+    } catch { toast.error("Erro ao enviar mensagem."); }
+    finally { setSending(false); }
+  };
+
+  if (loading) return <div className="flex items-center justify-center py-12"><Loader2 className="w-5 h-5 animate-spin text-[#165B36]" /></div>;
+
+  return (
+    <div className="flex flex-col" style={{ height: "50vh" }}>
+      <div className="flex-1 overflow-y-auto space-y-2 pr-1 mb-3">
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <MessageCircle className="w-10 h-10 text-gray-200 mb-3" />
+            <p className="text-sm text-gray-400">Nenhuma mensagem</p>
+            <p className="text-xs text-gray-300 mt-1">Envie uma mensagem ao cliente</p>
+          </div>
+        ) : (
+          messages.map((msg) => (
+            <div key={msg.id} className={`flex ${msg.sender === "admin" ? "justify-end" : "justify-start"}`}>
+              <div
+                className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl ${msg.sender === "admin" ? "rounded-br-md bg-[#165B36] text-white" : "rounded-bl-md bg-gray-100 text-gray-900"}`}
+              >
+                <p className="text-[0.6rem] font-semibold mb-0.5 opacity-70">{msg.senderName}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                <p className="text-[0.5rem] mt-1 opacity-50">
+                  {new Date(msg.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </div>
+            </div>
+          ))
+        )}
+        <div ref={endRef} />
+      </div>
+      <div className="flex-shrink-0 flex gap-2 pt-2 border-t border-gray-100">
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+          placeholder="Mensagem para o cliente..."
+          maxLength={2000}
+          className="flex-1 px-3.5 py-2.5 rounded-lg border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#165B36]/20"
+          style={{ borderColor: "rgba(133,108,66,0.15)", backgroundColor: "#FFFDF8" }}
+        />
+        <button
+          onClick={handleSend}
+          disabled={!text.trim() || sending}
+          className="px-3.5 py-2.5 rounded-lg text-white font-medium text-sm disabled:opacity-40 transition-all cursor-pointer flex-shrink-0"
+          style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
+        >
+          {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+        </button>
+      </div>
     </div>
   );
 }
@@ -1711,11 +1800,14 @@ function EditProjectModal({
                   </div>
                 </div>
               )}
+
+              {/* TAB: CHAT */}
+              {activeTab === "chat" && (
+                <AdminChatPanel projectId={project.id} />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
-
-        {/* Footer */}
         <div className="flex-shrink-0 px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex items-center gap-3">
           {error && <div className="flex items-center gap-1.5 text-xs text-red-600 flex-1 min-w-0"><AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /><span className="truncate">{error}</span></div>}
           <div className={`flex gap-3 ${error ? "" : "flex-1 justify-end"}`}>

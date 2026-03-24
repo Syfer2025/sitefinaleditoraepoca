@@ -1,0 +1,26 @@
+{
+  "name": "Época Editora de Livros",
+  "short_name": "Época Editora",
+  "description": "Publicamos histórias que transformam vidas. Serviços editoriais completos.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#052413",
+  "theme_color": "#165B36",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["books", "business"],
+  "lang": "pt-BR"
+}

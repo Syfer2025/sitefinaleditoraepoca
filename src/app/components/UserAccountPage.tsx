@@ -4,14 +4,14 @@ import { motion, AnimatePresence } from "motion/react";
 import {
   AlertCircle, ArrowLeft, Bell, Camera, CheckCircle, ChevronRight, Clock, CreditCard,
   Download, Edit3, Eye, FileText, Folder, History, Key, LayoutGrid, Loader2,
-  LogOut, Mail, Package, Phone, Plus, Receipt, Save, Search, Send, Shield, Upload, X,
-  Info, Files, Wallet, ScrollText, ExternalLink, Calendar
+  LogOut, Mail, MessageCircle, Package, Phone, Plus, Receipt, Save, Search, Send, Shield, Star, Upload, X,
+  Info, Files, Wallet, ScrollText, ExternalLink, Calendar, ThumbsUp, BookOpen, User as UserIcon, Sparkles
 } from "lucide-react";
 import { supabase } from "../data/supabaseClient";
 import { GoldButton } from "./GoldButton";
 import { Footer } from "./Footer";
 import { useUserAuth } from "./UserAuthContext";
-import { getUserProjects, userConfirmPayment, getReviewFiles, getUserProject, approveReview, getUserInvoices, getContractPdfUrl, getUserInstallments } from "../data/api";
+import { getUserProjects, userConfirmPayment, getReviewFiles, getUserProject, approveReview, getUserInvoices, getContractPdfUrl, getUserInstallments, getProjectChat, sendProjectChatMessage, submitProjectSurvey, getProjectSurvey } from "../data/api";
 import { NewRequestForm } from "./NewRequestForm";
 import { toast } from "sonner";
 import { FileViewer, isViewableFile } from "./account/FileViewer";
@@ -1430,9 +1430,270 @@ function TabHistorico({ project }: { project: Project }) {
 }
 
 // ============================================
+// Detail Tab: Chat
+// ============================================
+interface ChatMessage {
+  id: string;
+  sender: "client" | "admin";
+  senderName: string;
+  text: string;
+  createdAt: string;
+}
+
+function TabChat({ project }: { project: Project }) {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const loadMessages = useCallback(async () => {
+    try {
+      const data = await getProjectChat(project.id);
+      setMessages(data.messages || []);
+    } catch { /* silent */ }
+    finally { setLoading(false); }
+  }, [project.id]);
+
+  useEffect(() => {
+    loadMessages();
+    const interval = setInterval(loadMessages, 10000);
+    return () => clearInterval(interval);
+  }, [loadMessages]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleSend = async () => {
+    const trimmed = text.trim();
+    if (!trimmed || sending) return;
+    setSending(true);
+    try {
+      await sendProjectChatMessage(project.id, trimmed);
+      setText("");
+      await loadMessages();
+    } catch {
+      toast.error("Erro ao enviar mensagem.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-5 h-5 animate-spin text-[#165B36]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-[50vh]">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 mb-3">
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <MessageCircle className="w-10 h-10 text-[#856C42]/20 mb-3" />
+            <p className="text-sm text-[#856C42]/60">Nenhuma mensagem ainda</p>
+            <p className="text-xs text-[#856C42]/40 mt-1">Envie uma mensagem para a editora</p>
+          </div>
+        ) : (
+          messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex ${msg.sender === "client" ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl ${
+                  msg.sender === "client"
+                    ? "rounded-br-md"
+                    : "rounded-bl-md"
+                }`}
+                style={{
+                  backgroundColor: msg.sender === "client" ? "#165B36" : "#F0E8D4",
+                  color: msg.sender === "client" ? "white" : "#052413",
+                }}
+              >
+                <p className="text-[0.6rem] font-semibold mb-0.5" style={{ opacity: 0.7 }}>
+                  {msg.senderName}
+                </p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                <p className="text-[0.5rem] mt-1" style={{ opacity: 0.5 }}>
+                  {formatDateTime(msg.createdAt)}
+                </p>
+              </div>
+            </div>
+          ))
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input */}
+      <div className="flex-shrink-0 flex gap-2 pt-2 border-t" style={{ borderColor: "rgba(133,108,66,0.1)" }}>
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+          placeholder="Digite sua mensagem..."
+          maxLength={2000}
+          className="flex-1 px-3.5 py-2.5 rounded-xl border text-sm text-[#052413] bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#165B36]/15 transition-all"
+          style={{ borderColor: "rgba(133,108,66,0.15)" }}
+        />
+        <button
+          onClick={handleSend}
+          disabled={!text.trim() || sending}
+          className="px-3.5 py-2.5 rounded-xl text-white font-medium text-sm disabled:opacity-40 transition-all cursor-pointer flex-shrink-0"
+          style={{ background: "linear-gradient(135deg, #165B36, #052413)" }}
+        >
+          {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// Detail Tab: Survey (post-project)
+// ============================================
+function TabSurvey({ project }: { project: Project }) {
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [allowTestimonial, setAllowTestimonial] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [existingSurvey, setExistingSurvey] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getProjectSurvey(project.id);
+        if (data.survey) {
+          setExistingSurvey(data.survey);
+          setSubmitted(true);
+        }
+      } catch { /* no survey yet */ }
+      finally { setLoading(false); }
+    })();
+  }, [project.id]);
+
+  const handleSubmit = async () => {
+    if (rating === 0 || submitting) return;
+    setSubmitting(true);
+    try {
+      await submitProjectSurvey(project.id, { rating, comment: comment.trim() || undefined, allowTestimonial });
+      setSubmitted(true);
+      toast.success("Avaliação enviada com sucesso! Obrigado!");
+    } catch {
+      toast.error("Erro ao enviar avaliação.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-5 h-5 animate-spin text-[#165B36]" />
+      </div>
+    );
+  }
+
+  if (submitted || existingSurvey) {
+    const r = existingSurvey?.rating || rating;
+    return (
+      <div className="flex flex-col items-center text-center py-6">
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3" style={{ background: "rgba(10,124,62,0.08)" }}>
+          <ThumbsUp className="w-6 h-6 text-[#0a7c3e]" />
+        </div>
+        <p className="text-sm font-medium text-[#052413] font-serif mb-1">Obrigado pela sua avaliação!</p>
+        <div className="flex gap-1 mb-2">
+          {[1, 2, 3, 4, 5].map((s) => (
+            <Star key={s} className="w-5 h-5" fill={s <= r ? "#EBBF74" : "none"} stroke={s <= r ? "#EBBF74" : "#856C42"} strokeWidth={1.5} />
+          ))}
+        </div>
+        {existingSurvey?.comment && (
+          <p className="text-xs text-[#856C42]/70 max-w-xs">&ldquo;{existingSurvey.comment}&rdquo;</p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5 py-2">
+      <div className="text-center">
+        <Sparkles className="w-8 h-8 text-[#EBBF74] mx-auto mb-2" />
+        <p className="text-sm font-medium text-[#052413] font-serif">Como foi sua experiência?</p>
+        <p className="text-xs text-[#856C42]/60 mt-1">Sua opinião nos ajuda a melhorar</p>
+      </div>
+
+      {/* Star rating */}
+      <div className="flex justify-center gap-2">
+        {[1, 2, 3, 4, 5].map((s) => (
+          <button
+            key={s}
+            onMouseEnter={() => setHoverRating(s)}
+            onMouseLeave={() => setHoverRating(0)}
+            onClick={() => setRating(s)}
+            className="transition-transform hover:scale-110 cursor-pointer"
+          >
+            <Star
+              className="w-8 h-8 transition-colors"
+              fill={s <= (hoverRating || rating) ? "#EBBF74" : "none"}
+              stroke={s <= (hoverRating || rating) ? "#EBBF74" : "#856C42"}
+              strokeWidth={1.5}
+            />
+          </button>
+        ))}
+      </div>
+      {rating > 0 && (
+        <p className="text-center text-xs text-[#856C42]">
+          {rating <= 2 ? "Lamentamos. Conte-nos o que podemos melhorar." : rating <= 4 ? "Bom! Queremos melhorar ainda mais." : "Excelente! Ficamos felizes!"}
+        </p>
+      )}
+
+      {/* Comment */}
+      <textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Deixe um comentário (opcional)"
+        rows={3}
+        maxLength={500}
+        className="w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#052413] resize-none focus:outline-none focus:ring-2 focus:ring-[#165B36]/15"
+        style={{ borderColor: "rgba(133,108,66,0.15)", backgroundColor: "#FFFDF8" }}
+      />
+
+      {/* Allow testimonial */}
+      {rating >= 4 && (
+        <label className="flex items-center gap-2.5 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={allowTestimonial}
+            onChange={(e) => setAllowTestimonial(e.target.checked)}
+            className="w-4 h-4 rounded accent-[#165B36]"
+          />
+          <span className="text-xs text-[#052413]">Permitir uso como depoimento no site</span>
+        </label>
+      )}
+
+      <GoldButton
+        onClick={handleSubmit}
+        disabled={rating === 0 || submitting}
+        className="w-full py-2.5 text-sm font-semibold"
+      >
+        {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Star className="w-4 h-4" /> Enviar avaliação</>}
+      </GoldButton>
+    </div>
+  );
+}
+
+// ============================================
 // Project Detail Modal (tabbed)
 // ============================================
-type DetailTab = "overview" | "files" | "financial" | "historico";
+type DetailTab = "overview" | "files" | "financial" | "historico" | "chat" | "survey";
 
 function ProjectDetail({ project, onClose }: { project: Project; onClose: () => void }) {
   const navigate = useNavigate();
@@ -1494,7 +1755,9 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
     { key: "overview", label: "Visao Geral", icon: <Info className="w-3.5 h-3.5" /> },
     { key: "files", label: "Arquivos", icon: <Files className="w-3.5 h-3.5" />, badge: (liveProject.uploadedFiles?.length || 0) + (liveProject.reviewFiles?.length || 0) || undefined },
     { key: "financial", label: "Financeiro", icon: <Wallet className="w-3.5 h-3.5" />, badge: (liveProject.budget && liveProject.budget.status !== "paid" && liveProject.budget.status !== "fully_paid") || (liveProject.budget && liveProject.budget.remainderPaymentUrl && liveProject.budget.remainderStatus !== "paid") ? 1 : undefined },
+    { key: "chat", label: "Chat", icon: <MessageCircle className="w-3.5 h-3.5" /> },
     { key: "historico", label: "Historico", icon: <History className="w-3.5 h-3.5" /> },
+    ...(liveProject.status === "concluido" ? [{ key: "survey" as DetailTab, label: "Avaliar", icon: <Star className="w-3.5 h-3.5" /> }] : []),
   ];
 
   return (
@@ -1579,7 +1842,9 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
               {activeTab === "overview" && <TabOverview project={liveProject} />}
               {activeTab === "files" && <TabFiles project={liveProject} onViewFile={setViewingFile} />}
               {activeTab === "financial" && <TabFinancial project={liveProject} />}
+              {activeTab === "chat" && <TabChat project={liveProject} />}
               {activeTab === "historico" && <TabHistorico project={liveProject} />}
+              {activeTab === "survey" && <TabSurvey project={liveProject} />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -2132,17 +2397,70 @@ export function UserAccountPage() {
                     )}
                   </>
                 ) : (
-                  <>
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "rgba(235,191,116,0.1)" }}>
-                      <Package className="w-6 h-6 text-[#856C42]/30" />
+                  <div className="space-y-5">
+                    {/* Onboarding Steps */}
+                    <div className="text-center mb-2">
+                      <Sparkles className="w-8 h-8 text-[#EBBF74] mx-auto mb-2" />
+                      <p className="text-[#052413] font-medium text-base font-serif">Bem-vindo à Época Editora!</p>
+                      <p className="text-xs text-[#856C42]/60 mt-1">Siga os passos abaixo para começar</p>
                     </div>
-                    <p className="text-[#052413] font-medium text-sm mb-1 font-serif">Nenhum projeto ainda</p>
-                    <p className="text-xs text-[#856C42]/60 mb-4">Solicite seu orçamento e acompanhe aqui</p>
-                    <GoldButton onClick={() => setShowNewForm(true)} className="px-5 py-2.5 text-sm font-semibold">
-                      <Plus className="w-4 h-4" />
-                      Solicitar orçamento
-                    </GoldButton>
-                  </>
+                    <div className="space-y-2.5">
+                      {/* Step 1 */}
+                      <div
+                        className="flex items-start gap-3 p-3.5 rounded-xl border"
+                        style={{ backgroundColor: user.name ? "rgba(10,124,62,0.03)" : "#FFFDF8", borderColor: user.name ? "rgba(10,124,62,0.15)" : "rgba(133,108,66,0.12)" }}
+                      >
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
+                          style={{ backgroundColor: user.name ? "rgba(10,124,62,0.1)" : "rgba(235,191,116,0.2)", color: user.name ? "#0a7c3e" : "#856C42" }}
+                        >
+                          {user.name ? <CheckCircle className="w-3.5 h-3.5" /> : "1"}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-medium ${user.name ? "text-[#0a7c3e]" : "text-[#052413]"}`}>Complete seu perfil</p>
+                          <p className="text-[0.65rem] text-[#856C42]/60 mt-0.5">Adicione seu nome e telefone para facilitar a comunicação</p>
+                          {!user.name && (
+                            <button onClick={() => setShowProfileEdit(true)} className="mt-2 text-xs text-[#165B36] font-medium hover:underline cursor-pointer">
+                              Completar perfil →
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {/* Step 2 */}
+                      <div
+                        className="flex items-start gap-3 p-3.5 rounded-xl border"
+                        style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(235,191,116,0.25)" }}
+                      >
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
+                          style={{ backgroundColor: "rgba(235,191,116,0.2)", color: "#856C42" }}
+                        >
+                          2
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-[#052413]">Solicite seu primeiro orçamento</p>
+                          <p className="text-[0.65rem] text-[#856C42]/60 mt-0.5">Conte-nos sobre seu livro e receba uma proposta personalizada</p>
+                          <GoldButton onClick={() => setShowNewForm(true)} className="mt-2.5 px-4 py-2 text-xs font-semibold">
+                            <Plus className="w-3.5 h-3.5" />
+                            Solicitar orçamento
+                          </GoldButton>
+                        </div>
+                      </div>
+                      {/* Step 3 */}
+                      <div
+                        className="flex items-start gap-3 p-3.5 rounded-xl border opacity-50"
+                        style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.08)" }}
+                      >
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
+                          style={{ backgroundColor: "rgba(133,108,66,0.08)", color: "#856C42" }}
+                        >
+                          3
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-[#052413]">Acompanhe seu projeto</p>
+                          <p className="text-[0.65rem] text-[#856C42]/60 mt-0.5">Receba atualizações, converse com a equipe e acompanhe cada etapa</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </motion.div>
             ) : (() => {

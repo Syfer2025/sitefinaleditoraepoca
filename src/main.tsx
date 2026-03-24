@@ -8,4 +8,11 @@ import { getLogos } from "./app/data/api.ts";
 getLogos();
 
 createRoot(document.getElementById("root")!).render(<App />);
+
+// Register service worker for PWA
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}
   

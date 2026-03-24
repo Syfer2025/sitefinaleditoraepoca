@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GoldButton } from "./GoldButton";
 import { RevealOnScroll } from "./RevealOnScroll";
 import { Link } from "react-router";
 import { toast } from "sonner";
+import { Download } from "lucide-react";
 import footerLogoFallback from "/assets/36074aebf24684a213a02f0250350012b7c049a7.png";
 import { projectId, publicAnonKey } from "/utils/supabase/info";
 import { getLogos, getFooterContent, type FooterContent } from "../data/api";
@@ -22,6 +23,29 @@ export function Footer() {
   const [consentNewsletter, setConsentNewsletter] = useState(false);
   const [footerLogoImg, setFooterLogoImg] = useState<string>(footerLogoFallback);
   const [footer, setFooter] = useState<FooterContent>(FOOTER_DEFAULTS);
+  const deferredPromptRef = useRef<any>(null);
+  const [canInstall, setCanInstall] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      deferredPromptRef.current = e;
+      setCanInstall(true);
+    };
+    window.addEventListener("beforeinstallprompt", handler as EventListener);
+    return () => window.removeEventListener("beforeinstallprompt", handler as EventListener);
+  }, []);
+
+  const handleInstall = async () => {
+    const prompt = deferredPromptRef.current;
+    if (!prompt) return;
+    prompt.prompt();
+    const result = await prompt.userChoice;
+    if (result.outcome === "accepted") {
+      setCanInstall(false);
+      deferredPromptRef.current = null;
+    }
+  };
 
   useEffect(() => {
     getLogos().then((logos) => { if (logos.logo_footer) setFooterLogoImg(logos.logo_footer); });
@@ -213,6 +237,15 @@ export function Footer() {
             <div
               className="flex items-center gap-6"
             >
+              {canInstall && (
+                <button
+                  onClick={handleInstall}
+                  className="flex items-center gap-1.5 text-[0.8rem] text-[#EBBF74] hover:text-white transition-colors duration-300 cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Instalar App
+                </button>
+              )}
               {[
                 { label: "Privacidade", href: "/privacidade" },
                 { label: "Termos", href: "/termos" },

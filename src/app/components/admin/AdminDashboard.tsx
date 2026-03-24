@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Users, MessageSquare, Mail, BookOpen, TrendingUp, Eye } from "lucide-react";
+import { Users, MessageSquare, Mail, BookOpen, TrendingUp, Eye, DollarSign, Clock, AlertTriangle, Bell } from "lucide-react";
 import { motion } from "motion/react";
-import { api } from "../../data/api";
+import { api, getAdminFinancialStats, sendInstallmentReminders } from "../../data/api";
 import { allBooks } from "../../data/books";
+import { toast } from "sonner";
 
 interface Stats {
   totalUsers: number;
@@ -13,20 +14,40 @@ interface Stats {
   activeProjects: number;
 }
 
+interface FinancialStats {
+  totalRevenue: number;
+  totalPending: number;
+  totalOverdue: number;
+  totalProjects: number;
+  monthlyRevenue: { month: string; amount: number }[];
+}
+
 export function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [recentMessages, setRecentMessages] = useState<any[]>([]);
+  const [financial, setFinancial] = useState<FinancialStats | null>(null);
+  const [sendingReminders, setSendingReminders] = useState(false);
 
   useEffect(() => {
-    Promise.all([api("/admin/stats"), api("/admin/messages")])
-      .then(([statsData, msgsData]) => {
+    Promise.all([api("/admin/stats"), api("/admin/messages"), getAdminFinancialStats()])
+      .then(([statsData, msgsData, finData]) => {
         setStats(statsData);
         setRecentMessages(msgsData.messages?.slice(0, 5) || []);
+        setFinancial(finData);
       })
       .catch((err) => console.error("Dashboard load error:", err))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleSendReminders = async () => {
+    setSendingReminders(true);
+    try {
+      const res = await sendInstallmentReminders(3);
+      toast.success(`${res.sent} lembrete(s) enviado(s)`);
+    } catch (e: any) { toast.error(e.message || "Erro ao enviar lembretes"); }
+    finally { setSendingReminders(false); }
+  };
 
   if (loading) {
     return (
@@ -108,6 +129,61 @@ export function AdminDashboard() {
           </motion.div>
         ))}
       </div>
+
+      {/* Financial Dashboard */}
+      {financial && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base text-[#052413] font-serif">Resumo Financeiro</h3>
+            <button onClick={handleSendReminders} disabled={sendingReminders} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[#856C42] hover:bg-[#F0E8D4]/60 transition-colors border cursor-pointer disabled:opacity-50" style={{ borderColor: "rgba(133,108,66,0.15)" }}>
+              <Bell className="w-3.5 h-3.5" />
+              {sendingReminders ? "Enviando..." : "Enviar lembretes de parcelas"}
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { label: "Faturado", value: financial.totalRevenue, icon: DollarSign, color: "#165B36", bg: "rgba(22,91,54,0.08)" },
+              { label: "A receber", value: financial.totalPending, icon: Clock, color: "#EBBF74", bg: "rgba(235,191,116,0.12)" },
+              { label: "Em atraso", value: financial.totalOverdue, icon: AlertTriangle, color: "#d4183d", bg: "rgba(212,24,61,0.08)" },
+            ].map((card, i) => (
+              <motion.div key={card.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + i * 0.08, duration: 0.4 }} className="rounded-xl p-5 border" style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.12)" }}>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: card.bg }}>
+                    <card.icon className="w-5 h-5" style={{ color: card.color }} />
+                  </div>
+                  <p className="text-xs text-[#856C42]">{card.label}</p>
+                </div>
+                <p className="text-2xl font-semibold text-[#052413]">{card.value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Monthly Revenue Chart */}
+          {financial.monthlyRevenue.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.4 }} className="rounded-xl border p-5" style={{ backgroundColor: "#FFFDF8", borderColor: "rgba(133,108,66,0.12)" }}>
+              <h4 className="text-sm text-[#052413] font-serif mb-4">Receita Mensal (últimos 12 meses)</h4>
+              {(() => {
+                const maxVal = Math.max(...financial.monthlyRevenue.map(m => m.amount), 1);
+                return (
+                  <div className="flex items-end gap-2 h-40">
+                    {financial.monthlyRevenue.map((m) => {
+                      const pct = (m.amount / maxVal) * 100;
+                      const monthLabel = new Date(m.month + "-15").toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
+                      return (
+                        <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
+                          <span className="text-[0.55rem] text-[#856C42]/70">{m.amount > 0 ? (m.amount / 1000).toFixed(1) + "k" : ""}</span>
+                          <div className="w-full rounded-t-md" style={{ height: `${Math.max(pct, 4)}%`, background: "linear-gradient(180deg, #165B36, #052413)" }} />
+                          <span className="text-[0.55rem] text-[#856C42]/60">{monthLabel}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </motion.div>
+          )}
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent messages */}

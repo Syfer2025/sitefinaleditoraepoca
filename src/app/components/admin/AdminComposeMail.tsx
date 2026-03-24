@@ -282,17 +282,15 @@ export function AdminComposeMail() {
           </div>
         </div>
 
-        {/* Editor */}
-        {mode === "write" && (
-          <div
-            ref={editorRef}
-            contentEditable
-            suppressContentEditableWarning
-            data-placeholder="Escreva sua mensagem aqui…"
-            className="min-h-[260px] px-6 py-5 text-sm text-[#374151] outline-none leading-relaxed compose-editor"
-            style={{ background: "#FFFDF8" }}
-          />
-        )}
+        {/* Editor — always mounted, hidden during preview to preserve content */}
+        <div
+          ref={editorRef}
+          contentEditable
+          suppressContentEditableWarning
+          data-placeholder="Escreva sua mensagem aqui…"
+          className="min-h-[260px] px-6 py-5 text-sm text-[#374151] outline-none leading-relaxed compose-editor"
+          style={{ background: "#FFFDF8", display: mode === "write" ? "block" : "none" }}
+        />
 
         {/* Preview */}
         {mode === "preview" && (
