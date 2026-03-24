@@ -2137,10 +2137,10 @@ export function UserAccountPage() {
                       <Package className="w-6 h-6 text-[#856C42]/30" />
                     </div>
                     <p className="text-[#052413] font-medium text-sm mb-1 font-serif">Nenhum projeto ainda</p>
-                    <p className="text-xs text-[#856C42]/60 mb-4">Solicite sua diagramacao e acompanhe aqui</p>
+                    <p className="text-xs text-[#856C42]/60 mb-4">Solicite seu orçamento e acompanhe aqui</p>
                     <GoldButton onClick={() => setShowNewForm(true)} className="px-5 py-2.5 text-sm font-semibold">
                       <Plus className="w-4 h-4" />
-                      Solicitar diagramacao
+                      Solicitar orçamento
                     </GoldButton>
                   </>
                 )}
