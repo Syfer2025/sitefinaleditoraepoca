@@ -2687,6 +2687,82 @@ app.put(`${P}/admin/faqs`, async (c) => {
   } catch (e) { return err(c, `Erro ao salvar FAQs: ${e}`); }
 });
 
+// ── HERO CONTENT ──────────────────────────────────────────────────────────────
+app.get(`${P}/hero`, async (c) => {
+  try {
+    const hero = await kv.get("hero_content");
+    c.header("Cache-Control", "public, max-age=300");
+    return c.json({ hero: hero || null });
+  } catch (e) { return err(c, `Erro ao buscar hero: ${e}`); }
+});
+
+app.put(`${P}/admin/hero`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { hero } = await c.req.json();
+    await kv.set("hero_content", hero);
+    return c.json({ success: true });
+  } catch (e) { return err(c, `Erro ao salvar hero: ${e}`); }
+});
+
+// ── ABOUT CONTENT ─────────────────────────────────────────────────────────────
+app.get(`${P}/about-content`, async (c) => {
+  try {
+    const content = await kv.get("about_content");
+    c.header("Cache-Control", "public, max-age=300");
+    return c.json({ content: content || null });
+  } catch (e) { return err(c, `Erro ao buscar about content: ${e}`); }
+});
+
+app.put(`${P}/admin/about-content`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { content } = await c.req.json();
+    await kv.set("about_content", content);
+    return c.json({ success: true });
+  } catch (e) { return err(c, `Erro ao salvar about content: ${e}`); }
+});
+
+// ── FOOTER CONTENT ────────────────────────────────────────────────────────────
+app.get(`${P}/footer`, async (c) => {
+  try {
+    const footer = await kv.get("footer_content");
+    c.header("Cache-Control", "public, max-age=300");
+    return c.json({ footer: footer || null });
+  } catch (e) { return err(c, `Erro ao buscar footer: ${e}`); }
+});
+
+app.put(`${P}/admin/footer`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { footer } = await c.req.json();
+    await kv.set("footer_content", footer);
+    return c.json({ success: true });
+  } catch (e) { return err(c, `Erro ao salvar footer: ${e}`); }
+});
+
+// ── CTA BANNER ────────────────────────────────────────────────────────────────
+app.get(`${P}/cta-banner`, async (c) => {
+  try {
+    const cta = await kv.get("cta_banner");
+    c.header("Cache-Control", "public, max-age=300");
+    return c.json({ cta: cta || null });
+  } catch (e) { return err(c, `Erro ao buscar CTA banner: ${e}`); }
+});
+
+app.put(`${P}/admin/cta-banner`, async (c) => {
+  try {
+    const auth = await verifyAdmin(c.req.raw);
+    if (!auth) return err(c, "Não autorizado", 401);
+    const { cta } = await c.req.json();
+    await kv.set("cta_banner", cta);
+    return c.json({ success: true });
+  } catch (e) { return err(c, `Erro ao salvar CTA banner: ${e}`); }
+});
+
 // LOGO
 // Legacy single logo (backward compat — returns navbar logo or old logo)
 app.get(`${P}/logo`, async (c) => {
