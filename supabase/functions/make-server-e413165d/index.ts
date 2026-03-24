@@ -3386,6 +3386,22 @@ app.post(`${P}/projects/:id/chat`, async (c) => {
     }
     const msg = { id: crypto.randomUUID(), sender: isAdmin ? "admin" : "client", senderName, text: text.trim(), createdAt: new Date().toISOString() };
     messages.push(msg);
+    // Auto-reply when client sends a message (only if last message isn't already an auto-reply)
+    if (!isAdmin) {
+      const lastMsg = messages.length > 1 ? messages[messages.length - 2] : null;
+      const alreadyAutoReplied = lastMsg?.auto === true;
+      if (!alreadyAutoReplied) {
+        const autoReply = {
+          id: crypto.randomUUID(),
+          sender: "admin",
+          senderName: "Equipe Editorial",
+          text: "Obrigado pela sua mensagem! Recebemos e responderemos assim que possível. Em caso de urgência, entre em contato pelo WhatsApp.",
+          createdAt: new Date(Date.now() + 1000).toISOString(),
+          auto: true,
+        };
+        messages.push(autoReply);
+      }
+    }
     await kv.set(`chat:${id}`, messages);
     // Notify the other party by email (non-blocking)
     try {
