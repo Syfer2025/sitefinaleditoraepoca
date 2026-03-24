@@ -318,6 +318,24 @@ app.get(`${P}/user/validate-cnpj/:cnpj`, async (c) => {
   } catch (e) { return err(c, `Erro ao consultar CNPJ na Receita Federal: ${e}`); }
 });
 
+// CEP lookup proxy — calls ViaCEP server-side to avoid CORS/network issues
+app.get(`${P}/user/cep/:cep`, async (c) => {
+  try {
+    const cep = c.req.param("cep").replace(/\D/g, "");
+    if (cep.length !== 8) return err(c, "CEP deve ter 8 dígitos", 400);
+    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    if (!res.ok) return err(c, "Erro ao consultar ViaCEP", 502);
+    const data = await res.json();
+    if (data.erro) return err(c, "CEP não encontrado. Verifique e tente novamente.", 404);
+    return c.json({
+      logradouro: data.logradouro || "",
+      bairro: data.bairro || "",
+      localidade: data.localidade || "",
+      uf: data.uf || "",
+    });
+  } catch (e) { return err(c, `Erro ao consultar CEP: ${e}`); }
+});
+
 // Check if e-mail already exists in the system
 app.post(`${P}/user/check-email`, async (c) => {
   try {

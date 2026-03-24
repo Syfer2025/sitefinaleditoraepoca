@@ -322,11 +322,14 @@ export function UserAuthPage() {
     const clean = formatted.replace(/\D/g, "");
     if (clean.length === 8) {
       setCepLoading(true);
+      setStreet(""); setNeighborhood(""); setCity(""); setState("");
       try {
-        const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
+        const res = await fetch(`${BASE_URL}/user/cep/${clean}`, {
+          headers: { Authorization: `Bearer ${publicAnonKey}` },
+        });
         const data = await res.json();
-        if (data.erro) {
-          setCepError("CEP nao encontrado. Verifique e tente novamente.");
+        if (!res.ok) {
+          setCepError(data.error || "CEP não encontrado. Verifique e tente novamente.");
         } else {
           setStreet(data.logradouro || "");
           setNeighborhood(data.bairro || "");
