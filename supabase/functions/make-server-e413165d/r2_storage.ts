@@ -11,7 +11,7 @@ function getR2Config() {
   const accountId = Deno.env.get("R2_ACCOUNT_ID");
   const accessKeyId = Deno.env.get("R2_ACCESS_KEY_ID");
   const secretAccessKey = Deno.env.get("R2_SECRET_ACCESS_KEY");
-  const bucket = Deno.env.get("R2_BUCKET_NAME") || "epoca-editora-files";
+  const bucket = Deno.env.get("R2_BUCKET_NAME") || "editoraepocafiles";
   if (!accountId || !accessKeyId || !secretAccessKey) {
     throw new Error("R2 credentials not configured (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY)");
   }
@@ -63,8 +63,8 @@ async function signRequest(opts: SignedRequestOptions): Promise<{ url: string; h
   const region = "auto";
   const service = "s3";
   const { amzDate, dateStamp } = getAmzDate();
-  const host = `${cfg.bucket}.${cfg.accountId}.r2.cloudflarestorage.com`;
-  const canonicalUri = "/" + opts.path.replace(/^\//, "");
+  const host = `${cfg.accountId}.r2.cloudflarestorage.com`;
+  const canonicalUri = "/" + cfg.bucket + "/" + opts.path.replace(/^\//, "");
 
   // Query string
   const qp = opts.queryParams || {};
@@ -105,8 +105,8 @@ async function generatePresignedUrl(key: string, expiresInSeconds: number, metho
   const region = "auto";
   const service = "s3";
   const { amzDate, dateStamp } = getAmzDate();
-  const host = `${cfg.bucket}.${cfg.accountId}.r2.cloudflarestorage.com`;
-  const canonicalUri = "/" + key.replace(/^\//, "");
+  const host = `${cfg.accountId}.r2.cloudflarestorage.com`;
+  const canonicalUri = "/" + cfg.bucket + "/" + key.replace(/^\//, "");
   const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
 
   const qp: Record<string, string> = {
