@@ -506,7 +506,8 @@ app.post(`${P}/user/signin`, async (c) => {
       if (em.includes("rate limit")) return err(c, "Muitas tentativas. Aguarde alguns minutos e tente novamente.", 429);
       return err(c, `Erro ao fazer login: ${error.message}`, 401);
     }
-    return c.json({ access_token: data.session?.access_token, user: { id: data.user?.id, email: data.user?.email, name: data.user?.user_metadata?.name || data.user?.email, role: data.user?.user_metadata?.role || "user" } });
+    // Role is ALWAYS "user" for the user-facing login — never expose admin status here
+    return c.json({ access_token: data.session?.access_token, user: { id: data.user?.id, email: data.user?.email, name: data.user?.user_metadata?.name || data.user?.email, role: "user" } });
   } catch (e) { return err(c, `Erro inesperado no login: ${e}`); }
 });
 
@@ -516,8 +517,8 @@ app.get(`${P}/user/me`, async (c) => {
     if (!auth) return err(c, "Não autenticado", 401);
     const { data, error } = await getAdminClient().auth.admin.getUserById(auth.userId);
     if (error || !data?.user) return err(c, "Usuário não encontrado", 404);
-    const admins = await getAdmins();
-    return c.json({ user: { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || "", role: admins.includes(data.user.email || "") ? "admin" : (data.user.user_metadata?.role || "user"), createdAt: data.user.created_at, phone: data.user.user_metadata?.phone || "" } });
+    // Role is ALWAYS "user" for the user-facing endpoint — admin status is only checked via /auth/me
+    return c.json({ user: { id: data.user.id, email: data.user.email, name: data.user.user_metadata?.name || "", role: "user", createdAt: data.user.created_at, phone: data.user.user_metadata?.phone || "" } });
   } catch (e) { return err(c, `Erro ao buscar perfil: ${e}`); }
 });
 
@@ -710,11 +711,13 @@ app.post(`${P}/admin/users`, async (c) => {
     const auth = await verifyAdmin(c.req.raw);
     if (!auth) return err(c, "Não autorizado", 401);
     const { email, password, name, role } = await c.req.json();
-    const { data, error } = await getAdminClient().auth.admin.createUser({ email, password, user_metadata: { name, role: role || "user" }, email_confirm: true });
+    // SECURITY: user_metadata.role is ALWAYS "user" — admin status is controlled exclusively via admin_users KV list
+    const { data, error } = await getAdminClient().auth.admin.createUser({ email, password, user_metadata: { name, role: "user" }, email_confirm: true });
     if (error) return err(c, `Erro ao criar usuário: ${error.message}`, 400);
     if (role === "admin") {
       const admins = await getAdmins();
       if (!admins.includes(email)) { admins.push(email); await kv.set("admin_users", admins); }
+      auditLog("admin_granted", { targetEmail: email, grantedBy: auth.email });
     }
     return c.json({ success: true, user: { id: data.user?.id, email, name, role: role || "user" } });
   } catch (e) { return err(c, `Erro ao criar usuário: ${e}`); }
@@ -725,12 +728,14 @@ app.put(`${P}/admin/users/:id`, async (c) => {
     const auth = await verifyAdmin(c.req.raw);
     if (!auth) return err(c, "Não autorizado", 401);
     const { name, role } = await c.req.json();
-    const { data, error } = await getAdminClient().auth.admin.updateUserById(c.req.param("id"), { user_metadata: { name, role } });
+    // SECURITY: user_metadata.role is ALWAYS "user" — admin status is controlled exclusively via admin_users KV list
+    const { data, error } = await getAdminClient().auth.admin.updateUserById(c.req.param("id"), { user_metadata: { name, role: "user" } });
     if (error) return err(c, `Erro ao atualizar usuário: ${error.message}`, 400);
     const admins = await getAdmins();
     const email = data.user?.email || "";
     if (role === "admin" && !admins.includes(email)) { admins.push(email); await kv.set("admin_users", admins); }
     else if (role !== "admin" && admins.includes(email)) { await kv.set("admin_users", admins.filter((a: string) => a !== email)); }
+    auditLog("role_change", { targetEmail: email, newRole: role, changedBy: auth.email });
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao atualizar usuário: ${e}`); }
 });
@@ -740,13 +745,23 @@ app.delete(`${P}/admin/users/:id`, async (c) => {
     const auth = await verifyAdmin(c.req.raw);
     if (!auth) return err(c, "Não autorizado", 401);
     const sb = getAdminClient();
-    const { data: ud } = await sb.auth.admin.getUserById(c.req.param("id"));
+    const userId = c.req.param("id");
+    const { data: ud } = await sb.auth.admin.getUserById(userId);
     const ue = ud?.user?.email || "";
     if (ue === auth.email) return err(c, "Você não pode excluir sua própria conta", 400);
-    const { error } = await sb.auth.admin.deleteUser(c.req.param("id"));
-    if (error) return err(c, `Erro ao excluir usuário: ${error.message}`, 400);
+    // SECURITY: Remove from admin list BEFORE deleting user to prevent race conditions
     const admins = await getAdmins();
-    if (admins.includes(ue)) await kv.set("admin_users", admins.filter((a: string) => a !== ue));
+    if (admins.includes(ue)) {
+      await kv.set("admin_users", admins.filter((a: string) => a !== ue));
+      auditLog("admin_revoked_on_delete", { targetEmail: ue, deletedBy: auth.email });
+    }
+    const { error } = await sb.auth.admin.deleteUser(userId);
+    if (error) {
+      // Rollback: re-add to admin list if delete failed and user was admin
+      if (admins.includes(ue)) { await kv.set("admin_users", admins); }
+      return err(c, `Erro ao excluir usuário: ${error.message}`, 400);
+    }
+    auditLog("user_deleted", { targetEmail: ue, deletedBy: auth.email });
     return c.json({ success: true });
   } catch (e) { return err(c, `Erro ao excluir usuário: ${e}`); }
 });

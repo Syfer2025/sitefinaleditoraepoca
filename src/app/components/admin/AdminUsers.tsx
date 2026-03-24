@@ -158,11 +158,22 @@ export function AdminUsers() {
   };
 
   const toggleRole = async (user: AppUser) => {
-    const newRoleVal = user.role === "admin" ? "user" : "admin";
+    const isPromoting = user.role !== "admin";
+    const msg = isPromoting
+      ? `⚠️ ATENÇÃO: Você está prestes a dar acesso ADMIN a "${user.email}". Essa pessoa terá acesso total ao painel administrativo.\n\nDigite "CONFIRMAR" para prosseguir:`
+      : `Rebaixar "${user.email}" para usuário comum? Essa pessoa perderá acesso ao painel admin.`;
+
+    if (isPromoting) {
+      const input = prompt(msg);
+      if (input !== "CONFIRMAR") return;
+    } else {
+      if (!confirm(msg)) return;
+    }
+
     try {
       await api(`/admin/users/${user.id}`, {
         method: "PUT",
-        body: { name: user.name, role: newRoleVal },
+        body: { name: user.name, role: isPromoting ? "admin" : "user" },
       });
       await loadUsers();
     } catch (err: any) {
@@ -371,15 +382,25 @@ export function AdminUsers() {
                         />
                       </div>
 
-                      {/* Actions bar */}
-                      <div className="flex items-center gap-2 mt-3 pt-3 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleCopy(user.email, user.id); }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-[#856C42] bg-[#F0E8D4]/50 hover:bg-[#F0E8D4] transition-colors cursor-pointer"
-                        >
-                          {copiedId === user.id ? <Check className="w-3 h-3 text-[#0a7c3e]" /> : <Copy className="w-3 h-3" />}
-                          {copiedId === user.id ? "Copiado!" : "Copiar email"}
-                        </button>
+                      {/* Actions bar — role change and delete are intentionally separated */}
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleCopy(user.email, user.id); }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-[#856C42] bg-[#F0E8D4]/50 hover:bg-[#F0E8D4] transition-colors cursor-pointer"
+                          >
+                            {copiedId === user.id ? <Check className="w-3 h-3 text-[#0a7c3e]" /> : <Copy className="w-3 h-3" />}
+                            {copiedId === user.id ? "Copiado!" : "Copiar email"}
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); deleteUser(user); }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            Excluir
+                          </button>
+                        </div>
+                        {/* Role change separated to the right to prevent accidental clicks */}
                         <button
                           onClick={(e) => { e.stopPropagation(); toggleRole(user); }}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer"
@@ -390,14 +411,7 @@ export function AdminUsers() {
                           title={user.role === "admin" ? "Rebaixar para usuario" : "Promover a admin"}
                         >
                           <Shield className="w-3 h-3" />
-                          {user.role === "admin" ? "Rebaixar" : "Promover"}
-                        </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); deleteUser(user); }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                          Excluir
+                          {user.role === "admin" ? "Rebaixar" : "Promover a Admin"}
                         </button>
                       </div>
                     </div>
