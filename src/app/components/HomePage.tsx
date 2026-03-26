@@ -8,6 +8,7 @@ const CatalogSection = lazy(() => import("./CatalogSection").then(m => ({ defaul
 const TestimonialsSection = lazy(() => import("./TestimonialsSection").then(m => ({ default: m.TestimonialsSection })));
 const AuthorsSection = lazy(() => import("./AuthorsSection").then(m => ({ default: m.AuthorsSection })));
 const PricingSection = lazy(() => import("./PricingSection").then(m => ({ default: m.PricingSection })));
+const HowItWorksSection = lazy(() => import("./HowItWorksSection").then(m => ({ default: m.HowItWorksSection })));
 const ContactSection = lazy(() => import("./ContactSection").then(m => ({ default: m.ContactSection })));
 const FaqSection = lazy(() => import("./FaqSection").then(m => ({ default: m.FaqSection })));
 const Footer = lazy(() => import("./Footer").then(m => ({ default: m.Footer })));
@@ -30,6 +31,7 @@ export function HomePage() {
         <TestimonialsSection />
         <AuthorsSection />
         <PricingSection />
+        <HowItWorksSection />
         <FaqSection />
         <ContactSection />
         <Footer />

@@ -456,6 +456,7 @@ function ProgressBar({ project }: { project: Project }) {
 const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: (p: Project) => void }>(
   ({ project, onSelect }, ref) => {
     const isComplete = project.status === "concluido";
+    const needsReview = project.status === "revisao";
     const hasPendingPayment = project.budget && project.budget.status !== "paid" && project.budget.status !== "fully_paid";
     const currentIdx = STATUS_FLOW.findIndex((s) => s.key === project.status);
     const hasDeposit = project.budget?.depositPercent && project.budget.depositPercent > 0 && project.budget.depositPercent < 100;
@@ -475,7 +476,7 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
         style={{
           backgroundColor: isComplete ? "#f8fdf8" : "#FFFDF8",
           borderWidth: 1,
-          borderColor: isComplete ? "rgba(10,124,62,0.2)" : hasPendingPayment ? "rgba(235,191,116,0.35)" : "rgba(133,108,66,0.12)",
+          borderColor: isComplete ? "rgba(10,124,62,0.2)" : hasPendingPayment ? "rgba(235,191,116,0.35)" : needsReview ? "rgba(22,91,54,0.3)" : "rgba(133,108,66,0.12)",
         }}
       >
         {/* Title row */}
@@ -511,7 +512,8 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
           </span>
 
           <div className="flex items-center gap-1.5">
-            {hasPendingPayment && !project.budget?.installmentPlan?.enabled && (
+            {/* Primary CTA — only one payment action shown */}
+            {hasPendingPayment && (
               <a
                 href={`/pagamento/${project.id}`}
                 onClick={(e) => e.stopPropagation()}
@@ -519,25 +521,12 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
                 style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
               >
                 <CreditCard className="w-3 h-3" />
-                {project.budget?.chargeAmount
-                  ? `Pagar ${formatCurrency(project.budget.chargeAmount)}`
-                  : "Pagar"}
+                {project.budget?.installmentPlan?.enabled
+                  ? (project.budget?.chargeAmount ? `Entrada ${formatCurrency(project.budget.chargeAmount)}` : "Pagar entrada")
+                  : (project.budget?.chargeAmount ? `Pagar ${formatCurrency(project.budget.chargeAmount)}` : "Pagar")}
               </a>
             )}
-            {hasPendingPayment && project.budget?.installmentPlan?.enabled && (
-              <a
-                href={`/pagamento/${project.id}`}
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[0.6rem] font-semibold text-[#052413] hover:shadow-sm transition-all"
-                style={{ background: "linear-gradient(135deg, #EBBF74, #d4a84a)" }}
-              >
-                <CreditCard className="w-3 h-3" />
-                {project.budget?.chargeAmount
-                  ? `Entrada ${formatCurrency(project.budget.chargeAmount)}`
-                  : "Pagar entrada"}
-              </a>
-            )}
-            {hasRemainderUrl && (
+            {!hasPendingPayment && hasRemainderUrl && (
               <a
                 href={project.budget!.remainderPaymentUrl}
                 target="_blank"
@@ -550,19 +539,24 @@ const ProjectCard = forwardRef<HTMLButtonElement, { project: Project; onSelect: 
                 Pagar restante
               </a>
             )}
-            {isRemainderPaid && (
+            {/* Review action badge */}
+            {needsReview && !hasPendingPayment && (
+              <span
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.55rem] font-semibold text-[#165B36]"
+                style={{ backgroundColor: "rgba(22,91,54,0.08)" }}
+              >
+                <Eye className="w-2.5 h-2.5" />
+                Revisar
+              </span>
+            )}
+            {/* Badge — fully paid or completed */}
+            {!hasPendingPayment && !hasRemainderUrl && isRemainderPaid && (
               <span
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.55rem] font-medium text-[#0a7c3e]"
                 style={{ backgroundColor: "rgba(10,124,62,0.08)" }}
               >
                 <CheckCircle className="w-2.5 h-2.5" />
                 Pago total
-              </span>
-            )}
-            {project.uploadedFiles && project.uploadedFiles.length > 0 && (
-              <span className="flex items-center gap-0.5 text-[#856C42]/40" title={`${project.uploadedFiles.length} arquivo(s)`}>
-                <Upload className="w-3 h-3" />
-                <span className="text-[0.55rem]">{project.uploadedFiles.length}</span>
               </span>
             )}
             {isComplete && <CheckCircle className="w-3.5 h-3.5 text-[#0a7c3e]" />}
@@ -2183,6 +2177,7 @@ export function UserAccountPage() {
   const pendingActionCount = useMemo(() => {
     return projects.filter((p) => {
       if (p.status === "concluido") return false;
+      if (p.status === "revisao") return true;
       if (p.budget?.installmentPlan?.enabled) {
         return p.budget.installmentPlan.installments.some(
           (i) => i.status !== "paid" && new Date(i.dueDate + "T23:59:59") < new Date()
@@ -2324,7 +2319,7 @@ export function UserAccountPage() {
 
               <div className="space-y-1 pt-2 border-t" style={{ borderColor: "rgba(133,108,66,0.08)" }}>
                 <a href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Gostaria%20de%20saber%20mais%20sobre%20os%20servi%C3%A7os%20da%20%C3%89poca%20Editora." target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2 rounded-lg text-xs text-[#052413] hover:bg-[#F0E8D4]/50 transition-colors">
-                  <Mail className="w-3.5 h-3.5 text-[#165B36]" /> Fale conosco
+                  <MessageCircle className="w-3.5 h-3.5 text-[#165B36]" /> Fale conosco
                 </a>
                 <button onClick={handleLogout} className="w-full flex items-center gap-2 p-2 rounded-lg text-xs text-[#d4183d] hover:bg-[#d4183d]/5 transition-colors cursor-pointer">
                   <LogOut className="w-3.5 h-3.5" /> Sair da conta
@@ -2354,8 +2349,8 @@ export function UserAccountPage() {
                 <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
                 <p className="text-xs text-[#052413]">
                   {pendingActionCount === 1
-                    ? "Você tem 1 projeto aguardando ação — pagamento pendente ou parcela vencida."
-                    : `Você tem ${pendingActionCount} projetos aguardando ação — pagamentos pendentes ou parcelas vencidas.`}
+                    ? "Você tem 1 projeto aguardando ação — pagamento, parcela vencida ou revisão pendente."
+                    : `Você tem ${pendingActionCount} projetos aguardando ação — pagamentos, parcelas vencidas ou revisões pendentes.`}
                 </p>
               </motion.div>
             )}
@@ -2385,7 +2380,7 @@ export function UserAccountPage() {
 
               <GoldButton onClick={() => setShowNewForm(true)} className="px-3 py-2.5 text-xs font-semibold">
                 <Plus className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Novo projeto</span>
+                <span className="hidden sm:inline">Solicitar orçamento</span>
               </GoldButton>
             </div>
 
